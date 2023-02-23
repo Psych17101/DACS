@@ -1,0 +1,1 @@
+null!==document.cookie.match(/^(.*;)?\s*mwa_profile\s*=\s*[^;]+(.*)?$/)&&$(document).ready(function(){$.ajax({type:"POST",url:"/matlabcentral/profile/api/v1/active/ping"})});

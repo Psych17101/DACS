@@ -1,0 +1,395 @@
+"use strict";
+
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return !!right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+$(function () {
+  var options = {};
+  var curScriptElement = document.querySelector('script[data-code-options-app]');
+  var locale = curScriptElement.getAttribute('data-locale');
+  options.locale = locale;
+
+  switch (curScriptElement.getAttribute('data-code-options-app')) {
+    case 'answers':
+      options.tracking_url = '/matlabcentral/answers/rtc/copied_code';
+      options.dark_mode_pref_url = '/matlabcentral/answers/rtc/dark_mode_code_pref';
+      options.dark_mode_on_url = '/matlabcentral/answers/rtc/dark_mode_on';
+      options.dark_mode_off_url = '/matlabcentral/answers/rtc/dark_mode_off';
+      break;
+  } // add CodeOptions object
+
+
+  window.CodeOptions = {
+    show: function show(additional_options) {
+      if (additional_options) options = Object.assign(additional_options, options);
+      new CodeOptionsWidget(options).show();
+    }
+  };
+});
+
+var CodeOptionsWidget = /*#__PURE__*/function () {
+  function CodeOptionsWidget(_ref) {
+    var selector = _ref.selector,
+        tracking_id = _ref.tracking_id,
+        tracking_url = _ref.tracking_url,
+        profile_id = _ref.profile_id,
+        dark_mode_code = _ref.dark_mode_code,
+        dark_mode_pref_url = _ref.dark_mode_pref_url,
+        dark_mode_on_url = _ref.dark_mode_on_url,
+        dark_mode_off_url = _ref.dark_mode_off_url,
+        locale = _ref.locale;
+
+    _classCallCheck(this, CodeOptionsWidget);
+
+    this.selector = selector || ".rtcContent .CodeBlock";
+    this.tracking_id = tracking_id;
+    this.tracking_url = tracking_url;
+    this.profile_id = profile_id;
+    this.dark_mode_code = dark_mode_code;
+    this.dark_mode_pref_url = dark_mode_pref_url;
+    this.dark_mode_on_url = dark_mode_on_url;
+    this.dark_mode_off_url = dark_mode_off_url;
+    this.translated_text = this.get_translation(locale);
+    this.init();
+  }
+
+  _createClass(CodeOptionsWidget, [{
+    key: "init",
+    value: function init() {
+      var code_option_styles = document.createElement('style');
+      code_option_styles.innerHTML = "\n      /* COPY CODE TO CLIPBOARD STARTS */\n      .clipboard {\n        position: absolute;\n        width: 100%;\n        height: 0px;\n        padding-right: 30px;\n        display: flex;\n        justify-content: flex-end;\n        -webkit-touch-callout: none; /* iOS Safari */\n        -webkit-user-select: none; /* Safari */\n        -khtml-user-select: none; /* Konqueror HTML */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* Internet Explorer/Edge */\n        user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */\n      }\n      .btn-copy-code {\n        background-color: transparent;\n        border: none;\n        color: #6f6f6f;\n        outline: none;\n        padding: 3px 3px 5px 3px;\n        margin: 0px 7px 0px 11px;\n        height: 24px;\n      }\n      .btn-copy-code:hover {\n        color: #000;\n      }\n      .btn-copy-code:focus-visible {\n        outline: thin dotted;\n        outline: 5px auto -webkit-focus-ring-color;\n        outline-offset: -2px;\n      }\n      .btn-clipboard {\n        display: none;  /* Hide old clipboard button saved on race condition */\n      }\n      @keyframes highlight {\n        0% {\n          background: #ffff99;\n        }\n        100% {\n          background: #F7F7F7;\n        }\n      }\n      .highlight {\n        animation: highlight 0.75s;\n      }\n      [data-pseudo-content]::before {\n        content: attr(data-pseudo-content);\n      }\n      /* COPY CODE TO CLIPBOARD ENDS */\n\n      /* DARK MODE FOR CODE BLOCKS STARTS */\n      .dark-mode-switch {\n        border: none;\n        background: transparent;\n        outline: none;\n        padding: 4px 3px 3px 3px;\n        color: #6f6f6f;\n        height: 24px;\n      }\n      .dark-mode-switch:hover {\n        color: #000;\n      }\n      .dark-mode-switch:focus-visible {\n        outline: thin dotted;\n        outline: 5px auto -webkit-focus-ring-color;\n        outline-offset: -2px;\n      }\n      body.dark .dark-mode-switch, body.dark .btn-copy-code {\n        color: #b1b1b1;\n      }\n      body.dark .dark-mode-switch:hover, body.dark .btn-copy-code:hover {\n        color: #fff;\n      }\n      body.dark .rtcContent .CodeBlock.contiguous {\n        background-color: #161616;\n        color: #fff;\n      }\n      body.dark .rtcContent .lineNode .textBox .textWrapper.Comment {\n        color: #5FDF0F;\n      }\n      body.dark .rtcContent .lineNode .textBox .textWrapper.Keyword {\n        color: #7491F9;\n      }\n      body.dark .rtcContent .lineNode .textBox .textWrapper.String {\n        color: #DD74DD;\n      }\n      body.dark .rtcContent .lineNode .textBox .textWrapper.SysCommand {\n        color: #FFFF00;\n      }\n      body.dark .rtcContent .lineNode .textBox .textWrapper.UndetString {\n        color: #F62719;\n      }\n      body.dark .CodeBlock > .lineNode:first-child {\n        border-top: 0;\n      }\n      body.dark .CodeBlock > .inlineWrapper:last-child .lineNode {\n        border-bottom: 0;\n      }\n      body.dark .CodeBlock > .lineNode {\n        border-right:0;\n      }\n\n      @keyframes highlight_in_dark_mode {\n        0% {\n          background: #161616;\n        }\n        100% {\n          background: #303030;\n        }\n      }\n      body.dark .highlight {\n        animation: highlight_in_dark_mode 0.5s;\n      }\n      /* DARK MODE FOR CODE BLOCKS ENDS */\n    ";
+      document.head.appendChild(code_option_styles);
+    }
+  }, {
+    key: "show",
+    value: function show() {
+      var is_mobile = document.getElementById("mobile") ? document.getElementById("mobile").value : false;
+      var is_mm_enabled = document.getElementById("matlab_mobile_enabled") ? document.getElementById("matlab_mobile_enabled").value : false;
+      var try_tracking_url = "/matlabcentral/answers/rtc/try_in_matlab_mobile";
+      var div = document.createElement("div");
+      div.className = "clipboard";
+      var btn_dark_mode = document.createElement("button");
+      btn_dark_mode.setAttribute('title', this.translated_text.toggle_code_theme);
+      btn_dark_mode.setAttribute('aria-label', this.translated_text.toggle_code_theme);
+      btn_dark_mode.className = "dark-mode-switch";
+      var span_dark_mode = document.createElement('span');
+      span_dark_mode.className = "icon-contrast";
+      btn_dark_mode.appendChild(span_dark_mode);
+      div.appendChild(btn_dark_mode);
+
+      if (is_mobile == 'true' && is_mm_enabled == 'true') {
+        //Create a dropup menu to be opened on click of Copy icon
+        var copy_div = document.createElement("div");
+        copy_div.className = "dropdown-toggle";
+        copy_div.setAttribute('class', 'dropdown-toggle');
+        copy_div.setAttribute('id', 'dropdownMenuLink');
+        copy_div.setAttribute('data-toggle', 'dropdown');
+        copy_div.setAttribute('aria-haspopup', 'true');
+        copy_div.setAttribute('aria-expanded', 'false');
+        var dropdown = document.createElement('div');
+        dropdown.setAttribute('class', 'dropup show'); //Create copy icon (without on-click listener to copy code)
+
+        var btn = document.createElement("button");
+        var span = document.createElement('span');
+        btn.setAttribute('title', this.translated_text.button_title);
+        btn.setAttribute('aria-label', this.translated_text.button_title);
+        span.className = "glyphicon icon-mw-copy";
+        btn.appendChild(span);
+        btn.className = "btn-copy-code";
+        copy_div.appendChild(btn);
+        dropdown.appendChild(copy_div);
+        div.appendChild(dropdown); //Create dropup menu options
+
+        var dropdown_menu = document.createElement('div');
+        dropdown_menu.setAttribute('class', 'dropdown-menu dropdown-menu-right');
+        dropdown_menu.setAttribute('aria-labelledby', 'dropdownMenuLink');
+        dropdown.appendChild(dropdown_menu); //Dropup menu option: Copy to Clipboard
+
+        var copy_label_div = document.createElement("div");
+        copy_label_div.className = "copy add_padding_10";
+        var btn_1 = document.createElement("a");
+        var span_1 = document.createElement('span');
+        span_1.className = "add_font_color_mediumgray add_font_arial";
+        var text_val = document.createTextNode(this.translated_text.copy_to_clipboard);
+        span_1.appendChild(text_val);
+        btn_1.className = "execute_copy";
+        btn_1.appendChild(span_1);
+        copy_label_div.appendChild(btn_1);
+        dropdown_menu.appendChild(copy_label_div); //Dropup menu option: Try in MATLAB Mobile
+
+        var try_btn = document.createElement("div");
+        try_btn.className = "try add_padding_10";
+        var btn_2 = document.createElement("a");
+        btn_2.className = "execute_copy";
+        var span_2 = document.createElement('span');
+        span_2.className = "add_font_color_mediumgray add_font_arial";
+        var text_val_try = document.createTextNode(this.translated_text.try_in_mm);
+        span_2.appendChild(text_val_try);
+        btn_2.setAttribute('id', "try");
+        btn_2.appendChild(span_2);
+        try_btn.appendChild(btn_2);
+        dropdown_menu.appendChild(try_btn);
+      } else {
+        //Create Copy icon with on-click event class
+        var btn = document.createElement("button");
+        var span = document.createElement('span');
+        btn.setAttribute('title', this.translated_text.button_title);
+        btn.setAttribute('aria-label', this.translated_text.button_title);
+        span.className = "glyphicon icon-mw-copy";
+        btn.appendChild(span);
+        btn.className = "btn-copy-code execute_copy";
+        div.appendChild(btn);
+      }
+
+      $(this.selector).each(function (e) {
+        if (this.innerText.replace(/\n$/, "") != "") {
+          $(div).clone().insertBefore(this);
+        }
+      });
+
+      if (this.profile_id === undefined) {
+        if (this.is_dark_mode_cookie_set()) this.set_dark_mode();
+      } else if (String(this.dark_mode_code) == "true") {
+        $("body").addClass("dark");
+      }
+
+      var outer_this = this;
+      $(".dark-mode-switch").on("click", function () {
+        if (outer_this.profile_id === undefined) {
+          $("body").hasClass("dark") ? outer_this.remove_dark_mode() : outer_this.set_dark_mode();
+        } else {
+          $("body").hasClass("dark") ? outer_this.remove_dark_mode(true, outer_this.profile_id) : outer_this.set_dark_mode(true, outer_this.profile_id);
+        }
+      });
+      $('.execute_copy').on('click', function (e) {
+        if (is_mobile == 'true' && is_mm_enabled == 'true') {
+          //If mobile and MATLAB Mobile enabled, add appropriate selectors to get code and parent blocks
+          var copy_icon = $(this).parents('.dropup').find('.btn-copy-code');
+          var code_block = $(this).parents('.clipboard').next();
+          var html_code_block = $(code_block).html();
+        } else {
+          var copy_icon = $(this);
+          var code_block = $(this).parent().next();
+          var html_code_block = $(this).parent().next().html();
+        }
+
+        if ($(code_block).find('.inlineWrapper.outputs').length) {
+          var cloned_code_block = $(code_block).clone();
+          cloned_code_block.insertAfter($(code_block)).css('display', 'none');
+          $(cloned_code_block).find('.outputParagraph').remove();
+          var html_code_block = $(cloned_code_block).html();
+          $(cloned_code_block).remove();
+        }
+
+        var processed_code_html = html_code_block.replace(/<div class="lineNode mwRichTextComponentLine plainTextFixedSize"><span class="textBox"><span class="textWrapper"><\/span><\/span><\/div>/g, "\n").replace(/<\/span><\/span><\/div>(?=(<|\n))/g, "<\/span><\/span><\/div>\n");
+        var text_to_copy = $(processed_code_html).text().replace(/\n$/, '');
+        var res = copy_to_clipboard(text_to_copy, this.getBoundingClientRect().top + window.scrollY);
+        var title = res ? outer_this.translated_text.copied : outer_this.translated_text.unable_to_copy;
+        $(copy_icon).attr('title', title);
+        $(copy_icon).attr('aria-label', title);
+        $(copy_icon).attr('data-toggle', "tooltip");
+        $(copy_icon).tooltip({
+          trigger: 'hover'
+        });
+        $(copy_icon).tooltip('show');
+        $(code_block).addClass('highlight');
+        $(copy_icon).mouseleave(function (evt) {
+          $(copy_icon).tooltip('destroy');
+          $(copy_icon).attr('title', outer_this.translated_text.button_title);
+          $(copy_icon).attr('aria-label', outer_this.translated_text.button_title);
+        });
+        setTimeout(function () {
+          $(code_block).removeClass('highlight');
+        }, 751); // Tooltip added through dropdown Copy to Clipboard won't be destroyed through mouseleave
+
+        setTimeout(function () {
+          $(copy_icon).tooltip('destroy');
+        }, 2000);
+
+        if ($(this).attr('id') == "try") {
+          outer_this.update_try_count(try_tracking_url, outer_this.tracking_id);
+        } // The condition below checks to see if copy has already been registered for tracking, as we only want to track once per code block
+        else if (!$(this).attr('data-copied')) {
+            $(this).attr('data-copied', true);
+
+            if (outer_this.tracking_url && outer_this.tracking_id) {
+              outer_this.set_copied_code(outer_this.tracking_url, outer_this.tracking_id);
+            }
+          }
+
+        $(copy_icon).focus();
+      });
+    }
+  }, {
+    key: "set_copied_code",
+    value: function set_copied_code(url, id) {
+      $.ajax({
+        method: 'POST',
+        url: url,
+        contentType: 'application/json; charset=utf-8',
+        data: '{"copied_code":"' + id + '"}'
+      });
+    }
+  }, {
+    key: "update_try_count",
+    value: function update_try_count(url, id) {
+      var embedded_request = $('#question_origin_path').val();
+      $.ajax({
+        method: 'POST',
+        url: url,
+        contentType: 'application/json; charset=utf-8',
+        data: '{"copied_code":"' + id + '", "embedded_request":"' + embedded_request + '"}'
+      });
+    }
+  }, {
+    key: "update_dark_mode_code_pref",
+    value: function update_dark_mode_code_pref(profile_id, pref) {
+      $.ajax({
+        method: 'POST',
+        url: this.dark_mode_pref_url,
+        contentType: 'application/json; charset=utf-8',
+        data: '{"profile_id":' + profile_id + ',"dark_mode_code":"' + pref + '"}'
+      });
+    }
+  }, {
+    key: "set_dark_mode",
+    value: function set_dark_mode() {
+      var logged_in = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var profile_id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+      $("body").addClass("dark");
+
+      if (logged_in) {
+        this.update_dark_mode_code_pref(profile_id, "on");
+      } else {
+        document.cookie = "dark_mode_code=true; expires=" + new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000).toUTCString() + ";domain=mathworks.com;path=/;";
+
+        if (this.dark_mode_on_url) {
+          $.ajax({
+            method: 'POST',
+            url: this.dark_mode_on_url,
+            contentType: 'application/json; charset=utf-8',
+            data: '{"dark_mode":"on"}'
+          });
+        }
+      }
+    }
+  }, {
+    key: "remove_dark_mode",
+    value: function remove_dark_mode() {
+      var logged_in = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+      var profile_id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+      $("body").removeClass("dark");
+
+      if (logged_in) {
+        this.update_dark_mode_code_pref(profile_id, "off");
+      } else {
+        document.cookie = "dark_mode_code=false; expires=" + new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000).toUTCString() + ";domain=mathworks.com;path=/;";
+
+        if (this.dark_mode_off_url) {
+          $.ajax({
+            method: 'POST',
+            url: this.dark_mode_off_url,
+            contentType: 'application/json; charset=utf-8',
+            data: '{"dark_mode":"off"}'
+          });
+        }
+      }
+    }
+  }, {
+    key: "is_dark_mode_cookie_set",
+    value: function is_dark_mode_cookie_set() {
+      var dark_mode_cookie = false;
+      var allcookies = document.cookie;
+      var cookiearray = allcookies.split(';');
+
+      for (var i = 0; i < cookiearray.length; i++) {
+        var cookie_name = cookiearray[i].split('=')[0];
+        var cookie_value = cookiearray[i].split('=')[1];
+
+        if (cookie_name.trim() == "dark_mode_code") {
+          if (cookie_value == "true") dark_mode_cookie = true;
+          break;
+        }
+      }
+
+      return dark_mode_cookie;
+    }
+  }, {
+    key: "get_translation",
+    value: function get_translation(locale) {
+      switch (locale) {
+        case 'ja':
+          var translated_text = {
+            button_title: "コードをクリップボードにコピー",
+            copy_to_clipboard: "Copy to Clipboard",
+            copied: "コピーされました!",
+            unable_to_copy: "コピーできません",
+            try_in_mm: "Try in MATLAB Mobile",
+            toggle_code_theme: "コード テーマの切り替え"
+          };
+          break;
+
+        case 'ko':
+          var translated_text = {
+            button_title: "클립보드에 코드 복사",
+            copy_to_clipboard: "Copy to Clipboard",
+            copied: "복사 완료!",
+            unable_to_copy: "복사할 수 없음",
+            try_in_mm: "Try in MATLAB Mobile",
+            toggle_code_theme: "코드 테마 전환"
+          };
+          break;
+
+        case 'zh':
+        case 'en':
+        default:
+          var translated_text = {
+            button_title: "Copy code to clipboard",
+            copy_to_clipboard: "Copy to Clipboard",
+            copied: "Copied!",
+            unable_to_copy: "Unable to copy",
+            try_in_mm: "Try in MATLAB Mobile",
+            toggle_code_theme: "Toggle code theme"
+          };
+      }
+
+      return translated_text;
+    }
+  }]);
+
+  return CodeOptionsWidget;
+}();
+
+function copy_to_clipboard(text, n) {
+  if (window.clipboardData) {
+    // For IE
+    text = text.replace(/(\r\n)+/g, "\r\n");
+    var res = window.clipboardData.setData('Text', text);
+    return res;
+  } else {
+    var textArea = document.createElement("textarea");
+    textArea.value = text; // For Edge to not shift focus away
+
+    textArea.setAttribute("readonly", "");
+    textArea.style.top = n + "px";
+    textArea.style.margin = "0";
+    textArea.style.padding = "0";
+    textArea.style.position = "absolute";
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    try {
+      var res = document.execCommand('copy');
+      document.body.removeChild(textArea);
+      return res;
+    } catch (err) {
+      document.body.removeChild(textArea);
+      return false;
+    }
+  }
+}

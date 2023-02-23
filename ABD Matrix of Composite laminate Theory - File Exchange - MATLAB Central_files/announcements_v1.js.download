@@ -1,0 +1,190 @@
+function AppNotification(notifications, app) {
+        this.notifications = notifications;
+        this.count = notifications.length;
+        this.app = app;
+}
+
+AppNotification.prototype.load = function() {
+    var tracking_code;
+
+    if(this.app === "MATLAB Answers"){
+       tracking_code = "side_ans_announce";
+    }
+    else if(this.app === "File Exchange"){
+       tracking_code = "side_fx_announce";
+    }
+    else if(this.app === "Cody"){
+       tracking_code = "side_cody_announce";
+    }
+    else if(this.app === "Blogs"){
+       tracking_code = "side_blogs_announce";
+    }
+
+    for (var i = 0; i < this.count; i++) {
+      var template = this.renderNotification();
+      template = template.replace("{{announcement_id}}", 'announcement_'+this.notifications[i].id);
+      template = template.replace("{{href}}", (this.app === "Blogs" ? 'https://www.mathworks.com'+this.notifications[i].url : this.notifications[i].url) +'?s_tid='+tracking_code);
+      template = template.replace("{{thumbnail}}", this.notifications[i].image_url !== "" ? this.notifications[i].image_url : "https://www.mathworks.com/matlabcentral/profile/announcement.png");
+      template = template.replace("{{title}}", this.notifications[i].title);
+      template = template.replace("{{description}}", this.textTruncate(this.notifications[i].body, 13));
+
+      $('#announcements_container').append(template);
+    }
+};
+
+AppNotification.prototype.renderNotification = function() {
+      return  `
+               <div class="panel panel-default panel_sidebar_left add_margin_25 announcement-message" id={{announcement_id}}>
+                 <div class="panel-body add_border_color_orange add_padding_5">
+                  <div class="media add_margin_0">
+                    <label class="section_downsize add_font_color_orange add_indent_5 add_margin_0" style="font-size: 10px;">ANNOUNCEMENT</label>
+                    <button type="button" class="dismissed-notification close add_opacity_50" aria-label="Close" data-dismiss="alert" style="outline:0;"><span aria-hidden="true" class="add_font_color_mediumgray">×</span></button>
+                    <a href="{{href}}">
+                    <h6 class="media-heading add_indent_5 add_margin_5 add_font_color_darkblue add_font_arial" style="font-size: 13px;">
+                   <strong>{{title}}</strong>
+                    </h6>
+                    </a>
+                    <div class="media-left add_indent_5 add_padding_0">
+                      <img class="media-object pictogram_56 add_padding_5 imageNode" id="announcement_thumbnail" src="{{thumbnail}}" alt="...">
+                    </div>
+                    <div class="media-body add_margin_5 add_indent_5" style="font-size:12px;vertical-align:middle;">
+                     {{description}}
+                    </div>
+                </div>
+                </div>
+              </div>
+             `
+};
+
+
+AppNotification.prototype.textTruncate = function(str, length, ending) {
+  var maxLength = 200;
+  if (length == null) {
+   length = 15;
+  }
+  if (ending == null) {
+   ending = '...';
+  }
+ //remove images if any
+  str = str.replace(/<<.*?\>>/gmi, '');
+  //get all the links if any
+  var link_array = str.match(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*|'[^<]*|'[^>]*|'[^-]*')*>/gmi);
+
+  if (link_array !== null){
+    // reduce the link array to hash map - {<http://...com label> : {'label_n':'url'}}
+    var count = 0;
+    var map_reduced = link_array.reduce(function(map, obj) {
+      var procObj = obj.slice(1, -1);
+      map[obj] = { label: procObj.substr(procObj.indexOf(' ')+1)+'_link_'+count++, value: "<a href='"+procObj.substr(0,procObj.indexOf(' '))+"'>"+procObj.substr(procObj.indexOf(' ')+1)+"</a>"};
+      return map;
+    }, {});
+
+    //replace links with labels
+     str = str.replace(new RegExp(Object.keys(map_reduced).join("|"), "gi"), function(matched){
+         return map_reduced[matched].label;
+     });
+  }
+  //truncate
+  if(!!str){
+   if (str.split(" ").length > length) {
+     var string = str.split(" ").splice(0, length).join(" ");
+     var string = string.substr(0, maxLength);
+     var string = string.substr(0, Math.min(string.length, string.lastIndexOf(" "))) + ending;
+   } else {
+     var string = str;
+   }
+  }else{
+   string = "";
+  }
+
+  if (link_array !== null){
+    //replace the labels with links
+    var newArr = Object.values(map_reduced).reduce(function(map,obj){ map[obj.label] = obj.value; return map; }, {});
+    string = string.replace(new RegExp(Object.keys(newArr).join("|"), "gi"), function(matched){
+         return newArr[matched];
+    });
+   }
+  var txt = document.createElement('textarea');
+  txt.innerHTML = string;
+  return txt.textContent;
+};
+
+// Create a cookie with the specified name and value.
+AppNotification.prototype.SetCookie = function(sName, sValue){
+    // Expires the cookie in four months
+    var date = new Date();
+    date.setMonth(date.getMonth()+4);
+    if(this.app === "Blogs"){
+       document.cookie = sName + "=" + escape(sValue) + "; expires=" + date.toUTCString() + ";domain=www.mathworks.com;path=/matlabcentral";
+    }
+    else{
+       document.cookie = sName + "=" + escape(sValue) + "; expires=" + date.toUTCString() + ";path=/matlabcentral";
+    }
+   
+};
+
+
+// Retrieve the value of the cookie with the specified name.
+AppNotification.prototype.GetCookie = function(sName){
+  // cookies are separated by semicolons
+  var aCookie = document.cookie.split("; ");
+  for (var i=0; i < aCookie.length; i++)
+  {
+  var aCrumb = aCookie[i].split("=");
+  if (sName == aCrumb[0])
+  return unescape(aCrumb[1]);
+  }
+  // a cookie with the requested name does not exist
+  return null;
+};
+
+
+(function($){
+
+var this_announcements_js = document.currentScript;
+
+$(document).ready(function() {
+
+ var app = this_announcements_js.getAttribute('data-app-name');
+ var announcements_api;
+ //Blogs is hosted in different domain
+ if(app === "Blogs"){
+    announcements_api = 'https://www.mathworks.com/matlabcentral/discussions/api/v1/announcements/'+app
+ }
+ else{
+    announcements_api = '/matlabcentral/discussions/api/v1/announcements/'+app
+ }
+
+ //asynchronous call to announcements api
+  $.ajax({
+    url: announcements_api,
+    cache: false,
+    success: function(data) {
+
+      var appNotifications = new AppNotification(data, app);
+      appNotifications.load();
+
+      //hide dismissed notifications
+      if (appNotifications.GetCookie("dismissed-notifications")) {
+          $(appNotifications.GetCookie("dismissed-notifications")).hide();
+      }
+
+      $(".dismissed-notification").click(function () {
+          var alertId = $(this).closest(".announcement-message").attr("id");
+          //get the id of the notification to be dismissed
+          var dismissedNotifications = appNotifications.GetCookie("dismissed-notifications") + ",#" + alertId; //this is the new value of the dismissed notifications cookie with the array of ids
+          //dimsiss notification
+          $(this).closest(".announcement-message").fadeOut('slow');
+        //dismissedNotifications = dismissedNotifications.replace("null","");
+        appNotifications.SetCookie("dismissed-notifications",dismissedNotifications.replace('null,','')) //update cookie
+      });
+    },
+    error: function(xhr, status, err) {
+      console.debug(xhr);
+      console.debug(err);
+    }
+    });
+
+  });
+
+  })(jQuery);

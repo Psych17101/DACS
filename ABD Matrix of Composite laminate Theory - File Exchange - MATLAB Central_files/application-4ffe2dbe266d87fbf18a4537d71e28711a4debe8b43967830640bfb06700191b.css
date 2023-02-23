@@ -1,0 +1,530 @@
+.S0 {
+  margin: 3px 10px 5px 4px;
+  padding: 0px;
+  line-height: 28.8px;
+  min-height: 0px;
+  white-space: pre-wrap;
+  color: rgb(213, 80, 0);
+  font-family: Helvetica, Arial, sans-serif;
+  font-style: normal;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: left;
+}
+
+.S1 {
+  margin: 2px 10px 9px 4px;
+  padding: 0px;
+  line-height: 21px;
+  min-height: 0px;
+  white-space: pre-wrap;
+  color: rgb(0, 0, 0);
+  font-family: Helvetica, Arial, sans-serif;
+  font-style: normal;
+  font-size: 14px;
+  font-weight: normal;
+  text-align: left;
+}
+
+.CodeBlock {
+  background-color: #F7F7F7;
+  margin: 10px 0 10px 0;
+	overflow: auto;
+}
+
+.S2 {
+  margin: 2px 10px 9px 4px;
+  padding: 6px 45px 0px 13px;
+  line-height: 17.234px;
+  min-height: 18px;
+  white-space: nowrap;
+  color: rgb(0, 0, 0);
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
+
+.S3 {
+  margin: 2px 10px 9px 4px;
+  padding: 0px 45px 0px 13px;
+  line-height: 17.234px;
+  min-height: 18px;
+  white-space: nowrap;
+  color: rgb(0, 0, 0);
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
+
+.S4 {
+  margin: 2px 10px 9px 4px;	
+  
+  padding: 0px 45px 4px 13px;
+  line-height: 17.234px;
+  min-height: 18px;
+  white-space: nowrap;
+  color: rgb(0, 0, 0);
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
+
+.S5 {
+  margin: 2px 10px 9px 4px;	
+  color: rgb(64, 64, 64);
+  padding: 10px 0px 6px 17px;
+  background: rgb(255, 255, 255) none repeat scroll 0% 0% / auto padding-box border-box;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+  overflow-x: hidden;
+  line-height: 17.234px;
+}
+
+.S6 {
+  margin: 10px 10px 9px 4px;
+  padding: 0px;
+  line-height: 21px;
+  min-height: 0px;
+  white-space: pre-wrap;
+  color: rgb(0, 0, 0);
+  font-family: Helvetica, Arial, sans-serif;
+  font-style: normal;
+  font-size: 14px;
+  font-weight: normal;
+  text-align: left;
+}
+
+.S7 {
+  padding: 6px 45px 4px 13px;
+  line-height: 17.234px;
+  min-height: 18px;
+  white-space: nowrap;
+  color: rgb(0, 0, 0);
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 14px;
+}
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+
+
+ */
+
+.avatar-img {
+  width: 48px !important;
+  height: 48px !important;
+  border: 1px solid #c1c1c1 !important;
+  border-radius:50%;
+}
+
+.avatar-img-small {
+  width: 24px !important;
+  height: 24px !important;
+  border: 1px solid #c1c1c1 !important;
+  border-radius:50%;
+}
+
+.avatar-header {
+  padding-left: 54px;
+}
+
+.avatar-header-small {
+  padding-left: 28px;
+  padding-top: 2px;
+}
+
+.thread_body {
+  padding-left: 16px;
+}
+
+.thread_menu {
+  width: 16px;
+  display: inline-block;
+  height: 24px;
+}
+
+.thread_menu_icon {
+  font-size:24px;
+  text-decoration: none !important;
+}
+
+.inline-form {
+  display: inline-block;
+}
+
+.report-flag-modal {
+  max-width: 420px; min-width:320px; margin:auto;
+}
+.icon-fix-vert {
+  vertical-align: top;
+  line-height: 16px;
+}
+
+.radio {
+  margin-bottom: 0px;
+}
+ .expand_collapse .collapse.in { overflow: visible; }
+
+.smart_wrap {
+  word-break: break-word;
+  word-wrap: break-word;
+  /*display: inline-block;*/
+}
+
+.smart_wrap > img {
+  padding-bottom: 15px;
+}
+
+.btn-link-force {
+  color: #337ab7 !important;
+}
+
+
+/* Hack to be replaced by OPC editor, which should have better error style support */
+.mw_markup_edit_error {
+  z-index: 99 !important;
+  /*position: floating;*/
+  top: 60px !important;
+  right: 10px !important;
+}
+
+@media (max-width: 480px) {
+    .reply_list {
+      padding:0;
+      margin:0;
+    }
+}
+
+/* Tags Separator */
+
+.separator:after {
+  content: ",";
+}
+
+/* Community Profile Image */
+
+.content_container .community_profile_image {
+    width: 25px;
+    margin-right: 3px;
+    border-radius:50%;
+}
+
+/* Search Results */
+
+.search_result_desc {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  word-break: break-all;
+  word-break: break-word;
+
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+
+}
+
+.result_summary .paginate {
+  line-height: 36px;
+}
+
+.search_result_desc .tags_index ul{
+  display: contents;
+}
+
+.search_result_desc .contribution {
+  padding-top: 5px;
+}
+
+.content_container {
+  padding-bottom: 50px !important;
+}
+
+.empty-component-body {
+  background-color: #fff;
+  height: 50px;
+}
+
+.add_minimum_height {
+  height: 200px;
+}
+
+.page-arrows {
+  padding: 5px !important;
+}
+
+@media only screen and (min-width: 768px) {
+  .related_content {
+    padding-left: 15px !important;
+  }
+}
+
+.follow_link {
+  background-color: #fff !important;
+}
+
+.rating:before { display: none; }
+.rating_scale:before { content: '\e677 \e677 \e677 \e677 \e677'; }
+.rated { color: #eec52a; overflow: hidden; position: absolute; left: 0; top: 0; white-space: nowrap; }
+.rated:before { content: '\e677 \e677 \e677 \e677 \e677'; }
+.star-rating,
+.star-rating a:hover,
+.star-rating a:active,
+.star-rating a:focus,
+.star-rating .current-rating {
+  background: url(/matlabcentral/images/ico-star-flat-16.png) 0 0 repeat-x;
+}
+
+.star-rating li { display: inline; margin: 0; padding: 0; }
+
+.star-rating a,
+.star-rating .current-rating {
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-indent: -1000em;
+  height: 18px;
+  line-height: 18px;
+  outline: none;
+  overflow: hidden;
+  border: none;
+  z-index: 1;
+  background-position: 0 -38px;
+}
+
+.star-rating a:hover,
+.star-rating a:active,
+.star-rating a:focus { background-position: 0 -38px; }
+
+.star-rating a.one-star { width: 20%; z-index: 6; }
+.star-rating a.two-stars { width: 40%; z-index: 5; }
+.star-rating a.three-stars { width: 60%; z-index: 4; }
+.star-rating a.four-stars { width: 80%; z-index: 3; }
+.star-rating a.five-stars { width: 100%; z-index: 2; }
+.inline-rating { display: inline-block; vertical-align: middle; }
+
+ul.star-rating {
+  top: 3px;
+  position: relative;
+  bottom: 0;
+  width: 80px!important;
+  height: 18px;
+  overflow: hidden;
+  list-style: none;
+  background-position: left top;
+  margin: 0!important;
+  padding:0;
+}
+
+/* Align the text with the collapse label */
+.right-toolbar {
+ margin-top: -3.5px;
+}
+
+.op_panel {
+  background-color: #EDF5F9;
+  border-left-width: thick !important;
+  border-left-color: #0076a8 !important;
+}
+
+/* Override mlc.css, restoring site7 */
+/* Required to avoid shading action items purple */
+a:visited :not(class*="mentioned_myself") {
+  color: #337ab7 !important;
+}
+
+p.h1 > a:visited {
+  color: #ffffff !important;
+}
+
+
+/* Polls Styles */
+
+.poll_choices_input {
+  display: flex;
+}
+
+#poll_choice_1, #poll_choice_2{ 
+  margin-right: 30px;
+}
+
+.remove_choice {
+  padding-left: 10px !important;
+  font-size: 30px;
+}
+
+#preview_choices .radio {
+  padding-bottom: 0px !important;
+}
+
+.has-error #locations .form-check, .has-error label {
+  color: #b7312c;
+}
+
+#show_results {
+  padding-left: 10px;
+}
+
+#poll_avatar .avatar-img {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+#poll_footer {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-column-gap: 5px;
+  align-items: baseline;
+  margin-top: 15px;
+}
+
+#poll_avatar {
+  grid-column: span 1/1;
+  grid-row: span 1/1;
+}
+
+#poll_creator_name {
+  grid-column: span 5;
+}
+
+#poll_footer .views {
+  grid-column: span 3;
+}
+
+/* fix for g2693728 */
+#poll_footer .footer_tools {
+  grid-column: span 4;
+  justify-self: end;
+}
+
+#poll_results .poll_result {
+  width: auto;
+  height: auto;
+  border: 1px solid #99cbe1;
+}
+
+#poll_results .poll_result #poll_result_body { 
+  display: grid;
+  grid-row-gap: 10px;
+}
+
+#poll_results .poll_result .poll_result_info {
+  padding-left: 5px;
+}
+
+#poll_results .poll_result #option_title {
+  grid-column: span 12;
+  word-break: break-word;
+}
+
+#poll_results .poll_result #poll_vote_avatar img {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+#poll_results .poll_result #result_avatar {
+  text-align: center;
+  padding-top: 15px;
+}
+
+.embedded_cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#embedded_poll_meta {
+  padding-top: 5px;
+}
+
+#embedded_poll_meta span {
+  padding-right: 10px;
+}
+
+#embedded_comment {
+  margin-top: 20px;
+}
+
+#poll_edit {
+  padding-top: 5px;
+  width: auto;
+}
+
+.add_padding_right {
+  padding-right: 10px;
+}
+
+.margin_right_30 {
+  margin-right: 30px;
+}
+
+.margin_right_15 {
+  margin-right: 15px;
+}
+
+.padding_right_15 {
+  padding-right: 15px;
+}
+
+.add_padding_left_15 {
+  padding-left: 15px;
+}
+
+.poll_status {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
+
+.poll_status_label {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+#preview_poll_title {
+  word-break: break-word;
+}
+
+
+@media (max-width:425px) { 
+  #poll_edit {
+    padding-bottom: 10px;
+  }
+}
+
+/* Correct the placement of attached files, which inherits a -15 left/right margin */
+.attached_container {
+  margin-left: -5px;
+  margin-right: -5px;
+}
+
+.reply_placeholder_container {
+  width: 100%; margin-top: 15px !important;
+}
+
+#reply_placeholder_input {
+  border-radius: 0;
+  border: 1px solid #e6e6e6;
+  font-size: inherit;
+  background-color: #fff;
+  width: 100%;
+  padding: 5px;
+}
+
+.pending-uploads {
+  border-left: 0px !important;
+  border-right: 0px !important;
+  border-bottom: 0px !important;
+}
+
+.disabled {
+  color: #555;
+}

@@ -1,9 +1,10 @@
 % Rotation Matrix
-function M_2 = Rotation(theta, M_1)
-
-a = [cos(theta), sin(theta), 0;
-    -sin(theta),cos(theta), 0;
-    0,0,1];
-
-M_2 = a*M_1;
-
+function T = Rotation(theta)
+%T This function returns the transformation matrix T
+% given the orientation angle "theta".
+% There is only one argument representing "theta"
+% The size of the matrix is 3 x 3.
+% The angle "theta" must be given in degrees.
+m = cos(theta);
+n = sin(theta);
+T = [m*m n*n 2*m*n ; n*n m*m -2*m*n ; -m*n m*n m*m-n*n];

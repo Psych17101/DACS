@@ -1,0 +1,2703 @@
+<!DOCTYPE html>
+<!-- saved from url=(0097)https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/images/favicon.20230215162333215.ico" type="image/x-icon">
+<link rel="canonical" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory"><meta http-equiv="X-UA-Compatible" content="IE=edge">
+<iframe src="javascript:void(0)" title="" role="presentation" style="width: 0px; height: 0px; border: 0px; display: none;" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/saved_resource.html"></iframe><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/quant.js.download" async="" type="text/javascript"></script><script async="" type="text/javascript" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/cmp2.js.download"></script><script type="text/javascript" async="" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/elqCfg.min.js.download"></script><script async="" type="text/javascript" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/choice.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/webvitals.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/jquery.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/jquery-migrate.min.20230215162333215.js.download"></script><link rel="stylesheet" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/common.min.20230215162333215.css" type="text/css">
+<link rel="stylesheet" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/footer.min.20230215162333215.css" type="text/css">
+<link rel="stylesheet" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/matlabcentral.min.20230215162333215.css" type="text/css">
+<link rel="stylesheet" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/fileexchange.min.20230215162333215.css" type="text/css">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/roboto/roboto-latin-italic-400.20230215162333215.woff2" rel="preload" as="font" type="font/woff2" crossorigin="">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/roboto/roboto-latin-italic-500.20230215162333215.woff2" rel="preload" as="font" type="font/woff2" crossorigin="">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/roboto/roboto-latin-italic-700.20230215162333215.woff2" rel="preload" as="font" type="font/woff2" crossorigin="">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/roboto/roboto-latin-normal-400.20230215162333215.woff2" rel="preload" as="font" type="font/woff2" crossorigin="">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/roboto/roboto-latin-normal-500.20230215162333215.woff2" rel="preload" as="font" type="font/woff2" crossorigin="">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/roboto/roboto-latin-normal-700.20230215162333215.woff2" rel="preload" as="font" type="font/woff2" crossorigin="">
+<link href="https://nl.mathworks.com/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/fonts/mathworks.20230215162333215.woff" rel="preload" as="font" type="font/woff" crossorigin="">
+<script id="analyticsDigitalData">digitalData = {
+    'pageInstanceID' : 'ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central',
+    'page' : {
+        'pageInfo' : {
+            'pageID' : '/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory',
+            'destinationURL' : 'https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory'
+        },
+        'category' : {
+            'primaryCategory' : 'matlabcentral',
+            'subCategory1' : 'matlabcentral/fileexchange',
+            'subCategory2' : '',
+        },
+        'attributes' : {"descriptonCode":"FX_48522","category":["Structural Analysis"]}
+    },
+    'product' : [{ 'productInfo' : {} }],
+    'component' : [],
+    'events' : [],
+    'user': []
+};
+</script><script>(function(g,b,d,f){(function(a,c,d){if(a){var e=b.createElement("style");e.id=c;e.innerHTML=d;a.appendChild(e)}})(b.getElementsByTagName("head")[0],"at-body-style",d);setTimeout(function(){var a=b.getElementsByTagName("head")[0];if(a){var c=b.getElementById("at-body-style");c&&a.removeChild(c)}},f)})(window,document,"[class*='personalization-container']:not([id^='web-application']) {opacity: 0 !important}",1E3);</script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/satelliteLib-e8d23c2e444abadc572df06537e2def59c01db09.js.download" async=""></script><title>ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central</title>
+<script>!function(a){var e="https://s.go-mpulse.net/boomerang/",t="addEventListener";if("False"=="True")a.BOOMR_config=a.BOOMR_config||{},a.BOOMR_config.PageParams=a.BOOMR_config.PageParams||{},a.BOOMR_config.PageParams.pci=!0,e="https://s2.go-mpulse.net/boomerang/";if(window.BOOMR_API_key="LERXA-6VNES-W6PXS-U8C7F-BXSZH",function(){function n(e){a.BOOMR_onload=e&&e.timeStamp||(new Date).getTime()}if(!a.BOOMR||!a.BOOMR.version&&!a.BOOMR.snippetExecuted){a.BOOMR=a.BOOMR||{},a.BOOMR.snippetExecuted=!0;var i,_,o,r=document.createElement("iframe");if(a[t])a[t]("load",n,!1);else if(a.attachEvent)a.attachEvent("onload",n);r.src="javascript:void(0)",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="width:0;height:0;border:0;display:none;",o=document.getElementsByTagName("script")[0],o.parentNode.insertBefore(r,o);try{_=r.contentWindow.document}catch(O){i=document.domain,r.src="javascript:var d=document.open();d.domain='"+i+"';void(0);",_=r.contentWindow.document}_.open()._l=function(){var a=this.createElement("script");if(i)this.domain=i;a.id="boomr-if-as",a.src=e+"LERXA-6VNES-W6PXS-U8C7F-BXSZH",BOOMR_lstart=(new Date).getTime(),this.body.appendChild(a)},_.write("<bo"+'dy onload="document._l();">'),_.close()}}(),"".length>0)if(a&&"performance"in a&&a.performance&&"function"==typeof a.performance.setResourceTimingBufferSize)a.performance.setResourceTimingBufferSize();!function(){if(BOOMR=a.BOOMR||{},BOOMR.plugins=BOOMR.plugins||{},!BOOMR.plugins.AK){var e=""=="true"?1:0,t="",n="sdkiafixeqsfqy7vf3ia-f-160f54258-clientnsv4-s.akamaihd.net",i="false"=="true"?2:1,_={"ak.v":"34","ak.cp":"31027","ak.ai":parseInt("195948",10),"ak.ol":"0","ak.cr":7,"ak.ipv":4,"ak.proto":"http/1.1","ak.rid":"28866e23","ak.r":35804,"ak.a2":e,"ak.m":"x","ak.n":"essl","ak.bpcip":"144.212.128.0","ak.cport":56058,"ak.gh":"23.36.39.204","ak.quicv":"","ak.tlsv":"tls1.3","ak.0rtt":"","ak.csrc":"-","ak.acc":"reno","ak.t":"1677012688","ak.ak":"hOBiQwZUYzCg5VSAfCLimQ==tX80LWpnDT1USk++po4iPwrLofDHwHNxmHdU7fRzek3CcVnOip8yF2SIQqg57oxdJkplCC5HtKhnTwTmhBTEewZkwI7mfNOSioPuSa6uBhmCbfDlTnc4LRUqoJHyDqiDFQ7OeN7S2Hl0nIl/kyGeXJGDtBM6KtntqN4z+jh6sCg9aSUzN6gWJZ+I0OBcr+eJlZYLTu7IaDgJInBVT/3xWzNXWOC2lSzESSjT8wyYZT3tuoXGfgsCidC5QJtOxKsrNPWQ75u15EN5yDJEBtePswobKNiggyjgUf9pPbfF4rShC2QqkAXKR0tXzC+ZsIneng1aQzXYtbcJyCNeocteYhEoFTQjw9HGF5fw23bh1rL9iabF10CWmgHwJXXz1rVbLg8QR1uZJMBzyBP+UzOhK6a82dYhhP1m0xRqNXi0gbE=","ak.pv":"161","ak.dpoabenc":"","ak.tf":i};if(""!==t)_["ak.ruds"]=t;var o={i:!1,av:function(e){var t="http.initiator";if(e&&(!e[t]||"spa_hard"===e[t]))_["ak.feo"]=void 0!==a.aFeoApplied?1:0,BOOMR.addVar(_)},rv:function(){var a=["ak.bpcip","ak.cport","ak.cr","ak.csrc","ak.gh","ak.ipv","ak.m","ak.n","ak.ol","ak.proto","ak.quicv","ak.tlsv","ak.0rtt","ak.r","ak.acc","ak.t","ak.tf"];BOOMR.removeVar(a)}};BOOMR.plugins.AK={akVars:_,akDNSPreFetchDomain:n,init:function(){if(!o.i){var a=BOOMR.subscribe;a("before_beacon",o.av,null,null),a("onbeacon",o.rv,null,null),o.i=!0}return this},is_complete:function(){return!0}}}}()}(window);</script><meta name="csrf-param" content="authenticity_token">
+<meta name="csrf-token" content="s/eeH4eXRfQNWwlmVJ9d1FC5iLcG7mXdu/3TENoW3jPE2W02zsjXVo30pOtcKBWxa0TbWQjNFhofy58DIA9USw==">
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/application-b086782317cc6017b9b171e46648a1f737adba8738d7965d918580579116b1cf.j.download"></script>
+<link rel="stylesheet" media="screen" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/application-45e5b63e632d3112d7732d7387b35448ea1c06a7c72bd38f2b8c2636104829ce.css">
+<link rel="stylesheet" media="screen" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/application-2a8ae823fb2f4c5b3fb76c10d2f9640d3c6a105cbc296b319cfd2d7281255b4e.css">
+<meta name="description" content="Download and share free MATLAB code, including functions, models, apps, support packages and toolboxes">
+
+<link rel="stylesheet" type="text/css" href="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/mlc-rtc-1.0.5.css">
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/code-options-1.2.0.js.download" data-code-options-app="fileexchange" data-locale="nl-NL"></script>
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/profile_card_v1.3.js.download" data-app-name="fileexchange" defer=""></script>
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/component.v2.js.download" crossorigin="anonymous"></script>
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/mlc_typeahead_v1.1.js.download" defer=""></script>
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function () {
+    //following text will be moved to translation files later with globalization changes
+    var quickLinks = [
+      { text: "How to submit files", link: "/matlabcentral/content/fx/about.html?s_tid=gn_mlc_fx_help#Submitting_Files" },
+      { text: "Linking to GitHub Repositories", link: "/matlabcentral/content/fx/about.html?s_tid=gn_mlc_fx_help#Why_GitHub" },
+      { text: "How to build your reputation", link: "/matlabcentral/content/fx/about.html?s_tid=gn_mlc_fx_help#Build_Reputation" }
+    ];
+    var searchElement = document.getElementById('fxsearch'),
+        typeaheadView =  new mlcTypeAhead.GroupTypeaheadView({el: searchElement, app: "fileexchange", site_language: 'nl-NL', blankState: true, quickLinks: quickLinks});
+  });
+</script>
+<meta property="og:title" content="ABD Matrix of Composite laminate Theory"><meta property="og:type" content="website"><meta property="og:url" content="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory"><meta property="og:image" content="https://www.mathworks.com/responsive_image/160/120/0/0/0/cache/matlabcentral/images/default_screenshot.jpg"><meta property="og:description" content="Composite laminate Theory">
+
+                              <script>!function(a){var e="https://s.go-mpulse.net/boomerang/",t="addEventListener";if("False"=="True")a.BOOMR_config=a.BOOMR_config||{},a.BOOMR_config.PageParams=a.BOOMR_config.PageParams||{},a.BOOMR_config.PageParams.pci=!0,e="https://s2.go-mpulse.net/boomerang/";if(window.BOOMR_API_key="LERXA-6VNES-W6PXS-U8C7F-BXSZH",function(){function n(e){a.BOOMR_onload=e&&e.timeStamp||(new Date).getTime()}if(!a.BOOMR||!a.BOOMR.version&&!a.BOOMR.snippetExecuted){a.BOOMR=a.BOOMR||{},a.BOOMR.snippetExecuted=!0;var i,_,o,r=document.createElement("iframe");if(a[t])a[t]("load",n,!1);else if(a.attachEvent)a.attachEvent("onload",n);r.src="javascript:void(0)",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="width:0;height:0;border:0;display:none;",o=document.getElementsByTagName("script")[0],o.parentNode.insertBefore(r,o);try{_=r.contentWindow.document}catch(O){i=document.domain,r.src="javascript:var d=document.open();d.domain='"+i+"';void(0);",_=r.contentWindow.document}_.open()._l=function(){var a=this.createElement("script");if(i)this.domain=i;a.id="boomr-if-as",a.src=e+"LERXA-6VNES-W6PXS-U8C7F-BXSZH",BOOMR_lstart=(new Date).getTime(),this.body.appendChild(a)},_.write("<bo"+'dy onload="document._l();">'),_.close()}}(),"".length>0)if(a&&"performance"in a&&a.performance&&"function"==typeof a.performance.setResourceTimingBufferSize)a.performance.setResourceTimingBufferSize();!function(){if(BOOMR=a.BOOMR||{},BOOMR.plugins=BOOMR.plugins||{},!BOOMR.plugins.AK){var e=""=="true"?1:0,t="",n="sfpn2vqccgz7gy7xw7pa-f-aebddebf6-clientnsv4-s.akamaihd.net",i="false"=="true"?2:1,_={"ak.v":"34","ak.cp":"31027","ak.ai":parseInt("195948",10),"ak.ol":"0","ak.cr":15,"ak.ipv":4,"ak.proto":"h2","ak.rid":"6d2ba962","ak.r":5311,"ak.a2":e,"ak.m":"","ak.n":"essl","ak.bpcip":"145.94.221.0","ak.cport":64392,"ak.gh":"2.20.143.156","ak.quicv":"","ak.tlsv":"tls1.3","ak.0rtt":"","ak.csrc":"-","ak.acc":"","ak.t":"1677178846","ak.ak":"hOBiQwZUYzCg5VSAfCLimQ==3n6GUY5EyL18TUS0UmgfqbC1x78a3It7xEhRqNfpytlg1zyasdu7QuZ9tV0pW7M/PbpsDUAl8xGqGFM8tVP1qMfyaZw1Fefm28ZaVndatd9hoD4os6HiTFzd6dNMz8YEzAUM82k2rsknrI0FwQdeEBnooO3i1tOuu2RgmOaK1KNhT1jcRm0R1VH9L/oyyasLVxD+FzkPgRixPJgtBTgL3TAFdKaiwzHbX9ev/QMVf/OvhGkMQFZOD3BeBOTI/3+UXZua17VWP0XmmvDqijZR1WDnH4FCj+cJcx13NM2hcm45VJoLr5YexjsSII2PcYf47iZGqsW9fLiZYQ2uGkg+57AsDpIhdeDFhZPLPr4ZZZ1v802QABrasIM0DGLZzHhtbNqD2bqc2dSrmpiBVVF0xcet/TEqSx/O1VHKZaZx/4s=","ak.pv":"161","ak.dpoabenc":"","ak.tf":i};if(""!==t)_["ak.ruds"]=t;var o={i:!1,av:function(e){var t="http.initiator";if(e&&(!e[t]||"spa_hard"===e[t]))_["ak.feo"]=void 0!==a.aFeoApplied?1:0,BOOMR.addVar(_)},rv:function(){var a=["ak.bpcip","ak.cport","ak.cr","ak.csrc","ak.gh","ak.ipv","ak.m","ak.n","ak.ol","ak.proto","ak.quicv","ak.tlsv","ak.0rtt","ak.r","ak.acc","ak.t","ak.tf"];BOOMR.removeVar(a)}};BOOMR.plugins.AK={akVars:_,akDNSPreFetchDomain:n,init:function(){if(!o.i){var a=BOOMR.subscribe;a("before_beacon",o.av,null,null),a("onbeacon",o.rv,null,null),o.i=!0}return this},is_complete:function(){return!0}}}}()}(window);</script><style>
+.headernav_matrix button { 
+  width:24px; 
+  height:24px; 
+  padding:0;
+  border: none;
+  background:none transparent; 
+  display:inline-block;
+  transition:color .3s ease;
+  position: relative;
+}
+
+.headernav_matrix button > .icon-matrix { color:#777; font-size:24px; line-height:1.00 !important;}
+.headernav_matrix button:hover > .icon-matrix,
+.headernav_matrix button:focus > .icon-matrix { color:#333; }
+
+/* MATRIX MENU TABLET AND MOBILE*/
+#header_mobile .matrix_container { 
+  margin:1px auto 0; 
+  border:none; 
+  box-shadow:none; 
+  background:#fff; 
+  float:none; 
+  overflow:hidden; 
+  position:relative;
+  z-index:3;
+  display:block !important; 
+  height:auto !important;
+}
+#header_mobile .headernav_matrix > button { 
+  width:auto; 
+  min-width:37px; 
+  height:auto; 
+  min-height:37px; 
+  margin:3.5px -1.5px 0 0; 
+  float:right; 
+}
+#header_mobile .headernav_matrix > button > .icon-matrix { color:#0076a8; }
+
+@media (min-width:768px) and (max-width:991px) {
+  .matrix_menu_container_mobile { border-top:1px solid #e7e7e7; }
+}
+
+/* DESKTOP MATRIX MENU */
+.matrix_container { 
+  width:319px; 
+  padding:0 10px 10px; 
+  margin-top:2px; 
+  border:1px solid #999; 
+  background:#fff; 
+  box-shadow:0 1px 3px 0 rgba(0,0,0,0.25); 
+  float:right; 
+  overflow:hidden; 
+  position:absolute; 
+  right:0; 
+  z-index:1037; 
+}
+.matrix_container ul.matrix_links_primary { 
+  border-bottom:1px solid #ccc; 
+}
+.matrix_container ul[class*="matrix_links_"] { 
+  width:100%; 
+  padding:10px 0 0; 
+  margin-bottom:0; 
+  float:left; 
+} 
+.matrix_container ul[class*="matrix_links_"] > li { 
+  width:33.33%; 
+  height:72px;
+  padding:0 5px;
+  margin:0 0 10px; 
+  float:left;
+  font-size:12px; 
+  line-height:1.25; 
+  text-align:center; 
+  white-space:nowrap; 
+} 
+.matrix_container ul[class*="matrix_links_"] > li > a { 
+  width:100%; 
+  padding:7px 0 0 0; 
+  border:none;
+  color: #0076a8 !important;
+  background:transparent; 
+  display:block; 
+  text-decoration:none !important; 
+}
+
+.matrix_container ul[class*="matrix_links_"] > li > a > img { 
+  height:38px; 
+  padding:2px; 
+  width:auto; 
+  margin:0 auto 7px; 
+  border:1px solid transparent; 
+  border-radius:5px; 
+  background-color:#fff; 
+  display:block; 
+  transition:background-color .3s ease, border-color 0.3s ease; 
+}
+.matrix_container ul[class*="matrix_links_"] > li > a > .matrix_link_title { 
+  max-width:89px; 
+  display:block; 
+  line-height:1.15; 
+  white-space:normal; 
+}
+
+.matrix_container ul[class*="matrix_links_"] > li > a:hover > img,
+.matrix_container ul[class*="matrix_links_"] > li.matrix_active > a > img { 
+  border-color:#999;  
+  background-color:#f5f5f5; 
+}
+.matrix_container_zh { 
+  font-family:"Microsoft YaHei","Segoe UI",Arial,Helvetica; 
+}
+.matrix_container_ja { 
+  font-family:Meiryo,Verdana,Arial,Helvetica,"MS P ゴシック"; 
+}
+.matrix_container_kr { 
+  font-family:Malgun Gothic, Apple Gothic, Arial, sans-serif; 
+}
+
+[class*="matrix_container_"].matrix_container ul[class*="matrix_links_"] > li { 
+  height:90px; 
+}
+[class*="matrix_container_"] { padding-bottom:0; }
+[class*="matrix_container_"].matrix_container ul[class*="matrix_links_"] > li > a { 
+  padding-bottom:2px; 
+}
+[class*="matrix_container_"].matrix_container .matrix_link_title { 
+  font-size:13px !important; 
+  line-height:1.20 !important; 
+}</style><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/AppMeasurement.min.js.download" async=""></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/AppMeasurement_Module_ActivityMap.min.js.download" async=""></script><style>
+                   .profile-card {
+                       z-index: 900;
+                       width: 	405px;
+                       min-height: 212px;
+                       padding: 15px;
+                       border: 1px solid #ccc;
+                       box-shadow: 5px 5px 9px rgba(204,204,204,0.5);
+                    }
+
+                    #profile_name{
+                       width: 250px;
+                       overflow:hidden;
+                       white-space:nowrap;
+                       text-overflow: ellipsis;
+                       font-size: 16px;
+                       color:#005487;
+                     }
+
+
+                    a:hover { text-decoration: none; }
+
+                    .community_stats {
+                       width: 100%;
+                       font-size:11px;
+                       white-space: nowrap;
+                       position: absolute;
+                       bottom: 0px;
+                     }
+
+                     /* Rating: star display */
+                     .rating_block { display: inline-block; }
+                     .rate_scale { color: #ccc; display: inline-block; font: 1em/1.75 'mathworks'; position: relative; }
+                     .rate_scale:before { content: '\e677 \e677 \e677 \e677 \e677'; }
+
+                     .rated { color: #eec52a; overflow: hidden; position: absolute; left: 0; top: 0; white-space: nowrap; }
+                     .rated:before { content: '\e677 \e677 \e677 \e677 \e677'; }
+
+                     .loade {
+                           border: 6px solid #f3f3f3;
+                           border-radius: 50%;
+                           border-top: 6px solid #09f;
+                           width: 50px;
+                           height: 50px;
+                           -webkit-animation: spin 1s linear infinite;
+                           animation: spin 1s linear infinite;
+                           margin: 0 auto;
+                         }
+
+                      @-webkit-keyframes spin {
+                           0% { -webkit-transform: rotate(0deg); }
+                           100% { -webkit-transform: rotate(360deg); }
+                         }
+                      @keyframes spin {
+                           0% { transform: rotate(0deg); }
+                           100% { transform: rotate(360deg); }
+                         }
+
+            </style><style>
+      /* COPY CODE TO CLIPBOARD STARTS */
+      .clipboard {
+        position: absolute;
+        width: 100%;
+        height: 0px;
+        padding-right: 30px;
+        display: flex;
+        justify-content: flex-end;
+        -webkit-touch-callout: none; /* iOS Safari */
+        -webkit-user-select: none; /* Safari */
+        -khtml-user-select: none; /* Konqueror HTML */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+        user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+      }
+      .btn-copy-code {
+        background-color: transparent;
+        border: none;
+        color: #6f6f6f;
+        outline: none;
+        padding: 3px 3px 5px 3px;
+        margin: 0px 7px 0px 11px;
+        height: 24px;
+      }
+      .btn-copy-code:hover {
+        color: #000;
+      }
+      .btn-copy-code:focus-visible {
+        outline: thin dotted;
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+      }
+      .btn-clipboard {
+        display: none;  /* Hide old clipboard button saved on race condition */
+      }
+      @keyframes highlight {
+        0% {
+          background: #ffff99;
+        }
+        100% {
+          background: #F7F7F7;
+        }
+      }
+      .highlight {
+        animation: highlight 0.75s;
+      }
+      [data-pseudo-content]::before {
+        content: attr(data-pseudo-content);
+      }
+      /* COPY CODE TO CLIPBOARD ENDS */
+
+      /* DARK MODE FOR CODE BLOCKS STARTS */
+      .dark-mode-switch {
+        border: none;
+        background: transparent;
+        outline: none;
+        padding: 4px 3px 3px 3px;
+        color: #6f6f6f;
+        height: 24px;
+      }
+      .dark-mode-switch:hover {
+        color: #000;
+      }
+      .dark-mode-switch:focus-visible {
+        outline: thin dotted;
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+      }
+      body.dark .dark-mode-switch, body.dark .btn-copy-code {
+        color: #b1b1b1;
+      }
+      body.dark .dark-mode-switch:hover, body.dark .btn-copy-code:hover {
+        color: #fff;
+      }
+      body.dark .rtcContent .CodeBlock.contiguous {
+        background-color: #161616;
+        color: #fff;
+      }
+      body.dark .rtcContent .lineNode .textBox .textWrapper.Comment {
+        color: #5FDF0F;
+      }
+      body.dark .rtcContent .lineNode .textBox .textWrapper.Keyword {
+        color: #7491F9;
+      }
+      body.dark .rtcContent .lineNode .textBox .textWrapper.String {
+        color: #DD74DD;
+      }
+      body.dark .rtcContent .lineNode .textBox .textWrapper.SysCommand {
+        color: #FFFF00;
+      }
+      body.dark .rtcContent .lineNode .textBox .textWrapper.UndetString {
+        color: #F62719;
+      }
+      body.dark .CodeBlock > .lineNode:first-child {
+        border-top: 0;
+      }
+      body.dark .CodeBlock > .inlineWrapper:last-child .lineNode {
+        border-bottom: 0;
+      }
+      body.dark .CodeBlock > .lineNode {
+        border-right:0;
+      }
+
+      @keyframes highlight_in_dark_mode {
+        0% {
+          background: #161616;
+        }
+        100% {
+          background: #303030;
+        }
+      }
+      body.dark .highlight {
+        animation: highlight_in_dark_mode 0.5s;
+      }
+      /* DARK MODE FOR CODE BLOCKS ENDS */
+    </style><style type="text/css"> .qc-cmp-button {    background-color: #0076a8 !important;    border-color: #0076a8 !important;  }  .qc-cmp-button:hover {    border-color: #0076a8 !important;  }  .qc-cmp-alt-action,  .qc-cmp-link {    color: #0076a8 !important;  }  .qc-cmp-button.qc-cmp-secondary-button:hover {    background-color: #0076a8 !important;    border-color: #0076a8 !important;  }  .qc-cmp-button.qc-cmp-secondary-button:hover {    color: #ffffff !important;  }  .qc-cmp-button.qc-cmp-secondary-button {    color: #0076a8 !important;  }  .qc-cmp-button.qc-cmp-secondary-button {    background-color: #eee !important;    border-color: transparent !important;  }  .qc-cmp-ui,  .qc-cmp-ui .qc-cmp-title,  .qc-cmp-ui .qc-cmp-table,  .qc-cmp-ui .qc-cmp-messaging,  .qc-cmp-ui .qc-cmp-sub-title,  .qc-cmp-ui .qc-cmp-vendor-list,  .qc-cmp-ui .qc-cmp-purpose-info,  .qc-cmp-ui .qc-cmp-table-header,  .qc-cmp-ui .qc-cmp-beta-messaging,  .qc-cmp-ui .qc-cmp-main-messaging,  .qc-cmp-ui .qc-cmp-vendor-list-title{    color: #1a1a1a !important;  }  .qc-cmp-ui a,  .qc-cmp-ui .qc-cmp-alt-action {    color: #0076a8 !important;  }  .qc-cmp-ui {    background-color: #fef9ed !important;  } .dvsjko.dvsjko.dvsjko.dvsjko .qc-cmp2-footer .qc-cmp2-summary-buttons button { border-radius: 4px; }.dvsjko.dvsjko.dvsjko.dvsjko .qc-cmp2-footer .qc-cmp2-summary-buttons button:last-child:hover { background-color: #3391b9; }.iicKQX.iicKQX .qc-cmp2-footer .qc-cmp2-buttons-desktop button { border-radius: 4px; }.iicKQX.iicKQX .qc-cmp2-footer .qc-cmp2-buttons-desktop button:last-of-type:hover { background-color: #3391b9; }.iicKQX.iicKQX .qc-cmp2-footer > button { border-radius: 4px; }</style></head>
+<body class="
+		   
+		   templateservice
+		  
+		  
+		  " data-label-chat-online="Chat with Support" data-label-chat-offline="Chat is Offline" data-label-chatbot="Start MathWorks Bot" data-image-chatbot="/content/dam/mathworks/mathworks-dot-com/images/responsive/logos/chatbot.png" id="addon_details">
+
+	<a class="skip_link sr-only" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#skip_link_anchor" tabindex="1">Skip to content</a>
+
+	
+
+
+
+<!-- Mobile TopNav: Start -->
+<div class="header visible-xs visible-sm" id="header_mobile">
+	<nav class="navbar navbar-default" role="navigation"><div class="navbar-header">
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-xs-3">
+						<button type="button" class="navbar-toggle topnav_toggle" tabindex="1" data-toggle="collapse" data-target="#topnav_collapse">
+							<span class="sr-only">Toggle Main Navigation</span>
+							<span class="icon-menu"></span>
+						</button>
+					</div>
+					<div class="col-xs-6">
+						<div class="text-center">
+							<a href="https://nl.mathworks.com/?s_tid=gn_logo" class="svg_link navbar-brand" tabindex="3">
+								<img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/pic-header-mathworks-logo.20230215162333215.svg" class="mw_logo" alt="MathWorks - Mobile View"></a>
+						</div>
+					</div>
+					<div class="col-xs-3">
+						<div class="matrix_affordance_container_mobile" id="matrix_affordance_container_mobile"><div id="headernav_matrix_small" class="headernav_matrix"><button title="Matrix Menu" class="navbar-toggle matrix_toggle" data-toggle="collapse" data-target="#matrix_collapse" id="matrix_waffle_small" aria-label="Mathworks Menu" type="button"><span class="icon-matrix"></span></button></div></div>
+					</div>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="row visible-xs visible-sm">
+					<div class="col-xs-12">
+						<div class="navbar-collapse collapse" id="topnav_collapse">
+							<div class="topNavigation topnavigation containsResourceName resourceClass-topnavigation">
+
+<ul class="nav navbar-nav topnav" id="topnav_mobile">
+<li class="headernav_login" style="display: none;">
+	<a class="mwa-nav_login" tabindex="2" title="Sign In to Your MathWorks Account"><span class="visible-xs visible-sm">Sign In <span class="sr-only visually-hidden">to Your MathWorks Account</span></span></a>
+</li>
+<li class="headernav_logout dropdown" style="">
+	<a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" role="button" title="Access your MathWorks Account" aria-haspopup="menu" aria-controls="mw_nav_mobile" class="dropdown-toggle mwa_image_drop_down" data-toggle="dropdown" tabindex="2" style="background-image:url(/matlabcentral/profiles/25637895_1645201200279_DEF.jpg), url(/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/images/ico-header-account-active.20230215162333215.svg)" alt="Christophe+Heng+Andre">
+		<span class="visible-xs visible-sm">
+			<span class="mobile_account_image" style="background-image:url(/matlabcentral/profiles/25637895_1645201200279_DEF.jpg), url(/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/images/ico-header-account-active.20230215162333215.svg)" alt="Christophe+Heng+Andre"></span>
+			<span class="mobile_account_name" aria-hidden="true">Christophe+Heng+Andre</span>
+			<b class="caret"></b>
+		</span>
+	</a>
+	<ul role="menu" class="dropdown-menu" id="mw_nav_mobile">
+<li class="mwa-nav_account"><a role="menuitem" class="mwa-account" tabindex="2" href="https://nl.mathworks.com/mwaccount/?s_tid=gn_myac">My Account</a></li>
+		<li class="mwa-nav_community"><a role="menuitem" class="mwa-community-profile" tabindex="2" href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile?s_tid=gn_comm">My Community Profile</a></li>
+		<li class="mwa-nav_associate"><a role="menuitem" class="mwa-link-license" tabindex="2" href="https://nl.mathworks.com/licensecenter/licenses/add?s_tid=gn_aslc">Link License</a></li>
+		<li class="mwa-nav_logout">
+<a role="menuitem" class="mwa-logout" tabindex="2" href="https://nl.mathworks.com/login/logout?uri=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Ffileexchange%2F48522-abd-matrix-of-composite-laminate-theory">Sign Out</a>
+		</li>
+	</ul>
+</li>
+
+
+	
+	
+		<li class="topnav_products ">
+			<a href="https://nl.mathworks.com/products.html?s_tid=gn_ps" tabindex="2">Products</a>
+		</li>
+	
+		<li class="topnav_solutions ">
+			<a href="https://nl.mathworks.com/solutions.html?s_tid=gn_sol" tabindex="2">Solutions</a>
+		</li>
+	
+		<li class="topnav_academia ">
+			<a href="https://nl.mathworks.com/academia.html?s_tid=gn_acad" tabindex="2">Academia</a>
+		</li>
+	
+		<li class="topnav_support ">
+			<a href="https://nl.mathworks.com/help/?s_tid=gn_supp" tabindex="2">Support</a>
+		</li>
+	
+		<li class="topnav_community ">
+			<a href="https://nl.mathworks.com/matlabcentral/?s_tid=gn_mlc" tabindex="2">Community</a>
+		</li>
+	
+		<li class="topnav_events ">
+			<a href="https://nl.mathworks.com/company/events.html?s_tid=gn_ev" tabindex="2">Events</a>
+		</li>
+	
+	
+		<li class="headernav_store">
+			<a href="https://login.mathworks.com/embedded-login/landing.html?cid=getmatlab&amp;s_tid=gn_getml" tabindex="2">Get MATLAB</a>
+		</li>
+	
+</ul>
+</div>
+
+						</div>
+						<div class="navbar-collapse collapse" id="matrix_collapse">
+							<div class="matrix_menu_container_mobile" id="matrix_menu_container_mobile"><header class="App-header"><div class="matrix_container collapse" aria-describedby="matrix_title"><nav class="matrix_content"><h3 class="sr-only" id="matrix_title">MathWorks Matrix Menu</h3><ul class="list-unstyled matrix_links_primary"><li class=""><a class="svg_link" href="https://matlab.mathworks.com/" role="button" aria-label="MATLAB" id="matrix_link_matlab_home"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-matlabonline.svg" alt="matlab_home" aria-hidden="true"><span class="matrix_link_title">MATLAB</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/help/" role="button" aria-label="Help Center" id="matrix_link_help_center"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-helpcenter.svg" alt="help_center" aria-hidden="true"><span class="matrix_link_title">Help Center</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/" role="button" aria-label="MathWorks" id="matrix_link_mathworks_dotcom"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-mathworks.svg" alt="mathworks_dotcom" aria-hidden="true"><span class="matrix_link_title">MathWorks</span></a></li></ul><ul class="list-unstyled matrix_links_secondary"><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/answers/index" role="button" aria-label="MATLAB Answers" id="matrix_link_answers"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-answers.svg" alt="answers" aria-hidden="true"><span class="matrix_link_title">MATLAB Answers</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/fileexchange" role="button" aria-label="File Exchange" id="matrix_link_file_exchange"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-fileexchange.svg" alt="file_exchange" aria-hidden="true"><span class="matrix_link_title">File Exchange</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/videos.html" role="button" aria-label="Videos" id="matrix_link_videos"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-videos.svg" alt="videos" aria-hidden="true"><span class="matrix_link_title">Videos</span></a></li><li class=""><a class="svg_link" href="https://matlabacademy.mathworks.com/" role="button" aria-label="Online Training" id="matrix_link_online_training"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-onlinetraining.svg" alt="online_training" aria-hidden="true"><span class="matrix_link_title">Online Training</span></a></li><li class=""><a class="svg_link" href="https://blogs.mathworks.com/" role="button" aria-label="Blogs" id="matrix_link_blogs"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-blogs.svg" alt="blogs" aria-hidden="true"><span class="matrix_link_title">Blogs</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/cody" role="button" aria-label="Cody" id="matrix_link_cody"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-cody.svg" alt="cody" aria-hidden="true"><span class="matrix_link_title">Cody</span></a></li><li class=""><a class="svg_link" href="https://drive.matlab.com/" role="button" aria-label="MATLAB Drive" id="matrix_link_matlab_drive"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-matlabdrive.svg" alt="matlab_drive" aria-hidden="true"><span class="matrix_link_title">MATLAB Drive</span></a></li><li class=""><a class="svg_link" href="https://thingspeak.com/" role="button" aria-label="ThingSpeak" id="matrix_link_thingspeak"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-thingspeak.svg" alt="thingspeak" aria-hidden="true"><span class="matrix_link_title">ThingSpeak</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/support/bugreports/" role="button" aria-label="Bug Reports" id="matrix_link_bug_reports"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-bugreports.svg" alt="bug_reports" aria-hidden="true"><span class="matrix_link_title">Bug Reports</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/" role="button" aria-label="Community" id="matrix_link_community"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-community.svg" alt="community" aria-hidden="true"><span class="matrix_link_title">Community</span></a></li></ul></nav></div></header></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+</div>
+<!-- Mobile TopNav: End -->
+<!-- Desktop TopNav: Start -->
+<div class="header hidden-xs hidden-sm" id="header_desktop">
+	<nav class="navbar navbar-default" role="navigation"><div class="container-fluid">
+			<div class="row">
+				<div class="col-md-9">
+					<div class="navbar-header">
+						<div class="logo_container hidden-xs hidden-sm">
+							<a href="https://nl.mathworks.com/?s_tid=gn_logo" class="svg_link pull-left" tabindex="1">
+								<img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/pic-header-mathworks-logo.20230215162333215.svg" class="mw_logo" alt="MathWorks"></a>
+						</div>
+						<div class="navbar-collapse collapse hidden-xs hidden-sm">
+							
+							<div class="topNavigation topnavigation containsResourceName resourceClass-topnavigation">
+
+
+
+
+
+	
+
+	<ul id="topnav_desktop" class="nav navbar-nav topnav">
+<li class="topnav_products ">
+			<a href="https://nl.mathworks.com/products.html?s_tid=gn_ps" tabindex="2">Products</a> 
+		</li>
+	
+		<li class="topnav_solutions ">
+			<a href="https://nl.mathworks.com/solutions.html?s_tid=gn_sol" tabindex="2">Solutions</a> 
+		</li>
+	
+		<li class="topnav_academia ">
+			<a href="https://nl.mathworks.com/academia.html?s_tid=gn_acad" tabindex="2">Academia</a> 
+		</li>
+	
+		<li class="topnav_support ">
+			<a href="https://nl.mathworks.com/help/?s_tid=gn_supp" tabindex="2">Support</a> 
+		</li>
+	
+		<li class="topnav_community ">
+			<a href="https://nl.mathworks.com/matlabcentral/?s_tid=gn_mlc" tabindex="2">Community</a> 
+		</li>
+	
+		<li class="topnav_events ">
+			<a href="https://nl.mathworks.com/company/events.html?s_tid=gn_ev" tabindex="2">Events</a> 
+		</li>
+	</ul>
+</div>
+
+						</div>
+					</div>
+				</div>
+				<div class="col-md-3">
+					<div class="headerNavigation headernavigation containsResourceName resourceClass-headernavigation">
+<div class="collapse navbar-collapse" id="headernav_collapse">
+	<ul class="nav navbar-nav navbar-right" id="headernav">
+<li class="headernav_store"><a href="https://login.mathworks.com/embedded-login/landing.html?cid=getmatlab&amp;s_tid=gn_getml" class="btn btn_color_blue companion_btn btn-xs" tabindex="2">Get MATLAB</a></li>
+		
+		
+			
+
+<li class="headernav_login" style="display: none;">
+	<a class="mwa-nav_login" tabindex="2" title="Sign In to Your MathWorks Account"><span class="visible-xs visible-sm">Sign In <span class="sr-only visually-hidden">to Your MathWorks Account</span></span></a>
+</li>
+<li class="headernav_logout dropdown" style="">
+	<a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" role="button" title="Access your MathWorks Account" aria-haspopup="menu" aria-controls="mw_nav_desktop" class="dropdown-toggle mwa_image_drop_down" data-toggle="dropdown" tabindex="2" style="background-image:url(/matlabcentral/profiles/25637895_1645201200279_DEF.jpg), url(/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/images/ico-header-account-active.20230215162333215.svg)" alt="Christophe+Heng+Andre">
+		<span class="visible-xs visible-sm">
+			<span class="mobile_account_image" style="background-image:url(/matlabcentral/profiles/25637895_1645201200279_DEF.jpg), url(/etc.clientlibs/mathworks/clientlibs/customer-ui/templates/common/resources/images/ico-header-account-active.20230215162333215.svg)" alt="Christophe+Heng+Andre"></span>
+			<span class="mobile_account_name" aria-hidden="true">Christophe+Heng+Andre</span>
+			<b class="caret"></b>
+		</span>
+	</a>
+	<ul role="menu" class="dropdown-menu" id="mw_nav_desktop">
+<li class="mwa-nav_account"><a role="menuitem" class="mwa-account" tabindex="2" href="https://nl.mathworks.com/mwaccount/?s_tid=gn_myac">My Account</a></li>
+		<li class="mwa-nav_community"><a role="menuitem" class="mwa-community-profile" tabindex="2" href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile?s_tid=gn_comm">My Community Profile</a></li>
+		<li class="mwa-nav_associate"><a role="menuitem" class="mwa-link-license" tabindex="2" href="https://nl.mathworks.com/licensecenter/licenses/add?s_tid=gn_aslc">Link License</a></li>
+		<li class="mwa-nav_logout">
+<a role="menuitem" class="mwa-logout" tabindex="2" href="https://nl.mathworks.com/login/logout?uri=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Ffileexchange%2F48522-abd-matrix-of-composite-laminate-theory">Sign Out</a>
+		</li>
+	</ul>
+</li>
+
+
+		
+		<li id="headernav_matrix" class="headernav_matrix"><div id="wrapper"><button title="Matrix Menu" class="waffle" id="matrix_waffle_large" aria-label="Mathworks Menu" type="button"><span class="icon-matrix"></span></button><header class="App-header"><div class="matrix_container collapse" aria-describedby="matrix_title"><nav class="matrix_content"><h3 class="sr-only" id="matrix_title">MathWorks Matrix Menu</h3><ul class="list-unstyled matrix_links_primary"><li class=""><a class="svg_link" href="https://matlab.mathworks.com/" role="button" aria-label="MATLAB" id="matrix_link_matlab_home"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-matlabonline.svg" alt="matlab_home" aria-hidden="true"><span class="matrix_link_title">MATLAB</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/help/" role="button" aria-label="Help Center" id="matrix_link_help_center"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-helpcenter.svg" alt="help_center" aria-hidden="true"><span class="matrix_link_title">Help Center</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/" role="button" aria-label="MathWorks" id="matrix_link_mathworks_dotcom"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-mathworks.svg" alt="mathworks_dotcom" aria-hidden="true"><span class="matrix_link_title">MathWorks</span></a></li></ul><ul class="list-unstyled matrix_links_secondary"><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/answers/index" role="button" aria-label="MATLAB Answers" id="matrix_link_answers"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-answers.svg" alt="answers" aria-hidden="true"><span class="matrix_link_title">MATLAB Answers</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/fileexchange" role="button" aria-label="File Exchange" id="matrix_link_file_exchange"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-fileexchange.svg" alt="file_exchange" aria-hidden="true"><span class="matrix_link_title">File Exchange</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/videos.html" role="button" aria-label="Videos" id="matrix_link_videos"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-videos.svg" alt="videos" aria-hidden="true"><span class="matrix_link_title">Videos</span></a></li><li class=""><a class="svg_link" href="https://matlabacademy.mathworks.com/" role="button" aria-label="Online Training" id="matrix_link_online_training"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-onlinetraining.svg" alt="online_training" aria-hidden="true"><span class="matrix_link_title">Online Training</span></a></li><li class=""><a class="svg_link" href="https://blogs.mathworks.com/" role="button" aria-label="Blogs" id="matrix_link_blogs"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-blogs.svg" alt="blogs" aria-hidden="true"><span class="matrix_link_title">Blogs</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/cody" role="button" aria-label="Cody" id="matrix_link_cody"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-cody.svg" alt="cody" aria-hidden="true"><span class="matrix_link_title">Cody</span></a></li><li class=""><a class="svg_link" href="https://drive.matlab.com/" role="button" aria-label="MATLAB Drive" id="matrix_link_matlab_drive"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-matlabdrive.svg" alt="matlab_drive" aria-hidden="true"><span class="matrix_link_title">MATLAB Drive</span></a></li><li class=""><a class="svg_link" href="https://thingspeak.com/" role="button" aria-label="ThingSpeak" id="matrix_link_thingspeak"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-thingspeak.svg" alt="thingspeak" aria-hidden="true"><span class="matrix_link_title">ThingSpeak</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/support/bugreports/" role="button" aria-label="Bug Reports" id="matrix_link_bug_reports"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-bugreports.svg" alt="bug_reports" aria-hidden="true"><span class="matrix_link_title">Bug Reports</span></a></li><li class=""><a class="svg_link" href="https://nl.mathworks.com/matlabcentral/" role="button" aria-label="Community" id="matrix_link_community"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-matrix-community.svg" alt="community" aria-hidden="true"><span class="matrix_link_title">Community</span></a></li></ul></nav></div></header></div></li></ul>
+</div>
+</div>
+
+				</div>
+			</div>
+		</div>
+	</nav>
+</div>
+<!-- Desktop TopNav: End -->
+
+
+
+	<div class="sticky_header_container includes_subnav">
+		<!-- Section Header: Start -->
+		<div class="section_header level_3">
+			<div class="container-fluid">
+				<div class="row" id="mobile_search_row">
+					<div class="col-sm-6 col-md-7" id="section_header_title">
+						<div>
+<div class="sectionHead sectionhead containsResourceName resourceClass-sectionhead">
+
+
+	<div class="section_header_content">
+		<div class="section_header_title"><p class="h1">
+				<a href="https://nl.mathworks.com/matlabcentral/fileexchange/" class="add_cursor_pointer">File Exchange</a>
+				
+			</p></div>
+		
+			<button type="button" class="navbar-toggle collapsed subnav visible-xs visible-sm" data-toggle="collapse" data-target=".mobile_subnav_content" aria-label="Mobile Navigation"> <span class="icon-arrow-down icon_24"><span class="sr-only">Toggle Sub Navigation</span></span> </button>
+		
+	</div>
+</div>
+</div>
+					</div>
+					<div class="col-xs-12 col-sm-6 col-md-5" id="mobile_search">
+						<div>
+<div class="sectionHeadSearchBox sectionheadsearchbox containsResourceName resourceClass-sectionheadsearchbox">
+
+
+
+    
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/sectionheadsearchbox.min.20230215162333215.js.download"></script><div class="search_nested_content_container">
+	
+	<div id="search_scope_site" class="collapse in"><!-- Search File Exchange -->
+<div id="search_scope_fx" class="collapse in">
+  <form id="fx_search_form" name="mlcsearch_form" method="get" data-language="en" action="https://nl.mathworks.com/matlabcentral/fileexchange">
+    
+    <div class="input-group tokenized_search_field">
+      <label class="sr-only">Search File Exchange</label>
+      <input type="search" class="form-control conjoined_search fileexchange-search" autocomplete="off" name="q" placeholder="Search File Exchange" id="fxsearch" value="" onfocus="this.value = this.value;">
+      <div class="input-group-btn">
+        <button type="button" class="btn btn_search_adjacent dropdown-toggle" data-toggle="dropdown" tabindex="-1"><span class="caret"></span><span class="search_scope_label">File Exchange</span></button>
+        <ul class="dropdown-menu list-unstyled dropdown-menu-right" role="menu">
+          <li data-toggle="collapse" data-target="#search_scope_support" class="site_search_scope_trigger"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">Support</a></li>
+          <li data-toggle="collapse" data-target="#search_scope_sitewide" class="site_search_scope_trigger"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">MathWorks</a></li>
+        </ul>
+        <script>
+        window.addEventListener('DOMContentLoaded', function() {
+          $(".support_search_scope_trigger, .site_search_scope_trigger").click(function() {
+            $("#search_scope_fx").removeClass("in");
+            $("#query").val($("#fxsearch").val());
+            $("#supportsearch").val($("#fxsearch").val());
+          });
+        });
+        </script>
+        <button type="submit" id="submitsearch" class="btn icon-search btn_search_adjacent btn_search icon_16" tabindex="-1"></button>
+      </div>
+    </div>
+  </form>
+</div>
+<!-- End Search File Exchange -->
+<!-- Support Search -->
+<div id="search_scope_support" class="collapse">
+      <form id="supportsearch_form" name="supportsearch_form" method="get" data-language="en" action="https://nl.mathworks.com/support/search_results.html">
+        <div class="input-group tokenized_search_field">
+          <label class="sr-only">Search Support</label>
+          <input type="search" class="form-control conjoined_search" autocomplete="off" name="q" placeholder="Search Support" id="supportsearch">
+          <div class="input-group-btn">
+            <button type="button" class="btn btn_search_adjacent dropdown-toggle" data-toggle="dropdown" tabindex="-1"><span class="caret"></span><span class="search_scope_label">Support</span></button>
+            <ul class="dropdown-menu list-unstyled dropdown-menu-right" role="menu">
+              <li data-toggle="collapse" data-target="#search_scope_fx" class="fileexchange_search_scope_trigger"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">File Exchange</a></li>
+              <li data-toggle="collapse" data-target="#search_scope_sitewide" class="support_search_scope_trigger"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">MathWorks</a></li>
+            </ul>
+            <script>
+            window.addEventListener('DOMContentLoaded', function() {
+              $(".support_search_scope_trigger, .fileexchange_search_scope_trigger").click(function() {
+                $("#search_scope_support").removeClass("in");
+                $("#fxsearch").val($("#supportsearch").val());
+                $("#query").val($("#supportsearch").val());
+              });
+            });
+            </script>
+            <button type="submit" name="submitsearch" id="submitsearch" class="btn icon-search btn_search_adjacent btn_search icon_16" tabindex="-1"></button>
+          </div>
+        </div>
+      </form>
+    </div>
+<!-- End Support Search -->
+<!-- Search MathWorks.com -->
+<div id="search_scope_sitewide" class="collapse">
+ <form name="search" id="site_search" class="site_search" action="https://nl.mathworks.com/search/site_search.html" method="get">
+   <div class="input-group">
+     <label class="sr-only">Search MathWorks.com</label>
+     <input type="hidden" name="c[]" value="entire_site">
+     <input type="search" name="q" id="query" class="form-control conjoined_search" placeholder="Search MathWorks.com" autocomplete="off" \="">
+     <div class="input-group-btn">
+       <button type="button" class="btn btn_search_adjacent dropdown-toggle" data-toggle="dropdown" tabindex="-1"><span class="caret"></span><span class="search_scope_label">MathWorks</span></button>
+       <ul class="dropdown-menu list-unstyled dropdown-menu-right" role="menu">
+         <li data-toggle="collapse" data-target="#search_scope_fx" class="fileexchange_search_scope_trigger"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">File Exchange</a></li>
+         <li data-toggle="collapse" data-target="#search_scope_support" class="support_search_scope_trigger"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">Support</a></li>
+       </ul>
+       <script>
+       window.addEventListener('DOMContentLoaded', function() {
+         $(".support_search_scope_trigger, .fileexchange_search_scope_trigger").click(function() {
+           $("#search_scope_sitewide").removeClass("in");
+           $("#fxsearch").val($("#query").val());
+           $("#supportsearch").val($("#query").val());
+         });
+       });
+       </script>
+       <button type="submit" id="searchbutton" class="btn icon-search btn_search_adjacent btn_search icon_16" tabindex="-1"></button>
+     </div>
+   </div>
+ </form>
+</div>
+<!-- End Search --></div>
+	
+		<script>
+			$(".search_scope_trigger").click(function handlerSearch(event) {
+				var target1 = event.target.parentNode.attributes.getNamedItem("data-groupid").nodeValue;
+				$('#' + target1).removeClass("in");
+			});
+		</script>
+</div>
+<button class="btn icon-remove btn_search pull-right icon_32 visible-xs" data-toggle="collapse" data-target="#mobile_search" aria-expanded="false" aria-controls="mobile_search"><span class="sr-only">Close Mobile Search</span>
+</button>
+
+</div>
+</div>
+					</div>
+					<div class="visible-xs" id="search_actuator">
+						<button class="btn icon-search btn_search pull-right icon_16 containsResourceName resourceClass-button" data-toggle="collapse" data-target="#mobile_search" aria-expanded="false" aria-controls="mobile_search"><span class="sr-only">Close Mobile Search</span></button>
+					</div>
+				</div>
+				<!-- Mobile Local Nav: Start -->
+				<div class="row visible-xs visible-sm" id="mobile_subnav">
+					<div class="col-xs-12">
+						<div class="navbar-collapse collapse mobile_subnav_content">
+							<div>
+<div class="localNavigation localnav containsResourceName resourceClass-localnav">
+
+
+
+	<ul id="localnav_mobile" class="nav navbar-nav subnav" style="float:none">
+<li class="dropdown ">
+				<a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">MATLAB Central<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/?s_tid=gn_mlc">
+
+		
+
+		
+			
+			Community Home</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/answers/index/?s_tid=gn_mlc_an">
+
+		
+
+		
+			
+			MATLAB Answers</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/fileexchange/?s_tid=gn_mlc_fx">
+
+		
+
+		
+			
+			File Exchange</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/cody/?s_tid=gn_mlc_cody">
+
+		
+
+		
+			
+			Cody</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://blogs.mathworks.com/?s_tid=gn_mlc_blg">
+
+		
+
+		
+			
+			Blogs</a>
+
+							<hr class="local_nav_hr">
+</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/communities.html?s_tid=gn_mlc_tbc_dl">
+
+		
+
+		
+			
+			Communities</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/community/onramps/mlc_treasure_hunt?s_tid=gn_mlc_hunt">
+
+		
+
+		
+			
+			Treasure Hunt</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/highlights?s_tid=gn_mlc_hl">
+
+		
+
+		
+			
+			Highlights</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/contests.html?s_tid=gn_mlc_contests">
+
+		
+
+		
+			
+			Contests</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/community-advisors.html?s_tid=gn_mlc_cab">
+
+		
+
+		
+			
+			Advisors</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/profile/badges/all?s_tid=gn_mlc_bdgs">
+
+		
+
+		
+			
+			Virtual Badges</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/about.html?s_tid=gn_mlc_about">
+
+		
+
+		
+			
+			About</a>
+
+							
+						</li>
+					
+				</ul>
+</li>
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+	
+ <li id="leftnav_files"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/?s_tid=gn_mlc_fx_files">Files</a></li> <li id="leftnav_authors"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/authors?s_tid=gn_mlc_fx_auth">Authors</a></li> <li><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My File Exchange<span class="caret"></span></a><ul class="dropdown-menu"><li id=""><a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile?content=all">Followed Content Feed</a></li><li id=""><a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile/follows">Manage Following</a></li><li id=""><a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile/notification_preferences">Communication Preferences</a></li><li id=""><a href="https://nl.mathworks.com/matlabcentral/fileexchange/authors/my_fileexchange?s_tid=gn_mlc_fx_myfx">My Files</a></li></ul></li> <li id="leftnav_submit"><a href="https://nl.mathworks.com/contribute?s_tid=gn_mlc_fx_contr">Publish</a></li> <li id="leftnav_about"><a href="https://nl.mathworks.com/matlabcentral/content/fx/about.html?s_tid=gn_mlc_fx_help">About</a></li>
+
+</ul>
+</div>
+</div>
+
+						</div>
+					</div>
+				</div>
+				<!-- Mobile Local Nav: End -->
+			</div>
+		</div>
+		
+
+
+
+	<div class="horizontal_nav hidden-xs hidden-sm ">
+		<div class="horizontal_nav_container">
+			
+			<div>
+				<div class="container-fluid">
+					<div class="row">
+						
+	<div class="col-md-8 col-lg-9 hidden-xs hidden-sm">
+		<nav class="navbar navbar-default" role="navigation" id="subnav"><div class="collapse navbar-collapse">
+				<div>
+<div class="localNavigation localnav containsResourceName resourceClass-localnav">
+
+
+
+
+
+	
+	<ul id="localnav" class="nav navbar-nav subnav" style="float:none">
+<li class="dropdown ">
+				<a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">MATLAB Central<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/?s_tid=gn_mlc">
+
+		
+
+		
+			
+			Community Home</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/answers/index/?s_tid=gn_mlc_an">
+
+		
+
+		
+			
+			MATLAB Answers</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/fileexchange/?s_tid=gn_mlc_fx">
+
+		
+
+		
+			
+			File Exchange</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/cody/?s_tid=gn_mlc_cody">
+
+		
+
+		
+			
+			Cody</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://blogs.mathworks.com/?s_tid=gn_mlc_blg">
+
+		
+
+		
+			
+			Blogs</a>
+
+							<hr class="local_nav_hr">
+</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/communities.html?s_tid=gn_mlc_tbc_dl">
+
+		
+
+		
+			
+			Communities</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/community/onramps/mlc_treasure_hunt?s_tid=gn_mlc_hunt">
+
+		
+
+		
+			
+			Treasure Hunt</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/highlights?s_tid=gn_mlc_hl">
+
+		
+
+		
+			
+			Highlights</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/contests.html?s_tid=gn_mlc_contests">
+
+		
+
+		
+			
+			Contests</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/community-advisors.html?s_tid=gn_mlc_cab">
+
+		
+
+		
+			
+			Advisors</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/profile/badges/all?s_tid=gn_mlc_bdgs">
+
+		
+
+		
+			
+			Virtual Badges</a>
+
+							
+						</li>
+					
+						<li>
+							
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/about.html?s_tid=gn_mlc_about">
+
+		
+
+		
+			
+			About</a>
+
+							
+						</li>
+					
+				</ul>
+</li>
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+			
+			
+		
+	
+ <li id="leftnav_files"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/?s_tid=gn_mlc_fx_files">Files</a></li> <li id="leftnav_authors"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/authors?s_tid=gn_mlc_fx_auth">Authors</a></li> <li><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">My File Exchange<span class="caret"></span></a><ul class="dropdown-menu"><li id=""><a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile?content=all">Followed Content Feed</a></li><li id=""><a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile/follows">Manage Following</a></li><li id=""><a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile/notification_preferences">Communication Preferences</a></li><li id=""><a href="https://nl.mathworks.com/matlabcentral/fileexchange/authors/my_fileexchange?s_tid=gn_mlc_fx_myfx">My Files</a></li></ul></li> <li id="leftnav_submit"><a href="https://nl.mathworks.com/contribute?s_tid=gn_mlc_fx_contr">Publish</a></li> <li id="leftnav_about"><a href="https://nl.mathworks.com/matlabcentral/content/fx/about.html?s_tid=gn_mlc_fx_help">About</a></li>
+
+</ul>
+</div>
+</div>
+			</div>
+		</nav>
+</div>
+	<div class="col-md-4 col-lg-3 hidden-xs hidden-sm">
+		<div>
+<div class="callToAction calltoactionheader containsResourceName resourceClass-calltoactionheader">
+
+
+
+
+
+
+
+	<div class="cta_box">
+		<ul class="list-inline">
+<li class="cta_item cta_item_general">
+				
+	
+	<a href="https://nl.mathworks.com/campaigns/products/trials.html" class="icon-download " data-link="lead" data-offertype="trial" data-component="calltoactionheader">
+
+		
+
+		
+			
+			Trial software</a>
+
+			</li>
+		</ul>
+</div>
+
+
+
+
+</div>
+</div>
+	</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	</div>
+
+
+
+
+
+	
+
+	
+
+	
+		
+
+		
+			
+			
+				<div class="content_container" id="content_container">
+					
+					<main id="skip_link_anchor" tabindex="-1"><div class="container-fluid">
+							
+							
+							<section><div class="mainParsys parsys containsResourceName resourceClass-parsys">
+<div class="targetcontainer containsResourceName resourceClass-targetcontainer section">
+
+
+
+<div class="personalization-container " id="web-application-body-container">
+	<div>
+<div class="targetContent parsys containsResourceName resourceClass-parsys">
+<div class="cqColumns containsResourceName section resourceClass-columns">
+<div class="row   ">
+
+	
+		<div class=" col-xs-12">
+<div class="2420e633-83fe-4c2d-9b62-4248985f27d2 parsys containsResourceName resourceClass-parsys">
+  
+
+  <!-- JSON-LD for SEO purpose (see more at https://schema.org/) -->
+  <script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "name": "ABD Matrix of Composite laminate Theory - File Exchange - MATLAB CentralFile Exchange - MATLAB Central",
+      "accessibilitySummary": "Composite laminate Theory",
+      "url": "https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory",
+      "datePublished": "20 Nov 2014",
+      "contributor": {
+        "@type": "Person",
+        "name": "sujit"
+      },
+      "contentRating": "5.0",
+      "commentCount": "2"
+    }
+  </script>
+
+  <div id="announcements_container"></div>
+
+  <div data-view="detail">
+    
+    
+    
+    <div id="followSuccess" class="alert alert-success hidden"> <span class="alert_icon icon-alert-success"></span>
+  <p class="alert_heading"><strong>You are now following this Submission</strong></p>
+  <ul>
+    <li>You will see updates in your <a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile?content=all">followed content feed</a>
+    </li><li>You may receive emails, depending on your <a href="https://nl.mathworks.com/matlabcentral/profile/authors/my_profile/notification_preferences">communication preferences</a></li>
+  </ul>
+</div>
+
+    
+<script type="text/javascript">
+window.addEventListener('DOMContentLoaded', function() {
+  $('[data-toggle="popover"]').popover({trigger: 'click'});
+});
+</script>
+
+
+    <!-- start-of-the-page-container -->
+    <div class="row">
+      <div class="col-xs-12">
+        <!-- start-of-the-header -->
+        <div class="row">
+          <div class="col-xs-12 col-sm-2">
+            <div id="thumbnail" class="text-center">
+  <a border="0" href="https://nl.mathworks.com/matlabcentral/images/default_screenshot.jpg"><img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/e6ac10bf34b58c8481e1c9da2fb471e228780e9f" loading="lazy" itemprop="image" alt=""></a>
+</div>
+
+          </div>
+          <div class="col-xs-12 col-sm-10">
+            <div class="row">
+              <div class="col-xs-12 col-sm-8 col-md-9">
+                <h2 id="title" class="add_font_color_emphasize add_margin_5">
+                    <span id="titleText">ABD Matrix of Composite laminate Theory</span>
+                </h2>
+                <div class="add_margin_5">
+                    <span id="user_version"><a data-tab-id="version_history_tab" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#version_history_tab" name="version_history">Version 1.0.0.0</a> (1.68 KB) by <cite></cite> </span>
+                  <span><a class="author_inline analyticsMlcProfileModal results_author" data-locale-id="nl-NL" href="https://nl.mathworks.com/matlabcentral/profile/authors/2493613">sujit</a>
+
+</span>
+                </div>
+                <div id="summary" class="add_text_wrapping">
+                  <span id="summaryText">Composite laminate Theory</span>
+                </div>
+              </div>
+              <div class="col-xs-12 col-sm-4 col-md-3 section_downsize">
+                <div class="pull-right">
+                  <div class="rating add_margin_0 text-right add_display_block" title="5.00 out of 5 stars">
+                    <span class="numberrating">
+                      <div class="rate_scale">
+                        <a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory">
+                          <div class="rated pull-right" data-tab-id="reviews_tab" style="width: 100.0%;">
+                              <span id="rating_value">5.0</span>
+                          </div>
+                        </a>
+                      </div>
+                      <a id="review_count" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory">
+                        <span data-counter-id="reviews" data-tab-id="reviews_tab">
+                          (4)
+                        </span>
+                      </a>
+                    </span>
+                  </div>
+                    <p class="add_margin_0 text-right">
+                      <span id="downloads">3.3K Downloads</span>
+                      <span class="icon_16 icon-info-circle" data-container="#downloads" data-trigger="hover" data-toggle="popover" role="button" tabindex="0" data-html="true" data-placement="left" data-title="Downloads" data-content="Last 30 days: 14&lt;/br&gt;All time: 3,296" data-original-title="" title="">
+                      </span>
+                    </p>
+                  <p class="add_margin_0 text-right">
+                    <span id="date_updated">Updated
+                      <span content="2014-11-20">20 Nov 2014</span>
+                    </span>
+                  </p>
+                    <p class="text-right"><a data-toggle="modal" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#license_modal">View License</a></p>
+
+<div class="modal fade" id="license_modal" tabindex="-1" role="dialog" aria-labelledby="license_modal_title" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 class="modal-title" id="license_modal_title">License</h3>
+      </div>
+      <div class="modal-body">
+        <iframe src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/license.html" style="border: none" frameborder="0"></iframe>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+                </div>
+              </div>
+              <div class="col-xs-12">
+                <ul class="list-inline pull-right add_clear_both">
+  <li class="add_margin_0">
+      <div id="follow" data-fileexchange-id="48522"></div>
+  </li>
+  <!-- Start Download action -->
+  <li>
+    <div data-visible-on="add">
+            <div><a title="Download" data-logintodownload="false" class="btn btn-sm btn_color_blue link--download" href="https://nl.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/48522/versions/1/download/zip">Download</a></div>
+</div>
+
+  </li>
+  <!-- End Download action -->
+</ul>
+
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- end-of-the-header -->
+
+        <!-- start-of-the-tabs -->
+        <div class="row">
+          <div class="col-xs-12">
+            <div class="all-tabs-container">
+              <div>
+  <ul role="tablist" class="nav nav-tabs responsive" id="add_on_files">
+    <li class="active">
+      <a role="tab" data-toggle="tab" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#overview_tab" name="overview">Overview</a>
+    </li>
+        <li class="">
+          <a role="tab" data-toggle="tab" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#functions_tab" name="functions" class="resizable-iframe">Functions</a>
+        </li>
+    <li class="">
+      <a role="tab" data-toggle="tab" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#version_history_tab" name="version_history">Version History  <span data-counter-id="version_history"></span></a>
+    </li>
+    <li class="">
+      <a role="tab" data-toggle="tab" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#reviews_tab" name="reviews">Reviews  <span data-counter-id="reviews">(4)</span></a>
+    </li>
+    <li class="">
+      <a role="tab" data-toggle="tab" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#discussions_tab" name="discussions">Discussions  <span data-counter-id="discussions">(2)</span></a>
+    </li>
+  </ul>
+</div>
+
+<div class="tab-content responsive">
+    <div class="tab-pane active" id="overview_tab" data-context="web">
+    <div class="row">
+      <div class="col-xs-12 col-md-9">
+
+        <div id="description" data-add-on-description="true" class="add_margin_30 add_text_wrapping">
+          <div id="descriptionBody"><p>The stiffness method is used for matrix analysis of structures.It's useful for analysis of beams, planar trusses, space trusses, planar frames and space frames.End release of members in frame elements and support displacements can also be applied by this MATLAB Code</p></div>
+        </div>
+
+          <div id="citation" class="add_margin_30 add_text_wrapping">
+    <h3 class="add_bottom_rule add_margin_5">
+      Cite As
+    </h3>
+        <p id="defaultCitation" class="add_margin_20">
+    sujit (2023). <span id="defaultCitationTitle">ABD Matrix of Composite laminate Theory</span> (https://www.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory), MATLAB Central File Exchange.
+    Retrieved <time datetime="2023-02-23 19:00:47 UTC">February 23, 2023</time>.
+</p>
+
+  </div>
+
+      </div>
+
+      <div class="col-xs-12 col-md-3 section_downsize">
+          
+
+          <div id="matlab_release" class="add_margin_20">
+            <h5 class="add_bottom_rule add_margin_5">MATLAB Release Compatibility</h5>
+            <div>
+              Created with
+              R2011a
+            </div>
+            <div>
+              Compatible with any release
+            </div>
+          </div>
+
+        <div id="os_platforms" class="add_margin_20">
+          <h5 class="add_bottom_rule add_margin_5">Platform Compatibility</h5>
+          <span class="icon-checkbox-checked add_padding_5"></span><span>Windows</span> <span class="icon-checkbox-checked add_padding_5"></span><span>macOS</span> <span class="icon-checkbox-checked add_padding_5"></span><span>Linux</span>
+        </div>
+
+          <div id="categories" class="add_margin_20">
+    <h5 class="add_bottom_rule add_margin_5">Categories</h5>
+    <ul class="list-unstyled show_more_toggle" data-height="200" data-collapse-text="Show less" data-expand-text="Show more">
+        <li class="add_margin_15">
+            <a data-enable-spinner="true" href="https://nl.mathworks.com/matlabcentral/fileexchange/?category[]=support/engineeri5524&amp;s_tid=FX_AO_detail_cat">Engineering</a>
+            <span class="add_font_color_darkgray">&gt;</span>
+            <a data-enable-spinner="true" href="https://nl.mathworks.com/matlabcentral/fileexchange/?category[]=support/engineeri5524.support/civil-and5534&amp;s_tid=FX_AO_detail_cat">Civil and Environmental Engineering</a>
+            <span class="add_font_color_darkgray">&gt;</span>
+            <a data-enable-spinner="true" href="https://nl.mathworks.com/matlabcentral/fileexchange/?category[]=support/engineeri5524.support/civil-and5534.support/structura1756&amp;s_tid=FX_AO_detail_cat">Structural Analysis</a>
+            <span class="add_font_color_darkgray">&gt;</span>
+        </li>
+    </ul>
+  </div>
+
+
+        <div class="add_margin_20">
+  <div data-tags-path="">
+    <h5 class="add_bottom_rule add_margin_5">Tags
+      <span id="add_tags_span" class="add-tags-span pull_right ">
+        <a class="add-tags-link" href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#">Add Tags</a>
+      </span>
+    </h5>
+    <div id="tags" class="tag-list">
+        <a rel="nofollow" class="tag_component" href="https://nl.mathworks.com/matlabcentral/fileexchange/?term=tag:%22clt%22">clt</a> <a rel="nofollow" class="tag_component" href="https://nl.mathworks.com/matlabcentral/fileexchange/?term=tag:%22strain%22">strain</a>
+    </div>
+
+    <div id="add_tags_form">
+      <form id="add_new_tags_form" action="https://nl.mathworks.com/matlabcentral/fileexchange/ui/tags" accept-charset="UTF-8" data-remote="true" method="post"><input name="utf8" type="hidden" value="✓">
+  <input type="hidden" name="add_on_uuid" value="8f3245a8-3c40-4405-a2d2-9080002e8683">
+  <div class="multicomplete"><input type="text" id="add_tags" value="" class="form-control add_margin_5 multicomplete-input ui-autocomplete-input" autocomplete="off"></div>
+  <button type="button" class="btn btn-xs companion_btn btn_color_blue cancel_button">Cancel</button>
+  <input type="submit" value="Save" class="btn btn-xs btn_secondary save_button" data-disable-with="Save">
+</form>
+    </div>
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    $("#add_tags").multicomplete({
+      data_source: { url: "/matlabcentral/fileexchange/ui/tags/auto_suggest" }
+    });
+
+    $(".add-tags-link").click(function() {
+      $("#add_tags_form").show();
+      $("#add_tags").focus();
+      return false;
+    });
+
+    $("#add_tags_form .cancel_button").click(function() {
+      $("#add_tags").val('').blur();
+      $("#add_tags_form").hide();
+    });
+
+    $("#add_new_tags_form").on('ajax:complete', function(){
+      $('.multicomplete > .multicomplete-selected-item').remove()
+      $("#add_tags").val('').blur();
+      $("#add_tags_form").hide();
+    });
+});
+</script>
+
+
+        <div id="related_content" data-related-content-path="/matlabcentral/fileexchange/ui/related_content/8f3245a8-3c40-4405-a2d2-9080002e8683"><div class="add_margin_20">
+    <h5 class="add_bottom_rule add_margin_5">Others Also Downloaded</h5>
+    <div id="rel_content">
+        <div class="rc-component clearfix add_margin_20">
+            <p class="add_margin_0"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/87362-composite-material-abd-matrix-calculator?s_tid=FX_rc1_behav"> Composite material ABD matrix calculator</a></p>
+            <div class="rc-info">
+                <p class="rc-downloads pull-left add_padding_top_5 add_margin_0">34 Downloads</p>
+                <div class="rc-ratings pull-right add_margin_0" title="3.70 out of 5 stars">
+                    <div class="rating_scale">
+                        <div class="rating">
+                            <div class="rated" style="width:74.0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rc-component clearfix add_margin_20">
+            <p class="add_margin_0"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/25567-abd-matrix?s_tid=FX_rc2_behav">ABD matrix</a></p>
+            <div class="rc-info">
+                <p class="rc-downloads pull-left add_padding_top_5 add_margin_0">13 Downloads</p>
+                <div class="rc-ratings pull-right add_margin_0" title="0.00 out of 5 stars">
+                    <div class="rating_scale">
+                        <div class="rating">
+                            <div class="rated" style="width:0.0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="rc-component clearfix add_margin_20">
+            <p class="add_margin_0"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/64983-laminate-composite-solver?s_tid=FX_rc3_behav">Laminate composite solver</a></p>
+            <div class="rc-info">
+                <p class="rc-downloads pull-left add_padding_top_5 add_margin_0">15 Downloads</p>
+                <div class="rc-ratings pull-right add_margin_0" title="4.30 out of 5 stars">
+                    <div class="rating_scale">
+                        <div class="rating">
+                            <div class="rated" style="width:86.0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+        
+
+            <div id="poll_container"><iframe id="discussions-_discussions-polls-iframe" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/fx.html" style="width: 1px; min-width: 100%; padding: 0px; margin: 0px; border: none; position: relative; overflow: hidden;" scrolling="no"></iframe></div>
+            <script>
+              var component = new DiscussionsFrame({
+                  div_id: "#poll_container",
+                  app_id: "fx"
+              });
+              component.initPolls();
+            </script>
+
+          
+
+          <div id="treasure_hunt_spotlight">
+  <div class="panel panel-default add_cursor_pointer" onclick="location.href=&#39;/matlabcentral/community/onramps/mlc_treasure_hunt?s_tid=hunt_spotlight&#39;;">
+    <div class="panel-heading add_background_cover add_font_color_white" style="min-height: 80px; background-image: url(/matlabcentral/static/hunt_banner.png);">
+    </div>
+    <div class="panel-body">
+      <h3>Community Treasure Hunt</h3>
+      <p>Find the treasures in MATLAB Central and discover how the community can help you!</p>
+      <a class="icon-chevron" href="https://nl.mathworks.com/matlabcentral/community/onramps/mlc_treasure_hunt?s_tid=hunt_spotlight">Start Hunting!</a>
+    </div>
+  </div> 
+</div>
+
+          <div id="relatedContentSpotlight" class="relatedContentSpotlight" addonfileexchangeid="48522" addontitle="ABD Matrix of Composite laminate Theory" addonsummary="Composite laminate Theory" addontags="clt strain" addonpath="48522-abd-matrix-of-composite-laminate-theory">
+</div>
+
+<div id="staticSpotlight" class="">
+  <div class="panel panel-default">
+    <div class="panel-heading add_padding_40 add_background_position_left add_background_cover" style="background-image: url(/images/responsive/supporting/apps/downloads/panel-live-editor-spotlight.png);">
+    </div>
+    <div class="panel-body">
+      <h3 class="add_font_color_orange">Discover Live Editor</h3>
+      <p>Create scripts with code, output, and formatted text in a single executable document.</p>
+      <hr class="add_hr_spacing_10">
+      <p><a class="icon-chevron" href="https://www.mathworks.com/products/matlab/live-editor.html?s_tid=fx_mlle" target="liveeditor">Learn About Live Editor</a></p>
+    </div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+  <script>
+  $(function() {
+    var incrementViewCount = new UI.IncrementViewCount(
+      "/matlabcentral/fileexchange/ui/view_count",
+      "8f3245a8-3c40-4405-a2d2-9080002e8683"
+    );
+
+    incrementViewCount.execute();
+  });
+</script>
+
+<script type="text/javascript">$(document).ready(function () { CodeOptions.show(); });</script>
+
+      <div class="tab-pane resizable-iframe " id="functions_tab">
+        <div class="row">
+    <div class="col-xs-3">
+    	<div class="package__file-list single_tier functions" data-pane="scroll">
+            <h4></h4>
+          <ul class="nav nav-list nav--file-list truncate_text list-inline">
+              <li id="function_2dac29aa-1d74-9423-25da-50c031b76b8b" class="selected" title="SuJABD.m">
+                <a href="https://viewer.mathworks.com/?viewer=plain_code&amp;url=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Fmlc-downloads%2Fdownloads%2Fsubmissions%2F48522%2Fversions%2F1%2Fcontents%2FSuJABD.m&amp;embed=web" title="SuJABD.m" data-render-in-viewer-app="true" data-iframe-src="https://viewer.mathworks.com/?viewer=plain_code&amp;url=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Fmlc-downloads%2Fdownloads%2Fsubmissions%2F48522%2Fversions%2F1%2Fcontents%2FSuJABD.m&amp;embed=web">SuJABD.m</a>
+              </li>
+          </ul>
+      </div>
+    </div>
+    <div class="col-xs-9">
+    	<div class="package__file-content">
+        <div class="panel panel-default package__file-content_panel" id="functions_iframe_holder">
+          <iframe id="functions_iframe" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/saved_resource(1).html" data-default-src="https://viewer.mathworks.com/?viewer=plain_code&amp;url=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Fmlc-downloads%2Fdownloads%2Fsubmissions%2F48522%2Fversions%2F1%2Fcontents%2FSuJABD.m&amp;embed=web"></iframe>
+        </div>
+      </div>
+    </div>
+</div>
+
+      </div>
+    <div class="tab-pane " id="version_history_tab">
+      <div id="version_history_table">
+  <div class="col-12 col-lg-10">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Version</th>
+          <th>Published</th>
+          <th>Release Notes</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="version-history-cell nowrap-td">1.0.0.0</td>
+          <td class="version-history-cell nowrap-td"><time datetime="2014-11-20 11:00:09 UTC">20 Nov 2014</time></td>
+          <td class="version-history-cell wrap-td"><p></p></td>
+          <td class="version-history-cell nowrap-td">
+            <div data-version-history-table-state="add" data-version-number="1.0.0.0">
+              <div data-view="versions">
+                <div data-visible-on="add">
+            <div><a title="Download" data-logintodownload="false" class="btn btn-sm btn_color_blue link--download version-history-btn" href="https://nl.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/48522/versions/1/download/zip">Download</a></div>
+</div>
+
+              </div>
+            </div>
+          </td>
+        </tr>  
+      </tbody>
+    </table>
+  </div>
+</div>
+
+    </div>
+  <div class="tab-pane " id="reviews_tab">
+    
+
+  <div id="reviews" data-mlc-discussions="true" data-group-id="fx-reviews" data-created-by="2493613" data-ref-id="8f3245a8-3c40-4405-a2d2-9080002e8683" data-url="https://www.mathworks.com/matlabcentral/fileexchange/48522?tab=reviews"><iframe id="discussions-fx-reviews-iframe" src="https://nl.mathworks.com/matlabcentral/discussions/fx-reviews/ref/8f3245a8-3c40-4405-a2d2-9080002e8683?embed=true" style="width: 1px; min-width: 100%; padding: 0px; margin: 0px; border: none; position: relative; overflow: hidden; height: 0px;" scrolling="no"></iframe></div><div><style scoped="">.tooltip { z-index:400500 } .remove_padding { padding: 0; } .icon-fix-vert {     vertical-align: top;     line-height: 16px;   }   .radio {     margin-left: 10px; margin-bottom: 0px;  padding-bottom:10px; } </style><div class="modal fade" id="reviews-modal-container" style="max-width: 640px; min-width:320px;margin:auto;z-index:400480;" tabindex="-1" role="dialog"></div></div>
+
+  </div>
+  <div class="tab-pane " id="discussions_tab">
+    
+
+  <div id="discussions" data-mlc-discussions="true" data-group-id="fx-comments" data-created-by="2493613" data-ref-id="8f3245a8-3c40-4405-a2d2-9080002e8683" data-url="https://www.mathworks.com/matlabcentral/fileexchange/48522?tab=discussions"><iframe id="discussions-fx-comments-iframe" src="https://nl.mathworks.com/matlabcentral/discussions/fx-comments/ref/8f3245a8-3c40-4405-a2d2-9080002e8683?embed=true" style="width: 1px; min-width: 100%; padding: 0px; margin: 0px; border: none; position: relative; overflow: hidden; height: 0px;" scrolling="no"></iframe></div><div><style scoped="">.tooltip { z-index:400500 } .remove_padding { padding: 0; } .icon-fix-vert {     vertical-align: top;     line-height: 16px;   }   .radio {     margin-left: 10px; margin-bottom: 0px;  padding-bottom:10px; } </style><div class="modal fade" id="discussions-modal-container" style="max-width: 640px; min-width:320px;margin:auto;z-index:400480;" tabindex="-1" role="dialog"></div></div>
+
+  </div>
+</div>
+
+            </div>
+          </div>
+        </div>
+        <!-- end-of-the-tabs -->
+      </div>
+    </div>
+    <!-- end-of-the-page-container -->
+    
+    <script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/show-fd5cf0439451c86ee7730d63cc417bbe193efe0a11cda314c00d698073d09b83.js.download"></script>
+    <script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/application-bd5b70a9c0948de023c809418d9f2a237f8588d62791b2687a4f04118f12d8bf.j.download"></script>
+  </div>
+
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/announcements_v1.js.download" data-app-name="File Exchange"></script>
+<script type="text/javascript">
+    $(function () {
+        $('[data-toggle="popover"]').popover({ html: true });
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+
+    // Has to run on window load and not DOMContentReady because we have to wait for the Quaularoo object to exist
+    window.addEventListener("load", function () {
+        // Qualaroo survey code added in web2020Jul -- all values must be strings
+        function setQualarooVars(userIsFollowing) {
+            if (typeof _kiq !== "undefined" && _kiq.push) {
+                let qualarooVars = {
+                    "userLoggedIn": "true",
+                    "userIsFollowing": userIsFollowing.toString(),
+                    "userIsAuthor":  "false"
+                }
+
+                _kiq.push(['set', qualarooVars]);
+            }
+        }
+
+        const followUiContainer = document.getElementById("follow");
+
+        // Follow UI container only exists if the current user is logged in
+        if (followUiContainer) {
+            const followService = new FollowService(followUiContainer);
+
+            followService.addEventListener("load", function(followingLoadEvent) {
+                setQualarooVars(followingLoadEvent.data.isFollowing);
+            });
+
+            followService.load();
+        } else {
+            setQualarooVars(false);
+        }
+    });
+
+    const discussionsContainer = document.getElementById("discussions");
+
+    if (discussionsContainer) {
+        const discussionsComponent = new DiscussionsService(
+            "8f3245a8-3c40-4405-a2d2-9080002e8683",
+            "#discussions",
+            "fx-comments",
+            "discussions",
+            "https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory?tab=discussions",
+            "https://nl.mathworks.com/login?uri=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Ffileexchange%2F48522-abd-matrix-of-composite-laminate-theory%3Ftab%3Ddiscussions&amp;form_type=community"
+        );
+        discussionsComponent.load();
+    }
+
+    const reviewsContainer = document.getElementById("reviews");
+
+    if (reviewsContainer) {
+        const reviewsComponent = new DiscussionsService(
+            "8f3245a8-3c40-4405-a2d2-9080002e8683",
+            "#reviews",
+            "fx-reviews",
+            "reviews",
+            "https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory?tab=reviews",
+            "https://nl.mathworks.com/login?uri=https%3A%2F%2Fnl.mathworks.com%2Fmatlabcentral%2Ffileexchange%2F48522-abd-matrix-of-composite-laminate-theory%3Ftab%3Dreviews&amp;form_type=community"
+        );
+        reviewsComponent.load();
+    }
+</script>
+</div>
+</div>
+	
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+</div>
+</section><div>
+<div class="modalParsys parsys containsResourceName resourceClass-parsys">
+</div>
+</div>
+
+								
+
+
+
+
+
+<div id="location_content" style="display:none;"></div>
+
+<div class="modal fade" id="country-unselected" tabindex="-1" role="dialog" aria-labelledby="country-unselected-title" translate="no">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+				<img src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/pic-header-mathworks-logo.20230215162333215.svg" style="width:167px; height:auto;" class="mw_logo" alt="MathWorks - Domain Selector">
+</div>
+			<div class="modal-body">
+				<div class="row add_margin_40">
+					<div class="col-xs-12">
+						<p class="h1 icon-globe add_icon_color_darkblue" id="country-unselected-title">Select a Web Site</p>
+						<p>Choose a web site to get translated content where available and see local events and
+							offers. Based on your location, we recommend that you select: <strong class="recommended-country">Netherlands</strong>.
+						</p>
+						<div class="default-recommendation">
+							<a href="https://nl.mathworks.com/" id="recommended_domain_button" class="btn btn_color_blue containsResourceName resourceClass-button" data-lang="en"><span class="recommended-country">Netherlands</span></a>
+						</div>
+						<div class="ch-recommendation" style="display:none;">
+							<ul class="list-inline">
+<li class="add_display_block_xs add_margin_10_xs"><a href="https://ch.mathworks.com/" class="recommendation-button btn btn_color_blue btn-md add_display_block_xs" data-subdomain="ch" data-lang="en" data-recommended-text="Switzerland" data-default-lang="true" data-do-not-rewrite="true">Switzerland (English)</a></li>
+								<li class="add_display_block_xs add_margin_10_xs"><a href="https://ch.mathworks.com/" class="recommendation-button btn companion_btn btn-md add_display_block_xs" data-subdomain="ch" data-lang="de" data-recommended-text="Schweiz" data-do-not-rewrite="true">Switzerland (Deutsch)</a></li>
+								<li class="add_display_block_xs"><a href="https://ch.mathworks.com/" class="recommendation-button btn companion_btn btn-md add_display_block_xs" data-subdomain="ch" data-lang="fr" data-recommended-text="Suisse" data-do-not-rewrite="true">Switzerland (Français)</a></li>
+							</ul>
+</div>
+						<div class="zh-recommendation" style="display:none;">
+							<ul class="list-inline">
+<li class="add_display_block_xs add_margin_10_xs"><a href="https://ww2.mathworks.cn/" class="recommendation-button btn btn_color_blue btn-md add_display_block_xs" data-subdomain="ww2" data-lang="zh" data-recommended-text="中国" data-default-lang="true" data-do-not-rewrite="true">中国 (简体中文)</a></li>
+								<li class="add_display_block_xs"><a href="https://ww2.mathworks.cn/" class="recommendation-button btn companion_btn btn-md add_display_block_xs" data-subdomain="ww2" data-lang="en" data-recommended-text="China" data-do-not-rewrite="true">中国 (English)</a></li>
+							</ul>
+</div>
+					</div>
+				</div>
+				<p>You can also select a web site from the following list:</p>
+				<div class="alert alert-warning" id="china_performance_alert" style="display:none;">
+<span class="alert_icon icon-alert-warning"></span>
+					<h2>How to Get Best Site Performance</h2>
+					<p>Select the China site (in Chinese or English) for best site performance. Other MathWorks country
+						sites are not optimized for visits from your location.</p>
+				</div>
+				<div class="row add_margin_20">
+					<div class="col-sm-4 col-md-3">
+						<h3 class="add_bottom_rule">Americas</h3>
+						<ul class="list-unstyled">
+<li>
+<a href="https://la.mathworks.com/" class="domain_selector_link" data-country-code="LA" data-subdomain="la" data-lang="es" data-default-lang="true" data-selected-text="América Latina" data-recommended-text="América Latina" data-do-not-rewrite="true">América Latina</a> (Español)
+							</li>
+							<li>
+<a href="https://www.mathworks.com/" class="domain_selector_link" data-country-code="CA" data-subdomain="www" data-lang="en" data-do-not-rewrite="true">Canada</a> (English)
+							</li>
+							<li>
+<a href="https://www.mathworks.com/" class="domain_selector_link" data-country-code="US" data-subdomain="www" data-lang="en" data-default-lang="true" data-selected-text="United States" data-recommended-text="United States" data-do-not-rewrite="true">United States</a> (English)
+							</li>
+						</ul>
+</div>
+					<div class="col-sm-4 col-md-6">
+						<h3 class="add_bottom_rule">Europe</h3>
+						<div class="row">
+							<div class="col-xs-6 col-sm-12 col-md-6">
+								<ul class="list-unstyled add_margin_0_sm">
+<li>
+<a href="https://nl.mathworks.com/" class="domain_selector_link" data-country-code="BE" data-subdomain="nl" data-lang="en" data-do-not-rewrite="true">Belgium</a> (English)
+									</li>
+									<li>
+<a href="https://se.mathworks.com/" class="domain_selector_link" data-country-code="DK" data-subdomain="se" data-lang="en" data-do-not-rewrite="true">Denmark</a> (English)
+									</li>
+									<li>
+<a href="https://de.mathworks.com/" class="domain_selector_link" data-country-code="DE" data-subdomain="de" data-lang="de" data-default-lang="true" data-selected-text="Deutschland" data-recommended-text="Deutschland" data-do-not-rewrite="true">Deutschland</a> (Deutsch)
+									</li>
+									<li>
+<a href="https://es.mathworks.com/" class="domain_selector_link" data-country-code="ES" data-subdomain="es" data-lang="es" data-default-lang="true" data-selected-text="España" data-recommended-text="España" data-do-not-rewrite="true">España</a> (Español)
+									</li>
+									<li>
+<a href="https://se.mathworks.com/" class="domain_selector_link" data-country-code="FI" data-subdomain="se" data-lang="en" data-do-not-rewrite="true">Finland</a> (English)
+									</li>
+									<li>
+<a href="https://fr.mathworks.com/" class="domain_selector_link" data-country-code="FR" data-subdomain="fr" data-lang="fr" data-default-lang="true" data-selected-text="France" data-recommended-text="France" data-do-not-rewrite="true">France</a> (Français)
+									</li>
+									<li>
+<a href="https://uk.mathworks.com/" class="domain_selector_link" data-country-code="IE" data-subdomain="uk" data-lang="en" data-do-not-rewrite="true">Ireland</a> (English)
+									</li>
+									<li>
+<a href="https://it.mathworks.com/" class="domain_selector_link" data-country-code="IT" data-subdomain="it" data-lang="it" data-default-lang="true" data-selected-text="Italia" data-recommended-text="Italia" data-do-not-rewrite="true">Italia</a> (Italiano)
+									</li>
+									<li>
+<a href="https://nl.mathworks.com/" class="domain_selector_link" data-country-code="LU" data-subdomain="nl" data-lang="en" data-do-not-rewrite="true">Luxembourg</a> (English)
+									</li>
+								</ul>
+</div>
+							<div class="col-xs-6 col-sm-12 col-md-6">
+								<ul class="list-unstyled">
+<li>
+<a href="https://nl.mathworks.com/" class="domain_selector_link" data-country-code="NL" data-subdomain="nl" data-lang="en" data-default-lang="true" data-selected-text="Benelux" data-recommended-text="Netherlands" data-do-not-rewrite="true">Netherlands</a> (English)
+									</li>
+									<li>
+<a href="https://se.mathworks.com/" class="domain_selector_link" data-country-code="NO" data-subdomain="se" data-lang="en" data-do-not-rewrite="true">Norway</a> (English)
+									</li>
+									<li>
+<a href="https://de.mathworks.com/" class="domain_selector_link" data-country-code="AT" data-subdomain="de" data-lang="de" data-do-not-rewrite="true">Österreich</a> (Deutsch)
+									</li>
+									<li>
+<a href="https://www.mathworks.com/" class="domain_selector_link" data-country-code="PT" data-subdomain="www" data-lang="en" data-do-not-rewrite="true">Portugal</a> (English)
+									</li>
+									<li>
+<a href="https://se.mathworks.com/" class="domain_selector_link" data-country-code="Sweden" data-subdomain="se" data-lang="en" data-default-lang="true" data-selected-text="Nordic" data-recommended-text="Sweden" data-do-not-rewrite="true">Sweden</a> (English)
+									</li>
+									<li>Switzerland
+										<ul class="list-unstyled add_indent_20">
+<li>
+<a href="https://ch.mathworks.com/" class="domain_selector_link" data-country-code="CH" data-subdomain="ch" data-lang="de" data-selected-text="Schweiz" data-recommended-text="Schweiz" data-do-not-rewrite="true">Deutsch</a>
+											</li>
+											<li>
+<a href="https://ch.mathworks.com/" class="domain_selector_link" data-country-code="CH" data-subdomain="ch" data-lang="en" data-default-lang="true" data-selected-text="Switzerland" data-recommended-text="Switzerland" data-do-not-rewrite="true">English</a>
+											</li>
+											<li>
+<a href="https://ch.mathworks.com/" class="domain_selector_link" data-country-code="CH" data-subdomain="ch" data-lang="fr" data-selected-text="Suisse" data-recommended-text="Suisse" data-do-not-rewrite="true">Français</a>
+											</li>
+										</ul>
+</li>
+									<li>
+<a href="https://uk.mathworks.com/" class="domain_selector_link" data-country-code="GB" data-subdomain="uk" data-lang="en" data-default-lang="true" data-selected-text="United Kingdom" data-recommended-text="United Kingdom" data-do-not-rewrite="true">United Kingdom</a>
+										(English)
+									</li>
+								</ul>
+</div>
+						</div>
+					</div>
+					<div class="col-sm-4 col-md-3">
+						<h3 class="add_bottom_rule">Asia Pacific</h3>
+						<ul class="list-unstyled">
+<li>
+<a href="https://au.mathworks.com/" class="domain_selector_link" data-country-code="AU" data-subdomain="au" data-lang="en" data-default-lang="true" data-selected-text="Australia" data-recommended-text="Australia" data-do-not-rewrite="true">Australia</a> (English)
+							</li>
+							<li>
+<a href="https://in.mathworks.com/" class="domain_selector_link" data-country-code="IN" data-subdomain="in" data-lang="en" data-default-lang="true" data-selected-text="India" data-recommended-text="India" data-do-not-rewrite="true">India</a> (English)
+							</li>
+							<li>
+<a href="https://au.mathworks.com/" class="domain_selector_link" data-country-code="NZ" data-subdomain="au" data-lang="en" data-do-not-rewrite="true">New Zealand</a> (English)
+							</li>
+							<li>中国
+								<ul class="list-unstyled add_indent_20">
+<li>
+<a href="https://ww2.mathworks.cn/" class="domain_selector_link" data-country-code="CN" data-subdomain="ww2" data-lang="zh" data-default-lang="true" data-selected-text="中国" data-recommended-text="中国" data-do-not-rewrite="true">简体中文<span class="sr-only">Chinese</span>
+										</a>
+									</li>
+									<li>
+<a href="https://ww2.mathworks.cn/" class="domain_selector_link" data-country-code="CN" data-subdomain="ww2" data-lang="en" data-default-lang="true" data-selected-text="China" data-recommended-text="China" data-do-not-rewrite="true">English</a>
+									</li>
+								</ul>
+</li>
+							<li>
+<a href="https://jp.mathworks.com/" class="domain_selector_link" data-country-code="JP" data-subdomain="jp" data-lang="ja" data-default-lang="true" data-selected-text="日本" data-recommended-text="日本" data-do-not-rewrite="true">日本<span class="sr-only">Japanese</span></a> (日本語)
+							</li>
+							<li>
+<a href="https://kr.mathworks.com/" class="domain_selector_link" data-country-code="KR" data-subdomain="kr" data-lang="ko" data-default-lang="true" data-selected-text="한국" data-recommended-text="한국" data-do-not-rewrite="true">한국<span class="sr-only">Korean</span></a> (한국어)
+							</li>
+						</ul>
+</div>
+				</div>
+				<p class="text-center"><a href="https://nl.mathworks.com/" class="worldwide_link" data-lang="en">Contact your local office</a></p>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+
+    
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/domainselector.min.20230215162333215.js.download"></script>
+</div>
+					</main>
+</div>
+			<div class="cta_container_mobile visible-sm visible-xs">
+	<div class="container-fluid">      
+		<div class="row">
+			<div class="col-xs-12">
+				<div>
+<div class="callToAction calltoactionheader containsResourceName resourceClass-calltoactionheader">
+
+
+
+
+
+
+
+	<div class="cta_box">
+		<ul class="list-inline">
+<li class="cta_item cta_item_general">
+				
+	
+	<a href="https://nl.mathworks.com/campaigns/products/trials.html" class="icon-download " data-link="lead" data-offertype="trial" data-component="calltoactionheader">
+
+		
+
+		
+			
+			Trial software</a>
+
+			</li>
+		</ul>
+</div>
+
+
+
+
+</div>
+</div>
+			</div>
+		</div>
+	</div>
+</div>
+			
+			
+
+
+
+<footer id="footer" class="bs-footer"><div class="fat_footer_container">
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="fat_footer">
+<div class="fatFooterParsys iparsys parsys resourceClass-iparsys containsResourceName">
+<div class="section">
+<div class="new containsResourceName resourceClass-new"></div>
+</div>
+<div class="iparys_inherited">
+<div class="fatFooterParsys iparsys parsys containsResourceName resourceClass-par">
+<div class="cqColumns containsResourceName section resourceClass-columns">
+<div class="row   ">
+
+	
+		<div class=" col-xs-12 col-md-12 col-lg-3 add_margin_20">
+<div class="1 parsys containsResourceName resourceClass-parsys">
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p class="h4 add_font_futura_medium add_margin_0">MathWorks</p>
+<p><i>Accelerating the pace of engineering and science</i></p>
+</div>
+</div>
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p>MathWorks is the leading developer of mathematical computing software for engineers and scientists.</p>
+</div>
+</div>
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p><a href="https://nl.mathworks.com/discovery.html?s_tid=hp_ff_a_discover" data-target="same">Discover…</a></p>
+</div>
+</div>
+
+</div>
+</div>
+	
+		<div class=" col-xs-12 col-md-12 col-lg-9">
+<div class="2 parsys containsResourceName resourceClass-parsys">
+<div class="cqColumns containsResourceName section resourceClass-columns">
+<div class="row add_margin_20  ">
+
+	
+		<div class=" col-xs-12 col-sm-2">
+<div class="1 parsys containsResourceName resourceClass-parsys">
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p class="ff_section_title"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#fatfooter_products" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="fatfooter_products">Explore Products<span class="caret"></span></a></p>
+<div class="collapse" id="fatfooter_products">
+ <ul class="list-unstyled">
+<li><a href="https://nl.mathworks.com/products/matlab.html?s_tid=hp_ff_p_matlab">MATLAB</a></li>
+  <li><a href="https://nl.mathworks.com/products/simulink.html?s_tid=hp_ff_p_simulink">Simulink</a></li>
+  <li><a href="https://nl.mathworks.com/products/matlab/student.html?s_tid=hp_ff_p_student">Student Software</a></li>
+  <li><a href="https://nl.mathworks.com/hardware-support/home.html?s_tid=hp_ff_p_hwsupport">Hardware Support</a></li>
+  <li><a href="https://nl.mathworks.com/matlabcentral/fileexchange/?s_tid=hp_ff_p_fx">File Exchange</a></li>
+ </ul>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+	
+		<div class=" col-xs-12 col-sm-2">
+<div class="2 parsys containsResourceName resourceClass-parsys">
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p class="ff_section_title"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#fatfooter_buy" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="fatfooter_buy">Try or Buy<span class="caret"></span></a></p>
+<div class="collapse" id="fatfooter_buy">
+ <ul class="list-unstyled">
+<li><a href="https://nl.mathworks.com/downloads/web_downloads/?s_tid=hp_ff_t_downloads">Downloads</a></li>
+  <li><a href="https://nl.mathworks.com/campaigns/products/trials.html?s_tid=hp_ff_p_trial" data-target="same" data-link="lead" data-offertype="trial" data-component="footer">Trial Software</a></li>
+  <li><a href="https://nl.mathworks.com/company/aboutus/contact_us/contact_sales.html?s_tid=hp_ff_t_sales" data-link="lead" data-offertype="Contact Sales" data-component="footer">Contact Sales</a></li>
+  <li><a href="https://nl.mathworks.com/pricing-licensing.html?s_tid=hp_ff_t_pricing" data-link="lead" data-offertype="pl" data-component="footer">Pricing and Licensing</a></li>
+  <li><a href="https://nl.mathworks.com/store/?s_tid=hp_ff_t_buy" data-link="store" data-component="footer">How to Buy</a></li>
+ </ul>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+	
+		<div class=" col-xs-12 col-sm-2">
+<div class="3 parsys containsResourceName resourceClass-parsys">
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p class="ff_section_title"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#fatfooter_use" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="fatfooter_use">Learn to Use<span class="caret"></span></a></p>
+<div class="collapse" id="fatfooter_use">
+ <ul class="list-unstyled">
+<li><a href="https://nl.mathworks.com/help/?s_tid=hp_ff_l_doc" data-target="same">Documentation</a></li>
+  <li><a href="https://nl.mathworks.com/support/learn-with-matlab-tutorials.html?s_tid=hp_ff_l_tutorials" data-target="same">Tutorials</a></li>
+  <li><a href="https://nl.mathworks.com/help/examples.html?s_tid=hp_ff_l_examples" data-target="same">Examples</a></li>
+  <li><a href="https://nl.mathworks.com/videos.html?s_tid=hp_ff_l_videos">Videos and Webinars</a></li>
+  <li><a href="https://nl.mathworks.com/learn/training.html?s_tid=hp_ff_l_training">Training</a></li>
+ </ul>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+	
+		<div class=" col-xs-12 col-sm-2">
+<div class="4 parsys containsResourceName resourceClass-parsys">
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p class="ff_section_title"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#fatfooter_support" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="fatfooter_support">Get Support<span class="caret"></span></a></p>
+<div class="collapse" id="fatfooter_support">
+ <ul class="list-unstyled">
+<li><a href="https://nl.mathworks.com/help/install/?s_tid=hp_ff_s_install">Installation Help</a></li>
+  <li><a href="https://nl.mathworks.com/matlabcentral/answers/index?s_tid=hp_ff_s_answers">MATLAB Answers</a></li>
+  <li><a href="https://nl.mathworks.com/services/consulting.html?s_tid=hp_ff_s_consulting">Consulting</a></li>
+  <li><a href="https://nl.mathworks.com/licensecenter/?s_tid=hp_ff_s_license">License Center</a></li>
+  <li><a href="https://nl.mathworks.com/support/contact_us.html?s_tid=hp_ff_s_support">Contact Support</a></li>
+ </ul>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+	
+		<div class=" col-xs-12 col-sm-2">
+<div class="5 parsys containsResourceName resourceClass-parsys">
+<div class="text containsResourceName section resourceClass-text">
+<div class="mw-text   ">
+	<p class="ff_section_title"><a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#fatfooter_about" role="button" data-toggle="collapse" aria-expanded="false" aria-controls="fatfooter_about">About MathWorks<span class="caret"></span></a></p>
+<div class="collapse" id="fatfooter_about">
+ <ul class="list-unstyled">
+<li><a href="https://nl.mathworks.com/company/jobs/opportunities.html?s_tid=hp_ff_a_careers">Careers</a></li>
+  <li><a href="https://nl.mathworks.com/company/newsroom.html?s_tid=hp_ff_a_newsroom">Newsroom</a></li>
+  <li><a href="https://nl.mathworks.com/company/aboutus/soc_mission.html?s_tid=hp_ff_a_socialmission">Social Mission</a></li>
+  <li><a href="https://nl.mathworks.com/company/customer-stories.html?s_tid=hp_ff_a_customerstories">Customer Stories</a></li>
+  <li><a href="https://nl.mathworks.com/company.html?s_tid=hp_ff_a_company">About MathWorks</a></li>
+ </ul>
+</div>
+</div>
+</div>
+
+</div>
+</div>
+	
+</div>
+</div>
+
+</div>
+</div>
+	
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+		</div>
+	</div>
+</div>
+</div>
+
+	<!-- BASIC FOOTER CONTENT - Begin -->
+	<div class="container-fluid">
+		<div class="footer">
+			<div class="row">
+				<div class="col-xs-12 col-md-9">
+					<ul class="countrynav">
+<!-- Code to Remove Tracking from Previous page and add new tracking --><li class="footernav_country">
+							<a href="https://nl.mathworks.com/matlabcentral/fileexchange/48522-abd-matrix-of-composite-laminate-theory#" data-toggle="modal" id="domainButton" data-target="#country-unselected">
+								<span class="sr-only">Select a Web Site</span>
+								<span class="icon-globe icon_color_quinary icon_16"></span><span id="countrySelectorButtonText">Benelux</span>
+							</a>
+						</li>
+					</ul>
+<div class="clearfix"></div>
+					<div>
+<div class="footerNavigation footernavigation containsResourceName resourceClass-footernavigation">
+
+
+
+
+	<ul class="footernav  ">
+<li class="footernav_footernav_patents">
+			
+	
+	<a href="https://nl.mathworks.com/company/aboutus/policies_statements/trust-center.html?s_tid=gf_tc">
+
+		
+
+		
+			
+			Trust Center</a>
+
+		</li>
+	
+		<li class="footernav_footernav_trademarks">
+			
+	
+	<a href="https://nl.mathworks.com/company/aboutus/policies_statements/trademarks.html?s_tid=gf_trd">
+
+		
+
+		
+			
+			Trademarks</a>
+
+		</li>
+	
+		<li class="footernav_footernav_privacy">
+			
+	
+	<a href="https://nl.mathworks.com/company/aboutus/policies_statements.html?s_tid=gf_priv">
+
+		
+
+		
+			
+			Privacy Policy</a>
+
+		</li>
+	
+		<li class="footernav_footernav_piracy">
+			
+	
+	<a href="https://nl.mathworks.com/company/aboutus/policies_statements/piracy.html?s_tid=gf_pir">
+
+		
+
+		
+			
+			Preventing Piracy</a>
+
+		</li>
+	
+		<li class="footernav_footernav_status">
+			
+	
+	<a href="https://status.mathworks.com/?s_tid=gf_application">
+
+		
+
+		
+			
+			Application Status</a>
+
+		</li>
+	
+		<li class="footernav_footernav_terms">
+			
+	
+	<a href="https://nl.mathworks.com/matlabcentral/content/terms-of-use.html?s_tid=gf_terms">
+
+		
+
+		
+			
+			Terms of Use</a>
+
+		</li>
+	</ul>
+</div>
+</div>
+					
+					<div>
+<div class="footerCompanyAddress footercompanyaddress containsResourceName resourceClass-footercompanyaddress">
+
+
+
+	
+	<div class="cq-placeholder" data-emptytext="Footer Company Address"></div>
+
+</div>
+</div>
+					
+					<div>
+<div class="footerParsys iparsys parsys resourceClass-iparsys containsResourceName">
+<div class="section">
+<div class="new containsResourceName resourceClass-new"></div>
+</div>
+<div class="iparys_inherited">
+<div class="footerParsys iparsys parsys containsResourceName resourceClass-par"></div>
+</div>
+</div>
+</div>
+					
+					<div class="clearfix"></div>
+					<p class="copyright">© 1994-2023 The MathWorks, Inc.</p>
+				</div>
+				<div class="clearfix visible-sm add_margin_10"></div>
+				<div class="col-xs-12 col-md-3">
+					<div>
+<div class="socialMediaIconParsys iparsys parsys resourceClass-iparsys containsResourceName">
+<div class="section">
+<div class="new containsResourceName resourceClass-new"></div>
+</div>
+<div class="iparys_inherited">
+<div class="socialMediaIconParsys iparsys parsys containsResourceName resourceClass-par">
+<div class="socialmediaicon containsResourceName resourceClass-socialmediaicon section">
+
+
+
+
+
+	<div class="social_media  ">
+		<ul class="social_media_icons list-unstyled  ">
+<li>
+				<a href="https://www.facebook.com/MATLAB" class="svg_link" rel="noreferrer" target="_blank">
+					<img class="ico_facebook" alt="Facebook" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-facebook.20230215162333215.svg"></a>
+
+				 
+				
+			</li>
+			
+			<li>
+				<a href="https://twitter.com/MATLAB" class="svg_link" rel="noreferrer" target="_blank">
+					<img class="ico_twitter" alt="Twitter" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-twitter.20230215162333215.svg"></a>
+
+				 
+				
+			</li>
+			
+			<li>
+				<a href="https://www.instagram.com/matlab/" class="svg_link" rel="noreferrer" target="_blank">
+					<img class="ico_instagram" alt="Instagram" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-instagram.20230215162333215.svg"></a>
+
+				 
+				
+			</li>
+			
+			<li>
+				<a href="https://www.youtube.com/user/MATLAB" class="svg_link" rel="noreferrer" target="_blank">
+					<img class="ico_youtube" alt="YouTube" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-youtube.20230215162333215.svg"></a>
+
+				 
+				
+			</li>
+			
+			<li>
+				<a href="https://www.linkedin.com/company/the-mathworks_2" class="svg_link" rel="noreferrer" target="_blank">
+					<img class="ico_linkedin" alt="LinkedIn" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-linkedin.20230215162333215.svg"></a>
+
+				 
+				
+			</li>
+			
+			<li>
+				<a href="https://nl.mathworks.com/company/rss.html" class="svg_link" rel="noreferrer">
+					<img class="ico_rss" alt="RSS" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/ico-rss.20230215162333215.svg"></a>
+
+				 
+				
+			</li>
+			
+			
+		</ul>
+<div class="clearfix"></div>
+	</div>
+
+
+
+</div>
+</div>
+</div>
+</div>
+</div>
+					
+					<div class="clearfix"></div>
+					<p class="pull_right_sm pull_right_md pull_right_lg"><small class="percent_90"><em>Join the conversation</em></small></p>
+				</div>
+			</div>
+			
+		</div>
+
+	</div>
+	<!-- BASIC FAT FOOTER CONTENT - End -->
+</footer><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/domainredirect.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/akamai.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/lodash.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/common.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/condensedrelatedcontent.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/lightslider.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/spellcheck.min.20230215162333215.js.download"></script><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/matlabcentral.min.20230215162333215.js.download"></script><div id="web-application-footer-assets"></div>
+
+		
+			
+    
+<script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/matrixmenu.min.20230215162333215.js.download"></script><script>
+				if (typeof matrix !== 'undefined') {
+					matrix.show({
+						largeId: 'headernav_matrix',
+						smallId: ['matrix_affordance_container_mobile', 'matrix_menu_container_mobile'],
+						env: 'prod',
+						tier: 'DOTCOM',
+						lang: 'en'
+					});
+				}
+			</script><script type="text/javascript" nonce="" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/BmJBQ"></script>
+<script type="text/javascript" nonce="" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/Kn41EBU"></script><script>
+(function() {
+  var host = 'mathworks.com';
+  var element = document.createElement('script');
+  var firstScript = document.getElementsByTagName('script')[0];
+  var url = 'https://cmp.quantcast.com'
+    .concat('/choice/', 'zfNtLVVEHXE-1', '/', host, '/choice.js?tag_version=V2');
+  var uspTries = 0;
+  var uspTriesLimit = 3;
+  element.async = true;
+  element.type = 'text/javascript';
+  element.src = url;
+
+  firstScript.parentNode.insertBefore(element, firstScript);
+
+  function makeStub() {
+    var TCF_LOCATOR_NAME = '__tcfapiLocator';
+    var queue = [];
+    var win = window;
+    var cmpFrame;
+
+    function addFrame() {
+      var doc = win.document;
+      var otherCMP = !!(win.frames[TCF_LOCATOR_NAME]);
+
+      if (!otherCMP) {
+        if (doc.body) {
+          var iframe = doc.createElement('iframe');
+
+          iframe.style.cssText = 'display:none';
+          iframe.name = TCF_LOCATOR_NAME;
+          doc.body.appendChild(iframe);
+        } else {
+          setTimeout(addFrame, 5);
+        }
+      }
+      return !otherCMP;
+    }
+
+    function tcfAPIHandler() {
+      var gdprApplies;
+      var args = arguments;
+
+      if (!args.length) {
+        return queue;
+      } else if (args[0] === 'setGdprApplies') {
+        if (
+          args.length > 3 &&
+          args[2] === 2 &&
+          typeof args[3] === 'boolean'
+        ) {
+          gdprApplies = args[3];
+          if (typeof args[2] === 'function') {
+            args[2]('set', true);
+          }
+        }
+      } else if (args[0] === 'ping') {
+        var retr = {
+          gdprApplies: gdprApplies,
+          cmpLoaded: false,
+          cmpStatus: 'stub'
+        };
+
+        if (typeof args[2] === 'function') {
+          args[2](retr);
+        }
+      } else {
+        if(args[0] === 'init' && typeof args[3] === 'object') {
+          args[3] = Object.assign(args[3], { tag_version: 'V2' });
+        }
+        queue.push(args);
+      }
+    }
+
+    function postMessageEventHandler(event) {
+      var msgIsString = typeof event.data === 'string';
+      var json = {};
+
+      try {
+        if (msgIsString) {
+          json = JSON.parse(event.data);
+        } else {
+          json = event.data;
+        }
+      } catch (ignore) {}
+
+      var payload = json.__tcfapiCall;
+
+      if (payload) {
+        window.__tcfapi(
+          payload.command,
+          payload.version,
+          function(retValue, success) {
+            var returnMsg = {
+              __tcfapiReturn: {
+                returnValue: retValue,
+                success: success,
+                callId: payload.callId
+              }
+            };
+            if (msgIsString) {
+              returnMsg = JSON.stringify(returnMsg);
+            }
+            if (event && event.source && event.source.postMessage) {
+              event.source.postMessage(returnMsg, '*');
+            }
+          },
+          payload.parameter
+        );
+      }
+    }
+
+    while (win) {
+      try {
+        if (win.frames[TCF_LOCATOR_NAME]) {
+          cmpFrame = win;
+          break;
+        }
+      } catch (ignore) {}
+
+      if (win === window.top) {
+        break;
+      }
+      win = win.parent;
+    }
+    if (!cmpFrame) {
+      addFrame();
+      win.__tcfapi = tcfAPIHandler;
+      win.addEventListener('message', postMessageEventHandler, false);
+    }
+  }
+
+  makeStub();
+
+  var uspStubFunction = function() {
+    var arg = arguments;
+    if (typeof window.__uspapi !== uspStubFunction) {
+      setTimeout(function() {
+        if (typeof window.__uspapi !== 'undefined') {
+          window.__uspapi.apply(window.__uspapi, arg);
+        }
+      }, 500);
+    }
+  };
+
+  var checkIfUspIsReady = function() {
+    uspTries++;
+    if (window.__uspapi === uspStubFunction && uspTries < uspTriesLimit) {
+      console.warn('USP is not accessible');
+    } else {
+      clearInterval(uspInterval);
+    }
+  };
+
+  if (typeof window.__uspapi === 'undefined') {
+    window.__uspapi = uspStubFunction;
+    var uspInterval = setInterval(checkIfUspIsReady, 6000);
+  }
+})();
+
+//API call and event listener callback 
+__tcfapi('addEventListener', 2, function (tcData, success) {
+    var server = window.location.hostname;
+    var google = false;
+    var facebook = false;
+    var quantcast = false;
+    var twitter = false;
+    var twitterJapan = false;
+    var adCloud = false;
+    var linkedIn = false;
+    var yahoo = false;
+    var across = false;
+    var baidu = false;
+    var weChat = false;
+    var researchGate = false;
+    var terminus = false;
+    var fancyDigital = false;
+    var quora = false;
+    var appcast = false;
+    var consentResult = false;
+    var liResult = false;
+
+    //set services by domain
+    if (server.indexOf('ww2-') == -1 && server.indexOf('ww2.') == -1) {
+        google = true;
+        facebook = true;
+        adCloud = true;
+        terminus = true;
+    }
+    if (server.indexOf('ww2-') == -1 && server.indexOf('ww2.') == -1 && server.indexOf('in-') == -1 && server.indexOf('in.') == -1) {
+        quantcast = true;
+    }
+
+    if (server.indexOf('ww2-') == -1 && server.indexOf('ww2.') == -1 && server.indexOf('kr-') == -1 && server.indexOf('kr.') && server.indexOf('jp-') == -1 && server.indexOf('jp.') == -1) {
+        twitter = true;
+        linkedIn = true;
+    }
+
+    if (server.indexOf('matlabacademy-') > -1 || server.indexOf('matlabacademy.') > -1) {
+        quora = true;
+    }
+    if (server.indexOf('www-test') > -1 || server.indexOf('www-stage') > -1 || server.indexOf('www-integ') > -1 || server.indexOf('www.') > -1) {
+        quora = true;
+        appcast = true;
+    }
+    if (server.indexOf('jp-test') > -1 || server.indexOf('jp-stage') > -1 || server.indexOf('jp-integ') > -1 || server.indexOf('jp.') > -1) {
+        yahoo = true;
+        twitterJapan = true;
+    }
+    if (server.indexOf('ww2-test') > -1 || server.indexOf('ww2-stage') > -1 || server.indexOf('ww2-integ') > -1 || server.indexOf('ww2.') > -1) {
+        baidu = true;
+        weChat = true;
+        fancyDigital = true;
+    }
+    if (server.indexOf('kr-test') > -1 || server.indexOf('kr-stage') > -1 || server.indexOf('kr-integ') > -1 || server.indexOf('kr.') > -1) {
+        across = true;
+    }
+
+    //determine if CMP loaded,what consent status is,call scripts 
+    if (success) {
+        if (tcData.gdprApplies) {
+            if (tcData.eventStatus === 'tcloaded') {
+                if ('1' in tcData.purpose.consents && tcData.purpose.consents[10] === true) {
+                    for (i = 1; i < 6; i++) {
+                        if (tcData.purpose.consents[i] === false) {
+                            consentResult = false;
+                            break;
+                        } else {
+                            consentResult = true;
+                        }
+                    }
+                }
+
+                if ('1' in tcData.purpose.legitimateInterests && tcData.purpose.legitimateInterests[2] && tcData.purpose.legitimateInterests[5] && tcData.purpose.legitimateInterests[10]) {
+                    liResult = 'true';
+                }
+                //fire scripts here
+                if ((consentResult) && (liResult)) { localStorage.setItem('cmpConsent', 'true'); }
+                if ((consentResult) && (liResult) && (google)) { _satellite.track('googleBase'); }
+                if ((consentResult) && (liResult) && (facebook)) { _satellite.track('facebookBase'); }
+                if ((consentResult) && (liResult) && (quantcast)) { _satellite.track('quantcastBase'); }
+                if ((consentResult) && (liResult) && (adCloud)) { _satellite.track('adCloudBase'); }
+                if ((consentResult) && (liResult) && (twitter)) { _satellite.track('twitterBase'); }
+                if ((consentResult) && (liResult) && (researchGate)) { _satellite.track('researchGateBase'); }
+                if ((consentResult) && (liResult) && (terminus)) { _satellite.track('terminusBase'); }
+                if ((consentResult) && (liResult) && (linkedIn)) { _satellite.track('linkedInBase'); }
+                if ((consentResult) && (liResult) && (twitterJapan)) { _satellite.track('twitterBaseJapan'); }
+                if ((consentResult) && (liResult) && (yahoo)) { _satellite.track('yahooBase'); }
+                if ((consentResult) && (liResult) && (across)) { _satellite.track('acrossBase'); }
+                if ((consentResult) && (liResult) && (baidu)) { _satellite.track('baiduBase'); }
+                if ((consentResult) && (liResult) && (weChat)) { _satellite.track('weChatBase'); }
+                if ((consentResult) && (liResult) && (fancyDigital)) { _satellite.track('fancyDigitalBase'); }
+                if ((consentResult) && (liResult) && (quora)) { _satellite.track('quoraBase'); }
+                if ((consentResult) && (liResult) && (appcast)) { _satellite.track('appcastBase'); }
+
+            } else if (tcData.eventStatus === 'useractioncomplete') {
+                if ('1' in tcData.purpose.consents && tcData.purpose.consents[10] === true) {
+                    for (i = 1; i < 6; i++) {
+                        if (tcData.purpose.consents[i] === false) {
+                            consentResult = false;
+                            break;
+                        } else {
+                            consentResult = true;
+                        }
+                    }
+                }
+
+                if ('1' in tcData.purpose.legitimateInterests && tcData.purpose.legitimateInterests[2] && tcData.purpose.legitimateInterests[5] && tcData.purpose.legitimateInterests[10]) {
+                    liResult = 'true';
+                }
+                //fire scripts here
+                if ((consentResult) && (liResult)) { localStorage.setItem('cmpConsent', 'true'); }
+                if ((consentResult) && (liResult) && (google)) { _satellite.track('googleBase'); }
+                if ((consentResult) && (liResult) && (facebook)) { _satellite.track('facebookBase'); }
+                if ((consentResult) && (liResult) && (quantcast)) { _satellite.track('quantcastBase'); }
+                if ((consentResult) && (liResult) && (adCloud)) { _satellite.track('adCloudBase'); }
+                if ((consentResult) && (liResult) && (twitter)) { _satellite.track('twitterBase'); }
+                if ((consentResult) && (liResult) && (researchGate)) { _satellite.track('researchGateBase'); }
+                if ((consentResult) && (liResult) && (terminus)) { _satellite.track('terminusBase'); }
+                if ((consentResult) && (liResult) && (twitterJapan)) { _satellite.track('twitterBaseJapan'); }
+                if ((consentResult) && (liResult) && (linkedIn)) { _satellite.track('linkedInBase'); }
+                if ((consentResult) && (liResult) && (yahoo)) { _satellite.track('yahooBase'); }
+                if ((consentResult) && (liResult) && (across)) { _satellite.track('acrossBase'); }
+                if ((consentResult) && (liResult) && (baidu)) { _satellite.track('baiduBase'); }
+                if ((consentResult) && (liResult) && (weChat)) { _satellite.track('weChatBase'); }
+                if ((consentResult) && (liResult) && (fancyDigital)) { _satellite.track('fancyDigitalBase'); }
+                if ((consentResult) && (liResult) && (quora)) { _satellite.track('quoraBase'); }
+                if ((consentResult) && (liResult) && (appcast)) { _satellite.track('appcastBase'); }
+                
+            } else {
+                // print a debug error message to the console
+            }
+        } else { /* gdpr does not apply */
+            // Most likely you want to make the ad request in this case 
+            localStorage.setItem('cmpConsent', 'true');
+            if (google) { _satellite.track('googleBase'); }
+            if (facebook) { _satellite.track('facebookBase'); }
+            if (quantcast) { _satellite.track('quantcastBase'); }
+            if (adCloud) { _satellite.track('adCloudBase'); }
+            if (twitter) { _satellite.track('twitterBase'); }
+            if (researchGate) { _satellite.track('researchGateBase'); }
+            if (terminus) { _satellite.track('terminusBase'); }
+            if (twitterJapan) { _satellite.track('twitterBaseJapan'); }
+            if (linkedIn) { _satellite.track('linkedInBase'); }
+            if (yahoo) { _satellite.track('yahooBase'); }
+            if (across) { _satellite.track('acrossBase'); }
+            if (baidu) { _satellite.track('baiduBase'); }
+            if (weChat) { _satellite.track('weChatBase'); }
+            if (fancyDigital) { _satellite.track('fancyDigitalBase'); }
+            if (quora) { _satellite.track('quoraBase'); }
+            if ((appcast)) { _satellite.track('appcastBase'); }
+        }
+    }
+})
+</script><iframe name="__tcfapiLocator" style="display: none;" src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/saved_resource(2).html"></iframe><script>
+var _elqQ = _elqQ || [];
+_elqQ.push(["elqSetSiteId", "646005169"]), _elqQ.push(["elqUseFirstPartyCookie", "tracking.mathworks.com"]), _elqQ.push(["elqTrackPageView", window.location.href]),
+  function() {
+    function e() {
+      var e = document.createElement("script");
+      e.type = "text/javascript", e.async = !0, e.src = "//img03.en25.com/i/elqCfg.min.js";
+      var t = document.getElementsByTagName("script")[0];
+      t.parentNode.insertBefore(e, t)
+    }
+    e()
+  }();
+</script>
+
+<a class="btn btn_color_mediumgray" id="go-top" tabindex="0"><span class="sr-only">Go to top of page</span><span class="icon-arrow-open-up icon_24"></span></a><script src="./ABD Matrix of Composite laminate Theory - File Exchange - MATLAB Central_files/enterprise.js.download" async=""></script><ul class="ui-autocomplete ui-front ui-menu ui-widget ui-widget-content" id="ui-id-1" tabindex="0" style="display: none;"></ul><span role="status" aria-live="assertive" aria-relevant="additions" class="ui-helper-hidden-accessible"></span><script>_satellite["_runScript1"](function(event, target, Promise) {
+_satellite.cookie.set("_sdsat_eid",_satellite.getVar('eid'),1);
+});</script></body></html>

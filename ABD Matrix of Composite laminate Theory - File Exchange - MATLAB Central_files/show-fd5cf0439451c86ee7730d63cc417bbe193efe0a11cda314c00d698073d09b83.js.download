@@ -1,0 +1,224 @@
+const DiscussionsService = function (addOnUuid, elementId, groupId, anchor, addOnUrl, loginUrl) {
+    this._addOnUuid = addOnUuid;
+    this._elementId = elementId;
+    this._groupId = groupId;
+    this._anchor = anchor;
+    this._addOnUrl = addOnUrl;
+    this._loginUrl = loginUrl;
+
+    this._discussionComponent = new DiscussionsFrame({
+        div_id: elementId,
+        ref_id: addOnUuid,
+        group_id: groupId,
+        sticky_header_height: 50,
+        anchor: anchor,
+        debug: false,
+        base_url: addOnUrl,
+        callbacks: {
+          onUrl: null,
+          onLogin: this._loginCallback.bind(this),
+          onReply: this._replyCallback.bind(this)
+        }
+      })
+};
+
+DiscussionsService.prototype.load = function () {
+    this._discussionComponent.initComments();
+};
+
+DiscussionsService.prototype._loginCallback = function () {
+    window.location = this._loginUrl;
+};
+
+DiscussionsService.prototype._replyCallback = function (data) {
+    let topicReplyCount = data.topic_reply_count;
+    if (typeof topicReplyCount !== 'undefined') {
+        let counterElements = document.querySelectorAll('[data-counter-id =' + this._anchor + ']');
+        for (let i = 0; i < counterElements.length; i++) {
+            counterElements[i].innerHTML = `(${topicReplyCount})`;
+        }
+    }
+};
+function createOptions() {
+    var options = {};
+
+    options.targetElementClassName = "relatedContentSpotlight";
+    options.cacheRequests = JSON.parse(true);
+    options.async = JSON.parse(true);
+    options.debug = JSON.parse(false);
+    options.heading = '';
+    options.showHeading = JSON.parse(false);
+    options.maxTitleLength = 128;
+    options.maxDescriptionLength = 72;
+    options.maxSummaryLength = 50;
+    options.collections = "entire_site";
+    options.fields = ["thumbnail", "title_en","url","call_to_action"];
+    options.rows = 1;
+    options.startAt = 1;
+    options.serviceUrl = "/searchresults/condensed/related/content/en/v1";
+    options.unHideIds = ["staticSpotlight"];
+    options.text = document.getElementById(options.targetElementClassName).getAttribute("addonTitle") + " " +
+                    document.getElementById(options.targetElementClassName).getAttribute("addonSummary") + " " +
+                    document.getElementById(options.targetElementClassName).getAttribute("addonTags");
+
+    options.filters = ["(subcollection:offers)"];
+
+    options.itemTemplate = "<div class=\"panel panel-default add_cursor_pointer\" onclick=\"location.href='{{url}}';\">"+
+                            "<div class=\"panel-heading add_padding_0\"><img class=\"fluid_image\" src=\"{{thumbnail}}\" title=\"{{title_en}}\" alt=\"{{title_en}}\"></div>"+
+                            "<div class=\"panel-body\">"+
+                            "<h3>{{title_en}}</h3>"+
+                            "<p><a href=\"{{url}}\" class=\"icon-chevron\">{{call_to_action}}</a></p>"+
+                            "</div>"+
+                            "</div>";
+
+    options.tracking = callbackFunctionForTrackingCode;
+
+    function callbackFunctionForTrackingCode(url) {
+        var addonPath = document.getElementById(options.targetElementClassName).getAttribute("addonPath");
+        var regex = /(?!.*\/).+(?=\.)/;
+        var match = regex.exec(url);
+        var trackingCode = "s_iid=" + ["fx_" + addonPath + "_rcspot"]
+
+        if (url.indexOf("?") > -1) {
+            return url + "&" + trackingCode;
+        } else {
+            return url + "?" + trackingCode;
+        }
+    }
+
+    mwCondensedRelatedContentLib.init(options);
+}
+
+
+jQuery(document).ready(function(){
+    createOptions();
+});
+const FollowService = function(container) {
+    this._callbacks = {}
+    this._container = container;
+    this._fileExchangeId = container.getAttribute("data-fileexchange-id");
+}
+
+// Partial implementation of the standard EventTarget method
+FollowService.prototype.addEventListener = function(type, listener) {
+    this._callbacks[type] = listener;
+}
+
+// Set the initial follow/unfollow button
+FollowService.prototype.load = function() {
+    let onSuccess = function(responseData) {
+        this.updateFormHtml(responseData.form);
+
+        if (this._callbacks["load"]) {
+            this._callbacks["load"]({ data: { isFollowing: responseData.following } });
+        }
+    };
+
+    $.ajax({
+        url: window.location.origin + "/matlabcentral/fileexchange/" + this._fileExchangeId + "/follow",
+        type: "GET",
+        dataType: "json",
+        success: onSuccess.bind(this)
+    });
+}
+
+FollowService.prototype.update = function() {
+    let onSuccess = function(responseData) {
+        this.updateFormHtml(responseData.form);
+
+        if (responseData.following === true) {
+            document.getElementById("followSuccess").classList.remove("hidden");
+        } else {
+            document.getElementById("followSuccess").classList.add("hidden");
+        }
+    };
+
+    let form = this._container.querySelector("form");
+    let url = form.getAttribute("action");
+    let method = form.querySelector("input[name=_method]");
+
+    let requestData = { file_exchange_id: this._fileExchangeId }
+
+    if (method) {
+        requestData._method = method.value;
+    }
+
+    $.ajax({
+        url: url,
+        type: "POST",
+        dataType: "json",
+        data: requestData,
+        success: onSuccess.bind(this)
+    });
+}
+
+FollowService.prototype.updateFormHtml = function(html) {
+    this._container.innerHTML = html;
+
+    let form = this._container.querySelector("form");
+
+    let onSubmit = function(event) {
+        event.preventDefault();
+        this.update();
+    };
+
+    form.addEventListener("submit", onSubmit.bind(this));
+}
+;
+$(function () {
+    $("#matlab_fileexchange_badge_copy").on("click", function() {
+        var btn = $(this);
+        var content = $("#copy_markdown_content");
+        // focus, select & copy the selected element to clipboard
+        content.focus();
+        content.select();
+        document.execCommand("copy");
+        content.blur();
+        window.getSelection().removeAllRanges();
+
+        // show the popover
+        btn.popover('show');
+
+        setTimeout(function(){
+          btn.popover("hide");
+        }, 2000);
+    });
+});
+$(function () {
+  var trackDownloads = function (loggedIn) {
+    if(loggedIn) {
+      //Digital Data Events tracking
+      if (typeof(digitalData) !== 'undefined' && digitalData &&
+          typeof(_satellite) !== 'undefined' && _satellite) {
+        digitalData.events = [];
+        eventHolder = {
+          "eventInfo": {
+            "eventName": "fxFileDownload",
+            "eventAction": "fileDownload",
+            "eventId": Math.round(Math.random() * 10000000000)
+          }
+        }
+        digitalData.events.push(eventHolder);
+        _satellite.track("mlcEvents");
+      }
+    }
+  };
+  var downloadURL = function(url) {
+    window.open(url, '_blank');
+  };
+  var download = function (url, loggedIn, event) {
+    trackDownloads(loggedIn);
+    if(loggedIn) {
+      event.preventDefault();
+      downloadURL(url);
+    }
+  };
+  $('a.link--download').click(function (event) {
+    download(this.href, !$(this).data('logintodownload'), event);
+  });
+});
+
+
+
+
+

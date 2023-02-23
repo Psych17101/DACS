@@ -1,0 +1,538 @@
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+	isRewritten: function (segments) {
+		return segments[3] !== 'content';
+	},
+	isExemptUrl: function (url) {
+		if (this.getDomain(url) === 'blueprint') {
+			return true;
+		}
+		const exemptions = [
+			'/services/training/schedule_enroll.html',
+			'/company/aboutus/directions.html',
+			'/programs/nrd',
+			'/programs/usrp',
+			'/company/events/seminars/intl_reg_form.html',
+			'/googlee8a9c0de75ed5e40.html',
+			'/mwaccount/profiles/identity/',
+			'/mwaccount/profiles/incomplete',
+			'/mwaccount/profiles/reverify',
+			'/mwaccount/profiles/reverify/email',
+			'/mwaccount/profiles/verify',
+			'/mwaccount/profiles/verify/existing',
+			'/login',
+			'/login/association/tah/existing',
+			'/login/verification/tah/new',
+			'/login/verification/tah/reverify'
+		];
+		return exemptions.some(function (exemption) {
+			return url.includes(exemption);
+		});
+	},
+	getDomain: function (url) {
+		let domain;
+		const segments = url.split('/');
+		if (this.isRewritten(segments)) {
+			domain = segments[2];
+		} else {
+			domain = segments[5];
+		}
+		return domain;
+	},
+	getSubdomain: function (domain) {
+		let match = /^([a-z0-9]{2,3})\./.exec(domain);
+		if (match) {
+			return match[1];
+		}
+		match = /^(aem-)?([a-z0-9]{2,3})-/.exec(domain);
+		if (match) {
+			return match[2];
+		}
+		match = /^([a-z0-9]{2,})$/.exec(domain);
+		if (match) {
+			return match[1];
+		}
+		throw 'cannot determine subdomain for domain ' + domain;
+	},
+	getLang: function (url) {
+		let lang;
+		const segments = url.split('/');
+		if (this.isRewritten(segments)) {
+			if (segments[3] && segments[3].match(/^[a-z][a-z]$/)) {
+				lang = segments[3];
+			} else if (this.getSubdomain(segments[2]) === 'ch') {
+				lang = 'en';
+			} else if (this.getSubdomain(segments[2]) === 'ww2') {
+				lang = 'zh';
+			} else {
+				lang = '';
+			}
+		} else {
+			lang = segments[6].substr(0, 2);
+		}
+		return lang;
+	},
+	rewriteUrl: function (url, domain, lang) {
+		const segments = url.split('/');
+		if (segments[3] === 'content') {
+			segments[5] = domain;
+			segments[6] = lang;
+		} else {
+			segments[2] = domain;
+			if (segments[3] && segments[3].match(/^[a-z][a-z]$/)) {
+				if ((lang === 'en' && domain.startsWith('ch')) || (lang === 'zh' && domain.endsWith('mathworks.cn'))) {
+					segments.splice(3, 1);
+				} else {
+					segments[3] = lang;
+				}
+			} else if (lang && !(lang === 'en' && domain.startsWith('ch')) && !(lang === 'zh' && domain.endsWith('mathworks.cn'))) {
+				segments.splice(3, 0, lang);
+			}
+		}
+		return segments.join('/');
+	},
+	setCookie: function (domain, lang) {
+		let domainCookie = 'mathworks.com';
+		const sameSiteValue = 'Lax';
+		if (location.host.endsWith('mathworks.cn')) {
+			domainCookie = 'mathworks.cn';
+		}
+
+		let selectedSubdomain = this.getSubdomain(domain);
+		if (domain.endsWith('mathworks.cn')) {
+			selectedSubdomain = 'cn';
+		}
+
+		if (selectedSubdomain === 'www') {
+			// This is what ePS did in EQUUS and Ruby, so...
+			// we're just following suit.
+			selectedSubdomain = 'us';
+		}
+		if (selectedSubdomain !== 'cn' && selectedSubdomain !== 'ch') {
+			lang = '';
+		}
+		const cookieNames = this.getCookieNames(domain);
+		const expires = new Date();
+		expires.setFullYear(expires.getFullYear() + 68);
+
+		document.cookie = [
+			cookieNames.mwaPrefsCookieName, '=', encodeURIComponent(JSON.stringify({
+				domain: selectedSubdomain,
+				lang: lang,
+				v: 2
+			})),
+			'; expires=', expires.toUTCString(),
+			'; path=/',
+			'; domain=', domainCookie,
+			'; sameSite=', sameSiteValue,
+			'; secure'
+		].join('');
+	},
+	logoutMWA: function (domain) {
+		let domainCookie = 'mathworks.com';
+		if (location.host.endsWith('mathworks.cn')) {
+			domainCookie = 'mathworks.cn';
+		}
+
+		const cookieNames = this.getCookieNames(domain);
+		document.cookie = cookieNames.mwaLoginCookieName + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;path=/;domain=' + domainCookie + ';';
+	},
+	getSubdomainSuffix: function (domain) {
+		let subdomainSuffix;
+		const subdomainParts = domain.split('.')[0].split('-');
+		if (subdomainParts.length > 1) {
+			subdomainSuffix = subdomainParts[subdomainParts.length - 1];
+		}
+		return subdomainSuffix;
+	},
+	getCookieNames: function (domain) {
+		let mwaLoginCookieName = 'mwa';
+		let mwaPrefsCookieName = 'mwa_prefs';
+		const subdomainSuffix = this.getSubdomainSuffix(domain);
+		if (subdomainSuffix) {
+			mwaLoginCookieName = mwaLoginCookieName + '_' + subdomainSuffix;
+			mwaPrefsCookieName = mwaPrefsCookieName + '_' + subdomainSuffix;
+		}
+		return {
+			mwaLoginCookieName: mwaLoginCookieName,
+			mwaPrefsCookieName: mwaPrefsCookieName
+		};
+	},
+	switchDomain: function (targetDomain, targetLang) {
+		let targetUri = location.pathname;
+		// have to remove lang from uri if it's there
+		// Consider use case of being on ch.mathworks.com/de/products.html
+		// and then using domain selector to switch to Australia
+		if (targetUri.match(/^\/[a-z]{2}\//)) {
+			targetUri = targetUri.substring(3);
+		} else if (targetUri.match(/^\/[a-z]{2}\.html/)) {
+			targetUri = '/';
+		}
+		targetLang = this.getValidLang(this.getSubdomain(targetDomain), targetLang);
+
+		let url = '//' + targetDomain;
+		if (targetLang && !this.isDefaultLang(this.getSubdomain(targetDomain), targetLang) && !document.body.classList.contains('templateservice')) {
+			url += '/' + targetLang;
+		}
+		url += targetUri + location.search;
+		url = url.replace(/requestedDomain=[a-z]?[a-z]?&?/, '');
+		url = url.replace(/\&$/, '');
+		url = url.replace(/\?$/, '');
+		let requestedDomainParam = 'requestedDomain=' + targetLang;
+		if (url.indexOf('?') > -1) {
+			url = url + '&' + requestedDomainParam;
+		}  else {
+			url = url + '?' + requestedDomainParam;
+		}
+
+		window.location = url;
+	},
+	getPrefCookie: function (currentDomain) {
+		const cookieNames = this.getCookieNames(currentDomain);
+		// regex from: https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie
+		const cookieRegex = new RegExp('(?:(?:^|.*;\\s*)' + cookieNames.mwaPrefsCookieName + '\\s*\\=\\s*([^;]*).*$)|^.*$');
+		if (document.cookie) {
+			const cookieValue = document.cookie.replace(cookieRegex, '$1');
+			if (cookieValue) {
+				return JSON.parse(decodeURIComponent(cookieValue));
+			}
+		}
+		return '';
+	},
+	getPrefDomain: function (currentDomain) {
+		const mwaPrefsCookieJsonObject = this.getPrefCookie(currentDomain);
+		let visitorPrefDomain;
+
+		if (!!mwaPrefsCookieJsonObject) {
+			visitorPrefDomain = mwaPrefsCookieJsonObject.domain;
+			if (visitorPrefDomain === 'us') {
+				// This is what ePS did in EQUUS and Ruby, so...
+				// we're just following suit.
+				visitorPrefDomain = 'www';
+			}
+			// build the visitorPrefDomain while accounting for non-production
+			const subdomainSuffix = this.getSubdomainSuffix(currentDomain);
+			if (visitorPrefDomain !== 'cn') {
+				if (subdomainSuffix) {
+					visitorPrefDomain = visitorPrefDomain + '-' + subdomainSuffix;
+				}
+				visitorPrefDomain = visitorPrefDomain + '.mathworks.com';
+			} else {
+				visitorPrefDomain = 'ww2';
+				if (subdomainSuffix) {
+					visitorPrefDomain = visitorPrefDomain + '-' + subdomainSuffix;
+				}
+				visitorPrefDomain = visitorPrefDomain + '.mathworks.cn';
+			}
+		}
+		return visitorPrefDomain;
+	},
+	getPrefLang: function (currentDomain) {
+		const mwaPrefsCookieJsonObject = this.getPrefCookie(currentDomain);
+		return this.getValidLang(mwaPrefsCookieJsonObject.domain, mwaPrefsCookieJsonObject.lang);
+	},
+	getCookieVersion: function (currentDomain) {
+		const mwaPrefsCookieJsonObject = this.getPrefCookie(currentDomain);
+		return mwaPrefsCookieJsonObject.v;
+	},
+	getValidLang: function (subdomain, lang) {
+		let multilingualDomainLanguageSupport = {};
+		multilingualDomainLanguageSupport['ch'] = ['en','de','fr'];
+		multilingualDomainLanguageSupport['cn'] = ['zh','en'];
+		multilingualDomainLanguageSupport['ww2'] = ['zh','en'];
+
+		const currentDomainLangOptions = multilingualDomainLanguageSupport[subdomain];
+		if (currentDomainLangOptions) {
+			if (currentDomainLangOptions.indexOf(lang) >= 0) {
+				return lang;
+			} else {
+				return currentDomainLangOptions[0];
+			}
+		}
+		return '';
+	},
+	isDefaultLang: function (subdomain, lang) {
+		let multilingualDomainLanguageDefault = {};
+		multilingualDomainLanguageDefault['ch'] = 'en';
+		multilingualDomainLanguageDefault['cn'] = 'zh';
+		multilingualDomainLanguageDefault['ww2'] = 'zh';
+
+		const currentDomainLang = multilingualDomainLanguageDefault[subdomain];
+		if (currentDomainLang) {
+			return currentDomainLang === lang;
+		} else if (lang) {
+			return false;
+		}
+		return true;
+	}
+};
+
+},{}],2:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+	US: {name: 'United States', subdomain: 'www'},
+	AD: {name: 'Andorra', subdomain: 'es'},
+	AR: {name: 'Argentina', subdomain: 'la'},
+	AU: {name: 'Australia', subdomain: 'au'},
+	AT: {name: 'Austria', subdomain: 'de'},
+	BE: {name: 'Belgium', subdomain: 'nl'},
+	BO: {name: 'Bolivia', subdomain: 'la'},
+	BV: {name: 'Bouvet Islands', subdomain: 'se'},
+	CA: {name: 'Canada', subdomain: 'www'},
+	CL: {name: 'Chile', subdomain: 'la'},
+	CN: {name: 'China', subdomain: 'ww2'},
+	CX: {name: 'Christmas Island', subdomain: 'au'},
+	CC: {name: 'Cocos-Keeling Islands', subdomain: 'au'},
+	CO: {name: 'Colombia', subdomain: 'la'},
+	CR: {name: 'Costa Rica', subdomain: 'la'},
+	DK: {name: 'Denmark', subdomain: 'se'},
+	DO: {name: 'Dominican Republic', subdomain: 'la'},
+	EC: {name: 'Ecuador', subdomain: 'la'},
+	SV: {name: 'El Salvador', subdomain: 'la'},
+	EE: {name: 'Estonia', subdomain: 'se'},
+	FO: {name: 'Faroe Islands', subdomain: 'se'},
+	FJ: {name: 'Fiji', subdomain: 'au'},
+	FI: {name: 'Finland', subdomain: 'se'},
+	FR: {name: 'France', subdomain: 'fr'},
+	GF: {name: 'French Guiana', subdomain: 'fr'},
+	PF: {name: 'French Polynesia', subdomain: 'fr'},
+	DE: {name: 'Germany', subdomain: 'de'},
+	GL: {name: 'Greenland', subdomain: 'se'},
+	GP: {name: 'Guadalupe', subdomain: 'fr'},
+	GT: {name: 'Guatemala', subdomain: 'la'},
+	HK: {name: 'Hong Kong', subdomain: 'ww2'},
+	HN: {name: 'Honduras', subdomain: 'la'},
+	IS: {name: 'Iceland', subdomain: 'se'},
+	IN: {name: 'India', subdomain: 'in'},
+	IE: {name: 'Ireland', subdomain: 'uk'},
+	IT: {name: 'Italy', subdomain: 'it'},
+	JP: {name: 'Japan', subdomain: 'jp'},
+	KR: {name: 'Korea', subdomain: 'kr'},
+	LV: {name: 'Latvia', subdomain: 'se'},
+	LI: {name: 'Liechtenstein', subdomain: 'ch'},
+	LT: {name: 'Lithuania', subdomain: 'se'},
+	LU: {name: 'Luxembourg', subdomain: 'nl'},
+	MO: {name: 'Macau', subdomain: 'ww2'},
+	MQ: {name: 'Martinique', subdomain: 'fr'},
+	YT: {name: 'Mayotte Island', subdomain: 'fr'},
+	MX: {name: 'Mexico', subdomain: 'la'},
+	MC: {name: 'Monaco', subdomain: 'fr'},
+	NL: {name: 'Netherlands', subdomain: 'nl'},
+	NC: {name: 'New Caledonia', subdomain: 'fr'},
+	NZ: {name: 'New Zealand', subdomain: 'au'},
+	NI: {name: 'Nicaragua', subdomain: 'la'},
+	NO: {name: 'Norway', subdomain: 'se'},
+	PA: {name: 'Panama', subdomain: 'la'},
+	PG: {name: 'Papua New Guinea', subdomain: 'au'},
+	PY: {name: 'Paraguay', subdomain: 'la'},
+	PE: {name: 'Peru', subdomain: 'la'},
+	PT: {name: 'Portugal', subdomain: 'www'},
+	PR: {name: 'Puerto Rico', subdomain: 'la'},
+	RE: {name: 'Reunion Island', subdomain: 'fr'},
+	ES: {name: 'Spain', subdomain: 'es'},
+	LK: {name: 'Sri Lanka', subdomain: 'in'},
+	SE: {name: 'Sweden', subdomain: 'se'},
+	CH: {name: 'Switzerland', subdomain: 'ch'},
+	GB: {name: 'United Kingdom', subdomain: 'uk'},
+	UY: {name: 'Uruguay', subdomain: 'la'},
+	VA: {name: 'Vatican City', subdomain: 'it'},
+	VE: {name: 'Venezuela', subdomain: 'la'},
+};
+
+
+
+},{}],3:[function(require,module,exports){
+'use strict';
+
+const domainUtils = require('../domainRedirect/utils.js'),
+	countrySubdomains = require('./countrySubdomains.js');
+
+let recommendedSubdomain,
+	recommendedLink;
+
+const View = {
+	init: function () {
+		const view = this,
+			currentUrl = window.location.href,
+			currentDomain = domainUtils.getDomain(currentUrl),
+			currentSubdomain = domainUtils.getSubdomain(currentDomain),
+			currentUrlLang = domainUtils.getLang(currentUrl),
+			visitorPrefDomain = domainUtils.getPrefDomain(currentDomain),
+			visitorPrefLang = domainUtils.getPrefLang(currentDomain),
+			visitorSubdomain = domainUtils.getSubdomain(visitorPrefDomain),
+			akamaiCountryCode = window.MathWorksCountryCode;
+
+		view.setCookieAndSwitchDomain();
+		view.setCountrySelectorButtonText(visitorPrefLang, visitorSubdomain, currentUrlLang, currentSubdomain);
+		view.setRecommendedLink(akamaiCountryCode, visitorPrefDomain, visitorPrefLang);
+		view.showChinaPerformanceAlert(akamaiCountryCode);
+		view.checkVisitorPrefDomain(visitorPrefDomain, akamaiCountryCode, currentDomain, visitorPrefLang, currentSubdomain, currentUrlLang, currentUrl);
+	},
+	setCookieAndSwitchDomain: function () {
+		document.querySelectorAll('a.domain_selector_link').forEach(item => {
+			item.addEventListener('click', (e) => {
+				e.preventDefault();
+				const selectedDomain = domainUtils.getDomain(item.href),
+					selectedLang = item.dataset.lang;
+
+				domainUtils.setCookie(selectedDomain, selectedLang);
+				domainUtils.switchDomain(selectedDomain, selectedLang);
+			});
+		});
+	},
+	setCountrySelectorButtonText: function (visitorPrefLang, visitorSubdomain, currentUrlLang, currentSubdomain) {
+		let currentCountryText;
+		if (visitorPrefLang) {
+			currentCountryText =
+				document.querySelector('a[data-subdomain=\'' + visitorSubdomain + '\'][data-lang=\'' + visitorPrefLang + '\'][data-selected-text]')?.dataset.selectedText;
+		} else if (currentUrlLang) {
+			currentCountryText =
+				document.querySelector('a[data-subdomain=\'' + currentSubdomain + '\'][data-lang=\'' + currentUrlLang + '\'][data-selected-text]')?.dataset.selectedText;
+		} else {
+			currentCountryText =
+				document.querySelector('a[data-subdomain=\'' + currentSubdomain + '\'][data-default-lang=\'true\'][data-selected-text]')?.dataset.selectedText;
+		}
+
+		if(document.querySelector('#countrySelectorButtonText') && currentCountryText) {
+			document.querySelector('#countrySelectorButtonText').textContent = currentCountryText;
+		}
+	},
+	setRecommendedLink: function (akamaiCountryCode, visitorPrefDomain, visitorPrefLang) {
+		const view = this;
+		if (akamaiCountryCode) {
+			if (countrySubdomains[akamaiCountryCode] !== undefined) {
+				recommendedSubdomain = countrySubdomains[akamaiCountryCode].subdomain;
+			} else {
+				recommendedSubdomain = 'www';
+			}
+			recommendedLink = document.querySelector('a[data-subdomain=\'' + recommendedSubdomain + '\'][data-recommended-text]');
+		} else if (visitorPrefDomain) {
+			recommendedSubdomain = domainUtils.getSubdomain(visitorPrefDomain);
+			if (visitorPrefLang) {
+				recommendedLink = document.querySelector('a[data-subdomain=\'' + recommendedSubdomain + '\'][data-lang=\'' + visitorPrefLang + '\']');
+			} else {
+				recommendedLink = document.querySelector('a[data-subdomain=\'' + recommendedSubdomain + '\'][data-default-lang=\'true\']');
+			}
+		}
+		if (!recommendedLink) {
+			recommendedSubdomain = 'www';
+			recommendedLink = document.querySelector('a[data-subdomain=\'' + recommendedSubdomain + '\'][data-recommended-text]');
+		}
+
+		let linkObject = {	'dataRecommendedText': recommendedLink?.dataset.recommendedText,
+							'dataSubdomain': recommendedLink?.dataset.subdomain,
+							'dataHref': recommendedLink?.href,
+							'dataLang': recommendedLink?.dataset.lang };
+
+		view.clickRecommendedDomainButton(linkObject);
+		view.clickWorldwideLink(linkObject);
+	},
+	clickRecommendedDomainButton: function (linkObject) {
+		if(document.querySelectorAll('.recommended-country').length !== 0) {
+			document.querySelectorAll('.recommended-country').forEach(item => {
+				item.textContent = linkObject.dataRecommendedText;
+			});
+		}
+
+		let recommendedButtonSet;
+		if (linkObject.dataSubdomain === 'ch') {
+			recommendedButtonSet = document.querySelectorAll('.ch-recommendation .recommendation-button');
+			document.querySelector('.ch-recommendation').style.display = 'block';
+			document.querySelector('.zh-recommendation').style.display = 'none';
+			document.querySelector('.default-recommendation').style.display = 'none';
+		} else if (linkObject.dataSubdomain === 'ww2') {
+			recommendedButtonSet = document.querySelectorAll('.zh-recommendation .recommendation-button');
+			document.querySelector('.zh-recommendation').style.display = 'block';
+			document.querySelector('.ch-recommendation').style.display = 'none';
+			document.querySelector('.default-recommendation').style.display = 'none';
+		} else {
+			recommendedButtonSet = document.querySelectorAll('#recommended_domain_button');
+
+			if(recommendedButtonSet.length !== 0) {
+				recommendedButtonSet.forEach(item => {
+					item.href = linkObject.dataHref;
+					item.dataset.lang = linkObject.dataLang;
+				});
+			}
+		}
+
+		if(recommendedButtonSet.length !== 0) {
+			recommendedButtonSet.forEach(item => {
+				item.addEventListener('click', (e) => {
+					e.preventDefault();
+					const selectedDomain = domainUtils.getDomain(item.href),
+						selectedLang = item.dataset.lang;
+					domainUtils.setCookie(selectedDomain, selectedLang);
+					domainUtils.switchDomain(selectedDomain, selectedLang);
+				});
+			});
+		}
+	},
+	clickWorldwideLink: function (linkObject) {
+		const worldwideLink = document.querySelector('a.worldwide_link');
+		if(worldwideLink) {
+			worldwideLink.href = linkObject.dataHref;
+			worldwideLink.dataset.lang = linkObject.dataLang;
+			worldwideLink.addEventListener('click', (e) => {
+				e.preventDefault();
+				const selectedDomain = domainUtils.getDomain(worldwideLink.href);
+				const selectedLang = worldwideLink.dataset.lang;
+				domainUtils.setCookie(selectedDomain, selectedLang);
+				const href = e.target.getAttribute('href');
+				const worldwideLinkLocation = 'company/worldwide.html?s_tid=dmselect_cta&requestedDomain=';
+				if (href) {
+					location.href = href + worldwideLinkLocation;
+				}
+			});
+		}
+	},
+	showChinaPerformanceAlert: function (akamaiCountryCode) {
+		if (akamaiCountryCode === 'CN' && document.getElementById('china_performance_alert')) {
+			document.getElementById('china_performance_alert').style.display = 'block';
+		}
+	},
+	checkVisitorPrefDomain: function (visitorPrefDomain, akamaiCountryCode, currentDomain, visitorPrefLang, currentSubdomain, currentUrlLang, currentUrl) {
+		if ((!currentDomain.endsWith('.mathworks.com') && !currentDomain.endsWith('.mathworks.cn')) || domainUtils.isExemptUrl(currentUrl)) {
+			return;
+		}
+		if (visitorPrefDomain) {
+			if (akamaiCountryCode === 'CN' && domainUtils.getSubdomain(visitorPrefDomain) !== 'ww2' && !domainUtils.getCookieVersion(currentDomain)) {
+				document.getElementById('domainButton').click();
+				return;
+			}
+		}
+		if (!visitorPrefDomain) {
+			if (akamaiCountryCode) {
+				const akamaiDeterminedSubdomain = document.querySelector('a[data-country-code=\'' + akamaiCountryCode + '\']').dataset.subdomain;
+				if ((akamaiCountryCode.toLowerCase() === currentSubdomain) ||
+					(akamaiDeterminedSubdomain === currentSubdomain)) {
+					domainUtils.setCookie(currentDomain, currentUrlLang);
+				} else {
+					document.getElementById('domainButton').click();
+				}
+				return;
+			}
+			if (currentSubdomain === 'www') {
+				domainUtils.setCookie(currentDomain, '');
+			} else {
+				document.getElementById('domainButton').click();
+			}
+		} else if (visitorPrefDomain === currentDomain) { // they have a pref domain, this must be it, update cookie anyways to make sure it is v2
+			if (document.body.classList.contains('templateservice')) {
+				currentUrlLang = visitorPrefLang;
+			}
+			domainUtils.setCookie(currentDomain, currentUrlLang);
+		}
+		// else: the pref domain is different than current domain which means the redirect script has taken care of it and we don't want to override it
+	},
+};
+
+module.exports = View;
+document.addEventListener('DOMContentLoaded', () => {
+	View.init();
+});
+
+},{"../domainRedirect/utils.js":1,"./countrySubdomains.js":2}]},{},[3]);

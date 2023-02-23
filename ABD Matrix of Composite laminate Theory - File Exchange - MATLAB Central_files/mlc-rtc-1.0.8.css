@@ -1,0 +1,830 @@
+/* --------------- base styles  --------------*/
+.rtcContent {
+  display: block;
+  text-align: start;
+  line-height: 17.234px;
+  min-height: 0px;
+  white-space: normal;
+  color: rgb(0, 0, 0);
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-style: normal;
+  font-size: 14px;
+  font-weight: 400;
+  text-decoration: none solid rgb(0, 0, 0);
+}
+
+/* ---------------  richtext.css  --------------*/
+.rtcContent .paragraphNode {
+  font-family: Helvetica, Arial, sans-serif;
+  white-space: pre-wrap;
+  margin: 2px 10px 10px 4px; /* Added extra 1px bottom margin to have consistent spacing for copy to clipboard button */
+  line-height: 1.5;
+  color: rgba(0, 0, 0, 1);
+  font-size: 14px;
+  min-height: 17px;
+}
+
+.comment_body .rtcContent .paragraphNode,
+.comment_body .rtcContent .RTClistNode,
+.comment_body .rtcContent .CodeBlock {
+  font-size: 13px !important;
+}
+
+.comment_body .rtcContent .heading-2 {
+  font-size: 15px !important;
+}
+
+.rtcContent .heading-1 {
+  /* Can be uncommented when Title text is enabled in Toolstrip/Editor
+  margin: 10px 10px 15px 4px;
+  white-space: pre-wrap;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 22px;
+  line-height: 1.2em;
+  color: rgba(213, 80, 0, 1);
+  font-weight: normal;
+  min-height: 24px; */
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: rgba(60, 60, 60, 1);
+  white-space: pre-wrap;
+  line-height: 1;
+  margin: 20px 10px 5px 4px;
+}
+
+.rtcContent .heading-1:first-child {
+  margin-top: 3px;
+}
+
+.rtcContent .heading-2 {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: rgba(60, 60, 60, 1);
+  white-space: pre-wrap;
+  line-height: 1;
+  margin: 20px 10px 5px 4px;
+}
+
+.rtcContent .heading-3 {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  font-weight: bold;
+  color: rgba(60, 60, 60, 1);
+  white-space: pre-wrap;
+  line-height: 18px;
+  margin: 15px 10px 5px 4px;
+}
+
+.rtcContent .heading-4 {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  font-weight: bold;
+  color: rgba(60, 60, 60, 1);
+  white-space: pre-wrap;
+  line-height: 18px;
+  margin: 10px 10px 5px 4px;
+}
+
+.rtcContent .heading-2:first-child,
+.rtcContent .heading-3:first-child,
+.rtcContent .heading-4:first-child {
+  margin-top: 3px;
+}
+
+.rtcContent .heading-2.wrappable,
+.rtcContent .heading-3.wrappable,
+.rtcContent .heading-4.wrappable {
+  word-wrap: break-word;
+}
+
+/* --------------- Text attributes --------------*/
+.rtcContent .textBox.bold {
+  font-weight: bold;
+}
+
+.rtcContent .textBox.italic {
+  font-style: italic;
+}
+
+.rtcContent .textBox.underline {
+  text-decoration: underline;
+}
+
+.rtcContent .textBox.monospace {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Force expanding the line so that the container has correct height even with empty content */
+.rtcContent .textBox .textWrapper:empty::before,
+  /* Workaround for IE/Edge native buggy wrapping behavior. Force wrapping where it should occur. (g1447238) */
+.rtcContent .textBox:first-child::before {
+  content: "";
+  display: inline-block;
+}
+
+/* --------------- lists.css --------------*/
+.rtcContent .RTClistNode {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10.5pt;
+  color: #000;
+  line-height: 1.5em;
+}
+
+.rtcContent .RTClistItem {
+  margin-left: 20px;
+  white-space: pre-wrap;
+}
+
+/* --------------- sectionrules.css --------------*/
+/*
+* Line node blocks decoration
+*/
+.rtcContent .CodeBlock {
+  margin: 10px 3px 10px 3px;
+  border-radius: 4px;
+  background-color: #f7f7f7;
+}
+
+.rtcContent .CodeBlock + .paragraphNode {
+  margin-top: 10px;
+}
+
+/*
+* Line nodes decoration
+*/
+.rtcContent .CodeBlock > .inlineWrapper:first-child .lineNode:first-child,
+.rtcContent .CodeBlock > .lineNode:first-child {
+  /* Added extra 10px top padding to account for copy to clipboard button */
+  padding-top: 15px;
+}
+
+.rtcContent .CodeBlock .lineNode:last-child {
+  padding-bottom: 5px;
+}
+
+.rtcContent .lineNode {
+  padding-left: 10px;
+}
+
+/*.CodeBlock.contiguous {
+  border: 1px solid #E9E9E9;
+}*/
+
+/* Code blocks border */
+.CodeBlock > .inlineWrapper:last-child .lineNode,
+.CodeBlock > .lineNode:last-child {
+  border-bottom: 1px solid #e9e9e9;
+}
+.CodeBlock > .inlineWrapper:first-child,
+.CodeBlock > .lineNode:first-child {
+  border-top: 1px solid #e9e9e9;
+}
+.CodeBlock > .inlineWrapper:not(.outputs),
+.CodeBlock > .inlineWrapper.outputs .lineNode,
+.CodeBlock > .lineNode {
+  border-left: 1px solid #e9e9e9;
+  border-right: 1px solid #e9e9e9;
+}
+.rtcContent .lineNode {
+  padding-bottom: 4px;
+}
+.CodeBlock > .inlineWrapper.outputs + .inlineWrapper .lineNode {
+  padding-top: 6px;
+  border-top: 1px solid #e9e9e9;
+}
+.rtcContent .CodeBlock > .inlineWrapper.outputs .lineNode {
+  border-bottom: 1px solid #e9e9e9;
+}
+.rtcContent .CodeBlock > * .inlineWrapper.outputs .lineNode {
+  padding-top: 6px;
+}
+
+.op_answer_panel .CodeBlock.contiguous,
+.op_comment_panel .CodeBlock.contiguous {
+  border: 1px solid #ccc;
+}
+
+.rtcContent .lineNode .textBox {
+  white-space: pre;
+}
+
+/* --------------- syntax highlighting --------------*/
+.rtcContent .lineNode .textBox .textWrapper.Comment,
+.rtcContent .CodeExampleBlock .textWrapper.Comment {
+  color: rgb(34, 139, 34);
+}
+
+.rtcContent .lineNode .textBox .textWrapper.Keyword,
+.rtcContent .CodeExampleBlock .textWrapper.Keyword {
+  color: rgb(0, 0, 255);
+}
+
+.rtcContent .lineNode .textBox .textWrapper.String,
+.rtcContent .CodeExampleBlock .textWrapper.String {
+  color: rgb(160, 32, 240);
+}
+
+.rtcContent .lineNode .textBox .textWrapper.SysCommand,
+.rtcContent .CodeExampleBlock .textWrapper.SysCommand {
+  color: rgb(179, 140, 0);
+}
+
+.rtcContent .lineNode .textBox .textWrapper.UndetString,
+.rtcContent .CodeExampleBlock .textWrapper.UndetString {
+  color: rgb(179, 0, 0);
+}
+
+.pending-uploads {
+  margin-top: -6px !important;
+  border-right: 1px solid #c3c3c3;
+  border-bottom: 1px solid #c3c3c3;
+  border-left: 1px solid #c3c3c3;
+  padding: 3px 5px;
+  background-color: #ffffff;
+}
+
+/* File Upload Error Dialog */
+
+.file_upload_errors {
+  margin: 0 0 5px 0;
+  border: 1px solid #d12f19;
+  padding: 10px;
+  font-family: sans-serif;
+  font-size: 8pt;
+  line-height: 12pt;
+  background-color: #ffffff;
+}
+
+.file_upload_errors .title {
+  padding: 0 0 0 40px;
+  color: #d12f19;
+}
+
+.file_upload_errors ul {
+  list-style-position: inside;
+  padding: 0 0 0 40px;
+}
+
+/* --------------- tabelofcontents.css --------------*/
+.rtcContent .ToC {
+  margin-bottom: 20px;
+  padding-bottom: 4px;
+}
+
+.rtcContent .ToC .ToCHeading {
+  padding-left: 5px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  margin: 0px;
+  font-weight: bold;
+}
+
+.rtcContent .ToC .ToCItems {
+  padding-bottom: 10px;
+  padding-top: 10px;
+  padding-left: 7px;
+  margin-top: -1px;
+  margin-left: 0px;
+  margin-right: 0px;
+  margin-bottom: 0px;
+}
+
+/* --------------- Code Example--------------*/
+.rtcContent .CodeExampleBlock {
+  white-space: pre;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 12px;
+  line-height: 16px;
+  padding: 10px 10px 10px 5px;
+  margin-left: 55px;
+  margin-right: 3px;
+  border-radius: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* Fix for text/long code lines not wrapping */
+.CodeBlock.contiguous,
+.rtcContent .paragraphNode,
+.rtcContent .CodeExampleBlock {
+  overflow: auto;
+}
+
+/* Fix the list styles overriden by site6 css */
+.rtcContent ul.RTClistNode .RTClistItem {
+  list-style-type: square !important;
+}
+.rtcContent .RTClistNode {
+  padding-left: 40px;
+  margin-left: 0px;
+}
+.rtcContent .RTClistItem {
+  padding: 0px;
+}
+
+/* web-standards adds bullets so remove rtc bullets */
+.rtcContent ul > li:before { 
+  content: "";
+}
+
+/* Fix image to render in original aspect ratio */
+.rtcContent img[style*="height"] { 
+  height:auto !important;
+  max-width:none;
+}
+.mlc_editor .imageNode { 
+  max-width:none;
+}
+
+/* Hiding web image links */
+.rtcImageDialog .urlRadio + label,
+.rtcImageDialog .urlRadio,
+.inputField .urlField {
+  display: none;
+}
+
+/* Editor UI changes */
+.lti_editor {
+  margin-bottom: 7px;
+}
+.mlc_editor .rtePane .lineNode {
+  padding-left: 10px;
+}
+
+/* Help overlay */
+.help-overlay.btn-sm {
+  padding: 8px 12px;
+  font-size: 12px;
+  line-height: 1;
+}
+.help-overlay.btn-primary {
+  border: 1px solid #2e6da4;
+}
+.add_guide_popover_overlay {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 19;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+.overlay_editor_foreground {
+  background: rgba(0, 0, 0, 0);
+  float: left;
+  height: 352px;
+  width: auto;
+  overflow: visible;
+  position: absolute;
+  z-index: 22;
+}
+.add_guide_highlighted {
+  z-index: 20;
+  position: relative;
+}
+#rtc_editor_with_toolstrip .popover {
+  z-index: 1036; /* Fix for g2639211 */
+}
+body {
+  --rtc-helpoverlay-border: red;
+}
+.add_guide_border {
+  position: relative;
+}
+.add_guide_border:before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: 2px dashed transparent;
+  animation: animate_border_top_and_right 1s linear forwards;
+}
+.add_guide_border:after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  right: 2px;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: 2px dashed transparent;
+  animation: animate_border_bottom_and_left 1s linear forwards;
+  animation-delay: 1s;
+}
+@keyframes animate_border_top_and_right {
+  0% {
+    width: 0;
+    height: 0;
+    border-top-color: var(--rtc-helpoverlay-border);
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+  }
+  50% {
+    width: 100%;
+    height: 0;
+    border-top-color: var(--rtc-helpoverlay-border);
+    border-right-color: var(--rtc-helpoverlay-border);
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+  }
+  100% {
+    width: 100%;
+    height: 100%;
+    border-top-color: var(--rtc-helpoverlay-border);
+    border-right-color: var(--rtc-helpoverlay-border);
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+  }
+}
+@keyframes animate_border_bottom_and_left {
+  0% {
+    width: 0;
+    height: 0;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: var(--rtc-helpoverlay-border);
+    border-left-color: transparent;
+  }
+  50% {
+    width: 100%;
+    height: 0;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: var(--rtc-helpoverlay-border);
+    border-left-color: var(--rtc-helpoverlay-border);
+  }
+  100% {
+    width: 100%;
+    height: 100%;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: var(--rtc-helpoverlay-border);
+    border-left-color: var(--rtc-helpoverlay-border);
+  }
+}
+.add_toolstrip_section_border {
+  outline: 2px dashed var(--rtc-helpoverlay-border);
+}
+.overlay_number_guide {
+  padding-top: 8px;
+  color: #6f6f6f;
+}
+.reduce_toolstrip_height {
+  height: 48px !important;
+  margin: 2px !important;
+  overflow: hidden;
+}
+.restore_toolstrip_height {
+  height: 52px !important;
+  margin: 0px !important;
+}
+.section_border {
+  border: 2px dashed red;
+}
+.no_right_border {
+  border-right-style: none;
+}
+.no_left_border {
+  border-left-style: none;
+}
+.no_border {
+  border: none;
+}
+
+.rtc_tagline {
+  display: none;
+}
+@media screen and (min-width: 522px) {
+  .rtc_tagline {
+    display: block;
+    color: #6f6f6f;
+    padding: 3px;
+    border-width: 0px 1px 1px 1px;
+    border-style: solid;
+    border-color: rgb(204, 204, 204);
+    background-color: #f5f5f5;
+    margin: -7px 1px 7px 1px;
+    font-size: 10px;
+  }
+  .tagline_text {
+    border: 1px solid #e6e6e6;
+    padding: 5px;
+    margin: -5px;
+  }
+  .rtc_tagline a,
+  .rtc_tagline a:visited,
+  .rtc_tagline a:hover,
+  .rtc_tagline a:active {
+    color: #0076a8 !important;
+  }
+}
+
+/* MATLAB markup editor CSS */
+.matlabmarkup-preview {
+  display: none;
+}
+.custom_mm_tab {
+  padding: 0px;
+}
+.mm_preview {
+  min-height: 176px;
+  background-color: white;
+}
+.mm_preview_placeholder div[class*="mm_preview"] {
+  text-align: center;
+  font-size: 16px;
+  font-style: italic;
+}
+.mm_preview_no_text {
+  color: #6f6f6f;
+}
+.mm_preview_error {
+  color: #b7312c;
+}
+
+/* RTC context menu */
+.menu {
+  width: 150px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: grey;
+  border-radius: 2px;
+  background-color: rgb(249, 249, 249);
+  box-shadow: 2px 2px 6px rgba(50, 50, 50, 0.25);
+  position: fixed;
+  display: none;
+  z-index: 100;
+  font-size: 13px;
+}
+.menu-item {
+  padding: 4px 13px 4px 13px;
+}
+.menu-item:hover {
+  background-color: rgb(46, 79, 162);
+  cursor: pointer;
+  color: white;
+}
+
+/* LIVE EVAL SUPPORTING ANSWERS CSS */
+.before-mss-call-alert {
+  overflow-y: hidden;
+  transition-property: all;
+  transition-duration: 1.5s;
+  transition-timing-function: cubic-bezier(0, 1, 1.5, 1);
+  max-height: 0px;
+}
+.before-mss-call-alert.open {
+  max-height: 500px;
+}
+.before-mss-call-alert,
+.after-mss-call-alert {
+  margin: 0 auto;
+  min-width: 250px;
+  width: 35%;
+  max-width: 350px;
+}
+.live_eval_banner {
+  position: fixed;
+  width: 100%;
+  z-index: 948;
+}
+.live_eval_in_progress_mask {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 901;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+.stop_execution_in_alert {
+  float: right;
+}
+.stop_icon_in_alert {
+  float: left;
+  margin-right: 5px;
+  margin-top: 2px;
+}
+
+.ran_in_label {
+  float: right;
+}
+.ran_in_logo_div + div.answer_content {
+  margin-top: 0px;
+}
+a.ran_in_tooltip,
+a.ran_in_tooltip:hover,
+a.ran_in_tooltip:focus,
+a.ran_in_tooltip:active {
+  text-decoration: none;
+  color: inherit;
+}
+.r2020a_logo {
+  background-image: url(../images/ran_in_logo/r2020a.svg);
+  width: 62px;
+  height: 15px;
+  display: inline-block;
+  background-size: 62px 20px;
+}
+.r2020b_logo {
+  background-image: url(../images/ran_in_logo/r2020b.svg);
+  width: 62px;
+  height: 15px;
+  display: inline-block;
+  background-size: 62px 20px;
+}
+.r2021a_logo {
+  background-image: url(../images/ran_in_logo/r2021a.svg);
+  width: 62px;
+  height: 15px;
+  display: inline-block;
+  background-size: 62px 20px;
+}
+.r2021b_logo {
+  background-image: url(../images/ran_in_logo/r2021b.svg);
+  width: 62px;
+  height: 15px;
+  display: inline-block;
+  background-size: 62px 20px;
+}
+
+.r2022a_logo {
+  background-image: url(../images/ran_in_logo/r2022a.svg);
+  width: 62px;
+  height: 15px;
+  display: inline-block;
+  background-size: 62px 20px;
+}
+
+/* To made the background grey for code blocks */
+.liveCode .rtePane .scrollPane:not(.codeHidden) .CodeBlock {
+  background-color: #f7f7f7 !important;
+}
+
+/* Removing output arrangement options */
+.dijitContentPane.rightMarginContainer {
+  display: none;
+  margin-right: -28px;
+}
+/* Removing busy indicator */
+.mlc_editor .MultiViewRTC .busyHolder, .busyHolder {
+  display: none;
+}
+/* Removing figure palette from logged out view */
+.figurefloatingpalette {
+  display: none;
+}
+
+.overlay_editor_for_live_eval {
+  background: rgba(0, 0, 0, 0);
+  z-index: 21;
+}
+
+/* Handling data truncation ellipses */
+.rtcContent .matrixElement .verticalEllipsis,
+.rtcContent .textElement .verticalEllipsis,
+.rtcDataTipElement .matrixElement .verticalEllipsis,
+.rtcDataTipElement .textElement .verticalEllipsis {
+  margin-left: 35px;
+  background-image: url(../images/outputs/VEllipsis.png);
+  background-repeat: no-repeat;
+  height: 30px;
+  width: 12px;
+}
+.rtcContent .matrixElement .horizontalEllipsis,
+.rtcDataTipElement .matrixElement .horizontalEllipsis {
+  display: none;
+}
+
+/* LIVE EVAL ENDS */
+
+.file_exchange_toolstrip
+  .toolstrip
+  div[data-tag="motwToolstrip.liveEditorTab.insert.attachmentsColumn"] {
+  display: none;
+}
+
+/* MENTIONS STARTS */
+.mentions-view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  margin-top: 20px;
+  margin-left: -20px;
+  background: white;
+  color: black;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  z-index: 11110 !important;
+  font: 13px/1.46 Arial, Helvetica, sans-serif;
+  font-weight: 400;
+  line-height: 1.42857143;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  max-width: 100%;
+}
+
+.mentions-view h5 {
+  color: #333;
+  margin-top: 0;
+  margin-bottom: -1px;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.mentions-view .cur {
+  color: #555;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+.mentions-view .cur small {
+  color: white;
+}
+.mentions-view strong {
+  color: #3366ff;
+}
+.mentions-view .cur strong {
+  color: white;
+  font: bold;
+}
+.mentions-view ul {
+  list-style: none;
+  padding: 0;
+  margin: auto;
+  max-height: 200px;
+  overflow-y: auto;
+}
+.mentions-view ul li {
+  display: block;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+  margin: 0px;
+  padding: 10px 15px;
+}
+.mentions-view ul li:first-child {
+  border-top: 1px solid #ddd;
+}
+.mentions-view small {
+  font-size: smaller;
+  color: #777;
+  font-weight: normal;
+}
+
+.mentions-heading{
+  background-color: #e6e6e6
+}
+
+.mentions-img {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  vertical-align: bottom;
+  margin-right: 4px;
+}
+
+/* Mention someone other than yourself */
+.SectionBlock :not(.CodeBlock) a[class*="mentioned_myself"],
+.SectionBlock :not(.CodeBlock) a[class*="mentioned_myself"]:visited,
+.SectionBlock :not(.CodeBlock) a[class*="mentioned_myself"]:hover {
+  background-color: #f5f5f5;
+  padding-right: 2px;
+  padding-left: 1px;
+  border-radius: 5px;
+}
+
+/* Mention yourself */
+.SectionBlock :not(.CodeBlock) a[class*="mentioned_myself"],
+.SectionBlock :not(.CodeBlock) a[class*="mentioned_myself"]:visited,
+.SectionBlock :not(.CodeBlock) a[class*="mentioned_myself"]:hover {
+  background-color: #0076a8; /* link blue*/
+  color: white;
+  padding-right: 4px;
+  padding-left: 2px;
+  border-radius: 5px;
+}
+
+.pid {
+  display: none;
+}
+
+/* mentions highlight */
+@keyframes mentions_highlight {
+  0% {
+    background: #ffff99;
+  }
+  100% {
+    background: #f7f7f7;
+  }
+}
+.mentions_highlight {
+  animation: mentions_highlight 3s;
+}
+/* MENTIONS ENDS */

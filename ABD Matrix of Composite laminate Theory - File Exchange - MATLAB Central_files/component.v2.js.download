@@ -1,0 +1,435 @@
+var DiscussionsFrame = function(params) {
+  var component = this;
+  
+  // Provide Site6 compliant widgets an iframe may require the parent to insert in the DOM
+  component.modals = {
+    site6_spinner: function() {
+      return '<div id="' + component.disc_div.replace('#','') + '-spinner" class="progress"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="sr-only">Loading...</span></div></div>'
+    },
+    site6_modal: function() {
+      return '<div><style scoped>.tooltip { z-index:400500 } .remove_padding { padding: 0; } .icon-fix-vert {     vertical-align: top;     line-height: 16px;   }   .radio {     margin-left: 10px; margin-bottom: 0px;  padding-bottom:10px; } </style><div class="modal fade" id="' + component.disc_div.replace('#','') + '-modal-container" style="max-width: 640px; min-width:320px;margin:auto;z-index:400480;" tabindex="-1" role="dialog"></div>';
+    }
+  }
+
+  // Relating to host, div, instance
+  component.target_host = params.host || (window.location.protocol + '//' + window.location.hostname);   // Required for postmessage security, ensure this points to the right domain
+  component.disc_div = params.div_id || '#discussions_div';
+  component.identifier = 'discussions';
+
+  // For offset calculations, if required, support the height of a sticky header
+  component.sticky_header_height = params.sticky_header_height || 0;
+  // Save the params for per-component use (below)
+  component.initial_params = params;
+
+  // Debugging helpers
+  component.debug = params.debug || false;
+
+  // Client callbacks for the consumer, typically triggered by PostMessage events
+  component.callbacks = params.callbacks || {};
+  component.messageHandlers = {};
+}
+
+// Class methods for DiscussionsFrame, returns public interface
+DiscussionsFrame.prototype = function() {
+  var logger = function(message, component) { 
+    if (component.debug) console.log("DiscussionsFrame on " + component.disc_div + ": " + message); 
+  }
+
+  // General PostMessage handler
+  // This method configures a listener that matches PostMessage events based on the
+  // expected origin and target Discussions instance. There may be multiple DiscussionsComponents on a page,
+  // so this prevents crosstalk as well as malicious use.
+  var initMessageReceiver = function(component) {
+    window.addEventListener('message', function(event) {
+      
+      component.log("PostMessage received " + JSON.stringify(event) + " " + JSON.stringify(event.data));
+
+      // Host matcher
+      if (event.origin != component.target_host) {
+        component.log("Ignored host " + event.origin + ", does not match " + component.target_host);
+        return;
+      }
+      
+      // Support discussion_group for now for backwards compatibility
+      // This is used to ensure that when multiple frames are used, the correct instance receives this message
+      var remote_id = event.data['discussions_identifier'] || event.data['discussion_group'];
+      // Identifier matcher (formerly to group_id)
+      if (!remote_id || remote_id != component.identifier) {
+        component.log('Identifier mismatch: ' + component.identifier + " != " + remote_id)
+        return;
+      }
+
+      // Process PostMessage events
+      for(i in component.messageHandlers)
+        if (payload = event.data[i])
+          component.messageHandlers[i](payload, event);
+    });
+  }
+
+  // Send PostMessage to iframe
+  var sendPM = function(payload, component) {
+    if (typeof component.getIframe === 'function') {
+      iframe = component.getIframe();
+      if (iframe && typeof iframe.contentWindow !== 'undefined') {
+        payload["discussions_identifier"] = component.identifier;
+        component.getIframe().contentWindow.postMessage(payload, component.target_host)
+      } else {
+        component.log("Cannot send message: getIframe returned null.");
+        return;
+      }
+    } else {
+      component.log("Cannot send message: getIframe not defined.");
+      return;
+    }
+  }
+
+  // Wait for at least one iframe to load before proceeding
+  // Required: The component init method must set (and unset) DiscussionsFrame.MUTEX lock
+  var initIframeWithLock = function(component) {
+    // Only the first iframe to load enforces the lock to ensure a valid session is created.
+    var lockCount = 40;
+    var waitForLock = function() {
+      if (!DiscussionsFrame.MUTEX || DiscussionsFrame.MUTEX == component.identifier) {
+        component.addIframe();
+      } else {
+        lockCount--;
+        if (lockCount > 0) {
+          setTimeout(waitForLock, 100);
+        } else {
+          // If more than 4sec has passed, give control to the next iFrame
+          DiscussionsFrame.MUTEX = component.identifier;
+          component.addIframe();
+        }
+      }
+    }
+    waitForLock();
+  }
+
+  // Public methods
+  // This instance must be passed to private functions, so wrappers are provided
+  return {
+    initMessageReceiver:  function() { initMessageReceiver(this); },
+    sendPM:               function(payload) { sendPM(payload, this); },
+    log:                  function(message) { logger(message, this); },
+    initIframeWithLock:   function() { initIframeWithLock(this); }
+  }
+}();
+
+// Main entrypoint for configuring Polls (potentially)
+DiscussionsFrame.prototype.initPolls = function() {
+
+  var component = this; // Help scope readability
+
+  // This much match the corresponding id in Discussions under `Discussions.component_id` (Javscript)
+  // I have set it to the group_id used for this demo, which is assigned by default
+  this.identifier = '_discussions-polls';
+  this.app_id = component.initial_params.app_id;
+
+  // The first frame to load takes priority, set the mutex lock
+  if (!DiscussionsFrame.MUTEX)
+    DiscussionsFrame.MUTEX = component.identifier;
+
+  // Set up PostMessage as needed
+  this.messageHandlers = {
+    "setURL": function(ref) {  
+      if (component.callbacks.onUrl)
+        component.callbacks.onUrl(href);
+      else
+        window.open(href, "_blank"); 
+    },
+    'status': function(status) {
+      if (status == 'ready') {
+        $(component.disc_div).after(component.modals.site6_modal());
+        // Clear the iframe lock
+        DiscussionsFrame.MUTEX = null;
+        setTimeout(function() { component.sendAppID(); }, 1000);
+        component.log(" Discussions is ready");
+      }
+    },
+    'removeIframe': function(do_remove) {
+      if(do_remove == true) {
+        component.getIframe().remove();
+      }
+    },
+    'showModal': function(modal, event) {
+      if (event.data['discussions_login'] && component.callbacks.onLogin) {
+        component.callbacks.onLogin();
+      } else {
+        component.log("Performing model population in " + component.disc_div + '-modal-container with ' + modal )
+        $(component.disc_div + '-modal-container').html(modal);
+        $(component.disc_div + '-modal-container').modal('show');
+        setTimeout(function() { $(component.disc_div + '-modal-container').focus(); }, 150);
+      }
+    }    
+  }
+
+  // Provide a way to get the raw iframe (used for PostMessage)
+  this.getIframe = function() {
+    return $(component.disc_div + " iframe").get(0);
+  }
+
+  // Send the URL to use for all relative anchor links (used for links to replies)
+  this.sendAppID = function() {
+    component.log("Sending app ID: " + component.app_id)
+    if (component.app_id)
+      component.sendPM({"appID": component.app_id})
+  }
+
+  this.addIframe = function() { 
+    $(component.disc_div).append(this.createPlainIframe('embedded_poll/' + this.app_id + '?embed=true'));
+
+    iFrameResize({ 
+      log: false,
+      // We may need to add every domain, unless iFrameResizer supports regex (like zoid)? Confirm from Answers use case.
+      checkOrigin: component.target_host,
+      sizeHeight: true,
+      heightCalculationMethod: 'taggedElement',
+    }, '#discussions-' + this.identifier + '-iframe');
+
+    // If the component is in a tab, prepare a trigger to resize
+    // https://github.com/davidjbradshaw/iframe-resizer/issues/420
+    $(document).on('shown.bs.tab', function (e) {
+      if (iframe = component.getIframe())
+        iframe.iFrameResizer.resize();
+    })
+
+    // Initialize PostMessage
+    this.initMessageReceiver();
+  }
+
+  component.initIframeWithLock();
+}
+
+// Legacy DiscussionsComponent wrapper
+var DiscussionsComponentLegacyInit = function($, div, params, window) {
+  var component = new DiscussionsFrame(params);
+  // The old component used after-render convention: component.onURL = function(){}
+  var callbackIntercept = {
+    set: function(obj, prop, value) {
+      switch(prop) {
+        case 'onURL': component.callbacks.onURL = value; break;
+        case 'onReply': component.callbacks.onReply = value; break;
+        case 'onLike': component.callbacks.onLike = value; break;
+        case 'onFlag': component.callbacks.onFlag = value; break;
+        case 'onFollow': component.callbacks.onFollow = value; break;
+        case 'onLogin': component.callbacks.onLogin = value; break;
+      }
+    }
+  }
+
+  component.initComments(params);
+  return new Proxy({component: component}, callbackIntercept);
+}
+
+// Wrapper for initComments, setting it to the "manage" dashboard for comments
+DiscussionsFrame.prototype.initCommentManager = function() {
+  this.initComments({manage: true});
+}
+
+// Revised comments initializer, using iframeresizer. 1:1 functionally with the v1 interface
+DiscussionsFrame.prototype.initComments = function(options) {
+  if (typeof options == "undefined") options = {}
+  this.identifier = this.initial_params.group_id;
+  this.group_id = this.initial_params.group_id;
+  this.base_url = this.initial_params.base_url;
+  this.anchor = this.initial_params.anchor;
+  this.set_focus_tab = this.initial_params.anchor;
+  this.topic_id = this.initial_params.topic_id;
+  this.ref_id = this.initial_params.ref_id;
+  this.locale = this.initial_params.locale;
+
+  // Scope of "this" can become lost in callbacks...
+  var component = this;
+
+  // The first frame to load takes priority
+  if (!DiscussionsFrame.MUTEX)
+    DiscussionsFrame.MUTEX = component.identifier;
+
+  this.reload = function() { this.sendPM({"reload": true}); }
+
+  this.messageHandlers = {
+    // The embedded header will trigger a PostMessage when any external link is clicked
+    "setURL": function(href) {  
+      if (component.callbacks.onUrl)
+        component.callbacks.onUrl(href);
+      else
+        window.open(href, "_blank"); 
+    },
+    'status': function(status) {
+      if (status == 'ready') {
+        DiscussionsFrame.MUTEX = null
+        $(component.disc_div).after(component.modals.site6_modal());
+        setTimeout(component.sendHash, 500);
+        setTimeout(function() { component.sendBaseURL(); component.sendReplyAnchor(); }, 1000);
+        component.log(" Discussions is ready");
+      }
+    },
+    'discussionEvent': function(emitter) {
+      switch(emitter.type) {
+        case 'reply':  if (component.callbacks.onReply)  component.callbacks.onReply(emitter.data);  break;
+        case 'flag':   if (component.callbacks.onFlag)   component.callbacks.onFlag(emitter.data);   break;
+        case 'follow': if (component.callbacks.onFollow) component.callbacks.onFollow(emitter.data); break;
+        case 'like':   if (component.callbacks.onLike)   component.callbacks.onLike(emitter.data);   break;
+      }
+    },
+    'loadingSpinner': function(spinner) {
+      if (spinner == 'show') {
+        $(component.disc_div + " iframe").height(20);
+        $(component.disc_div).after(component.modals.site6_spinner());
+      } else {
+        var spinDiv = $(component.disc_div + '-spinner');
+        if (spinDiv)
+          $(component.disc_div + '-spinner').remove();
+      }
+      component.log("Spinner toggled: " + spinner + " on: " + component.disc_div + '-spinner');
+    },
+    'setAnchor': function(anchor) {
+      window.location.href = anchor;
+    },
+    'offset': function(offset) {
+      window.scrollTo(0, $(component.disc_div).offset().top + offset - component.sticky_header_height)
+    },
+    'showModal': function(modal, event) {
+      if (event.data['discussions_login'] && component.callbacks.onLogin) {
+        component.callbacks.onLogin();
+      } else {
+        component.log("Performing model population in " + component.disc_div + '-modal-container with ' + modal )
+        $(component.disc_div + '-modal-container').html(modal);
+        $(component.disc_div + '-modal-container').modal('show');
+        setTimeout(function() { $(component.disc_div + '-modal-container').focus(); }, 150);
+      }
+    },
+    'modalPosHeight': function(height, event) {
+      var id = event.data['modalPosID'];
+      var dTop = window.pageYOffset - $(component.disc_div).offset().top + (parent.window.innerHeight)/2 - height/2;
+      if (dTop < 0) { dTop = 0; }
+      if (dTop + height > $(component.disc_div).height()) { dTop = $(component.disc_div).height() - height; }
+      component.sendPM({"modalPosID": id, "modalPosTop": dTop});
+    }
+  }
+
+  // Send the URL to use for all relative anchor links (used for links to replies)
+  this.sendBaseURL = function() {
+    component.log("Sending base URL: " + component.base_url)
+    if (component.base_url)
+      component.sendPM({"baseURL": component.base_url})
+  }
+
+  // Replies use #reply_123 for anchor. Setting the anchor param overrides this. 
+  // e.g., anchor:"review"  ==>  review_123
+  this.sendReplyAnchor = function() {
+   if (component.anchor)
+    component.sendPM({"replyAnchor": component.anchor})
+  }
+
+  // getHashID and sendHash are responsible for translating anchor hashes to the iFramed app
+  this.getHashID = function() {
+    var hash = window.location.hash.substring(1)
+    var result = hash.match(new RegExp((component.anchor || 'reply') + '_(\\d+)'))
+    return result ? result[1] : null
+  }
+
+  this.sendHash = function() {
+    var replyID = component.getHashID();
+
+    if (component.set_focus_tab && typeof component.set_focus_tab === 'function') component.set_focus_tab()
+    if (replyID) {
+      component.sendPM({"anchorReply": '#reply_' + replyID})
+
+      // Add mention highlight if followed from Activities
+      const queryString = window.location.search
+      const urlParams = new URLSearchParams(queryString)
+      if (urlParams.has('mentions')) {
+        component.log("Sending mentions highlight for: #reply_" + replyID)
+        component.sendPM({"highlightMention": '#body_reply_' + replyID})
+      }
+
+    } else if (window.location.hash.substring(1).match(new RegExp(component.anchor + '_editor'))) {
+      component.sendPM({"findElement": '#reply_editor'})
+    }
+
+    $(window).on('hashchange', component.sendHash);
+  }
+
+  // Provide a way to get the raw iframe (used for PostMessage)
+  this.getIframe = function() {
+    return $(component.disc_div + " iframe").get(0);
+  }
+
+  this.addIframe = function() {
+    var replyID = component.getHashID()
+
+    // Add Iframe
+    if (options.manage)
+      $(component.disc_div).append(component.createPlainIframe(component.identifier + '/manage?embed=true' +
+        (component.locale ? '&locale=' + component.locale : '') ));
+    else if (component.ref_id)
+      $(component.disc_div).append(component.createPlainIframe(component.identifier + '/ref/' + component.ref_id +
+        (replyID ? '/' + replyID : '') + '?embed=true' +
+        (component.locale ? '&locale=' + component.locale : '') ));
+    else if (component.topic_id)
+      $(component.disc_div).append(component.createPlainIframe(component.identifier + '/' + component.topic_id + 
+        (replyID ? '/' + replyID : '') + '?embed=true' +
+        (component.locale ? '&locale=' + component.locale : '') ));
+
+    iFrameResize({ 
+      log: false,
+      // We may need to add every domain, unless iFrameResizer supports regex (like zoid)? Confirm from Answers use case.
+      checkOrigin: component.target_host,
+      sizeHeight: true,
+      heightCalculationMethod: 'taggedElement',
+    }, '#discussions-' + component.group_id + '-iframe');  
+
+
+    // If the component is in a tab, prepare a trigger to resize
+    // https://github.com/davidjbradshaw/iframe-resizer/issues/420
+    $(document).on('shown.bs.tab', function (e) {
+      if (iframe = component.getIframe())
+        iframe.iFrameResizer.resize();
+    })
+
+    component.initMessageReceiver();
+  }
+
+  // Show the spinner initially
+  $(component.disc_div).prepend(component.modals.site6_spinner());
+
+  component.initIframeWithLock();
+}
+
+// Iframe creation helpers
+
+// Create a "Plain" iframe prepped for IframeResizer
+DiscussionsFrame.prototype.createPlainIframe = function(path) {
+  return '<iframe id="discussions-' + this.identifier + '-iframe"' +
+    ' src="' + this.target_host + '/matlabcentral/discussions/' + path + '"' +
+    ' style="width: 1px; min-width: 100%; padding: 0; margin: 0; border: none; position: relative;">';
+}
+
+// Create a "Plain" iframe prepped for IframeResizer
+DiscussionsFrame.prototype.createCommentsIframe = function(path) {
+  return '<iframe id="discussions-' + this.group_id + '-iframe"' +
+    ' src="' + this.target_host + '/matlabcentral/discussions/' + path + '"' +
+    ' style="width: 1px; min-width: 100%; padding: 0; margin: 0; border: none; position: relative;">';
+}
+
+// Create a "Legacy" Zoid iframe, which is due to be replaced
+DiscussionsFrame.prototype.createZoid = function(params, buildUrl) {
+  this.disc_component_tag = 'discussion-component-' + (params.group_id || 'tag');
+
+  return zoid.create({
+    tag: this.disc_component_tag,
+    buildUrl: buildUrl,
+    domain: /^https:\/\/[\w-]+\.mathworks\.(com|cn)/,
+    allowedParentDomains: [/^https:\/\/[\w-]+\.mathworks\.(com|cn)/, /^http[s]*:\/\/[\w-]+\.dhcp.mathworks\.(com|cn)/],
+    dimensions: {
+      width: '100%',
+      height: '100px'
+    },
+    autoResize: {
+      height: true,
+      width: false,
+      element: this.disc_div
+    }
+  });
+}

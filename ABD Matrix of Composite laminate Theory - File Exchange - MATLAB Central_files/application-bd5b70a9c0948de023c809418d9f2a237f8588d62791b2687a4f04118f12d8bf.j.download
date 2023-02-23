@@ -1,0 +1,454 @@
+/* global $, MW */
+
+
+var TabSet = function (tabName) {
+    this.tabName = tabName;
+
+    this.pane = $('#' + tabName + '_tab');
+    this.iframe = $('#' + tabName + '_iframe');
+
+    if (tabName === 'examples') {
+        if (this.pane.find('.nav-list .selected')[0].firstElementChild.getAttribute('data-render-in-viewer-app') === 'false') {
+            var iframe = document.getElementById(this.tabName + '_iframe');
+            this.iframe.load(function () { initPlainCodeExampleIframe(iframe); });
+        }
+    }
+
+    this.enableNavigation();
+};
+
+TabSet.build = function (tabName) {
+    var tabExists = $('#' + tabName + '_tab').length > 0;
+
+    if (tabExists) {
+        return new TabSet(tabName);
+    }
+};
+
+TabSet.prototype.show = function (tabName) {
+    var tabToDisplay = $('#add_on_files a[href="#' + tabName + '"]');
+
+    if (tabToDisplay && tabToDisplay.length === 1) {
+        tabToDisplay.tab('show');
+    }
+};
+
+TabSet.prototype.enableNavigation = function () {
+    var tabSet = this;
+
+    tabSet.pane.find('.nav-list a').each(function () {
+        $(this).on('click', tabSet.navigate.bind(tabSet));
+    });
+};
+
+TabSet.prototype.navigate = function (clickEvent) {
+    var clickedElement = $(clickEvent.currentTarget);
+    var renderInViewerApp = clickedElement[0].getAttribute('data-render-in-viewer-app');
+
+    clickEvent.preventDefault();
+
+    this.setSelectedLink(clickedElement.parent('li'));
+
+    // examples resize more effectively using location.replace (ported from old FX code)
+    if ((this.tabName === 'examples') || (this.tabName === 'functions')) {
+        var iframe = document.getElementById(this.tabName + '_iframe');
+
+        iframe.contentWindow.location.replace(clickedElement.data('iframeSrc'));
+        iframe.src = clickedElement.data('iframeSrc');
+
+        if (renderInViewerApp === 'true') {
+            resizeIframe(iframe);
+        }
+    } else {
+        this.replaceIframeContents(clickedElement.data('iframeSrc'));
+    }
+
+    $('html,body').scrollTop($('.all-tabs-container').offset().top - 100);
+};
+
+TabSet.prototype.setSelectedLink = function (selectedElement) {
+    this.pane.find('.nav-list .selected').removeClass('selected');
+
+    selectedElement.addClass('selected');
+};
+
+TabSet.prototype.replaceIframeContents = function (url) {
+    this.iframe.css('height', 'auto');
+    this.iframe.attr('src', url);
+};
+
+var initPlainCodeExampleIframe = function (iframe) {
+    var doc = iframe.contentDocument ? iframe.contentDocument : iframe.contentWindow.document;
+    openLinksInNewTab(doc);
+};
+
+var openLinksInNewTab = function (doc) {
+    var links = $(doc).find('a[href^="http"],a[href^="https"]');
+    var iframeEventHandler;
+
+    if (MW.addons) {
+        for (var i = 0; i < links.length; i += 1) {
+            links[i].setAttribute('data-action', 'openSystemBrowser');
+            links[i].setAttribute('data-add-on-metadata', JSON.stringify({ 'url': links[i].href }));
+        }
+
+        if (!iframeEventHandler) {
+            iframeEventHandler = new MW.addons.UIEventHandler(doc);
+            // eslint-disable-next-line no-undef
+            iframeEventHandler.addListener(controller);
+        }
+    } else {
+        links.attr('target', '_blank');
+    }
+};
+
+var scrollNavigationToSelectedItem = function () {
+    var selectedItem = $('.tab-pane.active .selected');
+    var navigation;
+
+    if (selectedItem.length > 0) {
+        navigation = $(".tab-pane.active [data-pane='scroll']");
+
+        navigation.animate({
+            'scrollTop': selectedItem.offset().top - navigation.offset().top + navigation.scrollTop()
+        });
+    }
+};
+
+var setNavigationDimensions = function () {
+    var offset = getTabOffsetHeight() + 1;
+    $(".tab-pane.active [data-pane='scroll']").each(function () {
+        if ($(this).data('original-width') === undefined) {
+            $(this).data('original-width', $(this).outerWidth(true));
+        }
+        $(this).css({
+            'height': $(window).height() - offset,
+            'width': $(this).data('original-width'),
+            'position': 'fixed',
+            'top': offset
+        });
+    });
+};
+
+var getTabOffsetHeight = function () {
+    var scrollOffset, headerOffset;
+
+    scrollOffset = $('.tab-content').offset().top - $(window).scrollTop();
+    headerOffset = $("[data-header='sticky']").height();
+
+    return Math.max(scrollOffset, headerOffset);
+};
+
+var ensureSelectedNavigationItemIsVisible = function () {
+    var selectedItem = $('.tab-pane.active .selected');
+    var navigation;
+    var offset;
+
+    if (selectedItem.length === 0) { return; }
+
+    if (selectedItem.offset().top > $(window).height()) {
+        navigation = $(".tab-pane.active [data-pane='scroll']");
+
+        offset = (selectedItem.offset().top - $(window).height()) + selectedItem.height();
+
+        navigation.animate({ 'scrollTop': offset });
+    }
+};
+
+// FX/doc/example iframes may finish loading before we have set
+// the load event handler. This function assumes that if there is
+// any content in the iframe's body element that it is loaded.
+// If it has not in fact finished loading, the load event handler
+// will be triggered and balance everything out.
+var iframeBodyHasLoaded = function (iframe) {
+    try {
+        if (iframe.contentDocument.body) {
+            return $(iframe.contentDocument.body).html().length > 0;
+        }
+    } catch (e) {
+        return false;
+    }
+    return false;
+};
+
+var setIframeHeightToContentHeight = function (iframe) {
+    if (!iframe.src.includes('viewer=')) {
+        // site6.css sets the overflow-y on the iframe's html and body elements to "scroll,"
+        // so we have to manually override it.
+        $(iframe.contentDocument).find('html').css({ 'overflow-y': 'hidden' });
+        $(iframe.contentDocument).find('body').css({ 'overflow-y': 'hidden' });
+
+        iframe = document.getElementById(iframe.id);
+        var doc = iframe.contentDocument ? iframe.contentDocument : iframe.contentWindow.document;
+        doc = doc || document;
+        var body = doc.body;
+        var html = doc.documentElement;
+
+        // in IE and Edge, body and html scrollHeight are not reliable. Instead, get the
+        // height of the content class element of the example preview in mlc-downloads. this
+        // only seems to be an issue with examples and not functions
+        var contentScrollHeight = 0;
+        var contentOffsetHeight = 0;
+        var contentClientHeight = 0;
+
+        if (iframe.id === 'examples_iframe' && iframe.src.includes('mlc-downloads')) {
+            var iframeContent = doc.getElementsByClassName('content');
+
+            // add 20 px buffer for not including the title in the height
+            if (iframeContent && iframeContent.length !== 0) {
+                contentScrollHeight = iframeContent[0].scrollHeight + 20;
+                contentOffsetHeight = iframeContent[0].offsetHeight + 20;
+                contentClientHeight = iframeContent[0].clientHeight + 20;
+            }
+        }
+
+        var height = Math.max(
+            Math.max(body.scrollHeight, html.scrollHeight, contentScrollHeight),
+            Math.max(body.offsetHeight, html.offsetHeight, contentOffsetHeight),
+            Math.max(body.clientHeight, html.clientHeight, contentClientHeight)
+        );
+
+        if (height > 0) {
+            iframe.style.visibility = 'hidden';
+            iframe.style.height = '10px'; // reset to minimal height ...
+            // IE opt. for bing/msn needs a bit added or scrollbar appears
+            iframe.style.height = height + 25 + 'px';
+            iframe.style.visibility = 'visible';
+        }
+    }
+};
+
+var resizeIframe = function (iframe) {
+    if (iframe.src.includes('viewer=')) {
+        $(iframe).iFrameResize({
+            'heightCalculationMethod': 'lowestElement',
+            'bodyMargin': '0 20px', // To leave a buffer zone in case the horizontal scroll bar appears (which would also cause a vertical scroll bar to appear)
+            'autoResize': false,
+            'checkOrigin': false
+        });
+    } else {
+        setIframeHeightToContentHeight(iframe);
+    }
+};
+
+$(function () {
+    var detailPage = document.querySelector('[data-view=detail]');
+
+    if (detailPage) {
+        // polyfill for IE
+        if (!String.prototype.includes) {
+            // eslint-disable-next-line no-extend-native
+            String.prototype.includes = function (search, start) {
+                'use strict';
+                if (typeof start !== 'number') {
+                    start = 0;
+                }
+
+                if (start + search.length > this.length) {
+                    return false;
+                } else {
+                    return this.indexOf(search, start) !== -1;
+                }
+            };
+        }
+
+        // [RS] I do not know why we do this here...
+        $('body').attr('id', 'addon_details');
+
+        ['apps', 'blocks', 'examples', 'functions', 'models'].forEach(function (tabName) {
+            TabSet.build(tabName);
+        });
+
+        scrollNavigationToSelectedItem();
+
+        $('.tab-pane.resizable-iframe iframe').each(function () {
+            var self = this;
+
+            if (iframeBodyHasLoaded(this)) {
+                resizeIframe(this);
+            }
+
+            window.addEventListener('resize', function () {
+                resizeIframe(self);
+            });
+
+            $(this).on('load', function () {
+                resizeIframe(self);
+                ensureSelectedNavigationItemIsVisible();
+            });
+        });
+
+        // only use left-nav scroll bar in add-ons
+        if (MW.addons) {
+            setNavigationDimensions();
+
+            $(window).on('scroll resize', function (event) {
+                setNavigationDimensions();
+            });
+        }
+
+        $("a[data-toggle='tab']").on('shown.bs.tab', function (event) {
+            if (event.target.classList.contains('resizable-iframe')) {
+                var iframe = document.getElementById(event.target.name.toLowerCase() + '_iframe');
+
+                // If it is the first time that this tab is visible, set the iframe src and clear
+                // the data-default-src attribute.
+                // See g2105244.
+                if (iframe.dataset.defaultSrc) {
+                    iframe.src = iframe.dataset.defaultSrc;
+                    delete iframe.dataset.defaultSrc;
+                }
+
+                if (iframe.iFrameResizer) {
+                    iframe.iFrameResizer.resize();
+                } else {
+                    resizeIframe(iframe);
+                }
+            }
+
+            if (MW.addons) {
+                setNavigationDimensions();
+            }
+        });
+
+        var tabLinks = document.querySelectorAll('[data-tab-id]');
+
+        if (tabLinks === null) { return; }
+
+        tabLinks.forEach(function (tabLink) {
+            tabLink.addEventListener('click', function (event) {
+                var tabName = event.target.dataset.tabId;
+                var tabSet = new TabSet();
+
+                tabSet.show(tabName);
+
+                event.preventDefault();
+            });
+        });
+    }
+});
+
+// cSpell:words Resizer
+;
+$(document).ready(function () {
+
+  var relatedContentElement = document.querySelector('[data-related-content-path]');
+
+  if (relatedContentElement)
+  {
+    var url = relatedContentElement.getAttribute('data-related-content-path');
+
+    $.ajax({
+      url : url,
+      dataType : "script"
+    });
+  }
+});
+var selectCitationText = function (event) {
+    if(!document.body.createTextRange) {
+        // non-IE implementation
+        var range = document.createRange(),
+            selection = window.getSelection();
+
+        range.selectNodeContents(event.currentTarget);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    } else {
+        var range = document.body.createTextRange();
+        range.moveToElementText(event.currentTarget);
+        range.select();
+    }
+};
+
+$(function () {
+    // listeners to select the text for a citation
+    var defaultCitation = document.getElementById("defaultCitation"),
+        visibleDoi = document.querySelectorAll("p[data-citation-component='visibleDoiCitation']"),
+        apaCitations = document.querySelectorAll("div[data-citation-component='apa']"),
+        mlaCitations = document.querySelectorAll("div[data-citation-component='mla']"),
+        bibtexCitations = document.querySelectorAll("div[data-citation-component='bibtex']"),
+        customCitations = document.querySelectorAll("p[data-citation-component='custom']");
+
+    if (defaultCitation) {
+        defaultCitation.addEventListener('click', selectCitationText);
+    }
+
+    // using forloop because IE does not support forEach on these objects
+    for(var i = 0; i < visibleDoi.length; i++) {
+        visibleDoi[i].addEventListener('click', selectCitationText);
+    }
+
+    for(var i = 0; i < apaCitations.length; i++) {
+        apaCitations[i].addEventListener('click', selectCitationText);
+    }
+
+    for(var i = 0; i < mlaCitations.length; i++) {
+        mlaCitations[i].addEventListener('click', selectCitationText);
+    }
+
+    for(var i = 0; i < bibtexCitations.length; i++) {
+        bibtexCitations[i].addEventListener('click', selectCitationText);
+    }
+
+    for(var i = 0; i < customCitations.length; i++) {
+        customCitations[i].addEventListener('click', selectCitationText);
+    }
+});
+var UI;
+
+if (UI === undefined) { UI = {}; }
+
+UI.IncrementViewCount = (function () {
+    "use strict";
+
+    var IncrementViewCount = function (url, addOnUuid, timeOut) {
+        this.url = url;
+        this.addOnUuid = addOnUuid;
+        this.timeOut = timeOut || 5000;
+    };
+
+    IncrementViewCount.prototype.execute = function () {
+        if (this._isBotRequest()) { return };
+
+        setTimeout(this._updateViewCount.bind(this), this.timeOut);
+    };
+
+    IncrementViewCount.prototype._updateViewCount = function () {
+        // PUT requests are currently (Mar 13 2019) dropped by the load balancer,
+        // so we use the "_method" parameter to tell Rails to treat the POST as if it were a PUT
+        $.ajax({
+            url: this.url,
+            type: 'POST',
+            data: {
+                uuid: this.addOnUuid,
+                _method: 'PUT'
+            }
+        });
+    };
+
+    IncrementViewCount.prototype._isBotRequest = function () {
+        if (window && window.navigator) {
+            return (window.navigator.userAgent.match(/bot|spider|crawl|curl|slurp/i) !== null);
+        }
+    };
+
+    return IncrementViewCount;
+}());
+function scrollSpy(){
+    var scrollSpyOffset = $('.sticky_header_container').outerHeight();
+    //10 pixels below blue banner + 1px fix to assure proper highlighting = 11
+    scrollSpyOffset = scrollSpyOffset + 11;
+    $('body').scrollspy({target:'#sticky_anchornav', offset:scrollSpyOffset});
+  };
+  document.addEventListener("DOMContentLoaded", scrollSpy)
+;
+/*
+ *
+
+
+
+
+
+ */
+
+;

@@ -1,0 +1,288 @@
+function createOptions(params) {
+
+    var options = {};
+
+    options.targetElementClassName = 'relatedContentMicro';
+    options.cacheRequests = JSON.parse(true);
+    options.async = JSON.parse(true);
+    options.debug = JSON.parse(false);
+  	options.showMainHeading = JSON.parse(false);
+  	options.heading = 'Discussions';
+    options.showHeading = JSON.parse(false);
+    options.maxTitleLength = 128;
+    options.maxDescriptionLength = 72;
+    options.maxSummaryLength = 50;
+	  options.primaryCore = 'answers';
+    options.cores = ["answers"];
+    options.fields = ["url", "title_en", "title_zh", "title_ja", "title_ko", "title_fr", "title_it", "title_de", "title_es", "answers_count", "status", "asset_id", "asked_by", "methods_used"];
+    options.rows = 3;
+    options.startAt = 1;
+    options.serviceUrl = '/searchresults/related/v1';
+    options.itemUrl = '';
+    options.itemID = 'discussion:topic:' + document.getElementById(options.targetElementClassName).getAttribute("itemID");
+
+	options.filters = ["(subcollection:discussions)"];
+	options.excludeIDs = document.getElementById(options.targetElementClassName).getAttribute("excludeIDs");
+
+    options.itemTemplate = '<div class="media" style="margin-bottom:10px;">'+
+                           '    <a href="{{url}}" title="{{assetTitle}}">'+
+                           '        <p class="related-title">{{assetTitle}}</p>'+
+                           '    </a>'+
+                           '    <div class="small">Discussions</div>'+
+                           '    </div>'+
+						               '</div>';
+    options.tracking = [params.tracking_prefix + 'rc1-1_p1', params.tracking_prefix + 'rc1-2_p2', params.tracking_prefix + 'rc1-3_p3'];
+
+    mwRelatedContentLib.init(options);
+
+
+    var options2 = {};
+
+    options2.targetElementClassName = 'relatedContentMacro';
+    options2.cacheRequests = JSON.parse(true);
+    options2.async = JSON.parse(true);
+    options2.debug = JSON.parse(false);
+	  options2.showMainHeading = JSON.parse(false);
+	  options2.heading = 'Entire Website';
+    options2.showHeading = JSON.parse(false);
+    options2.maxTitleLength = 128;
+    options2.maxDescriptionLength = 72;
+    options2.maxSummaryLength = 50;
+	  options2.primaryCore = 'answers';
+    options2.cores = ["add-ons", "answers", "latest_documentation", "entire_site","examples-gallery"];
+    options2.fields = ["url", "subcollection", "title_en", "title_zh", "title_ja", "title_ko", "title_fr", "title_it", "title_de", "title_es", "answers_count", "status", "asset_id", "asked_by", "methods_used"];
+    options2.rows = 3;
+    options2.startAt = 1;
+    options2.serviceUrl = '/searchresults/related/v1';
+    options2.itemUrl = '';
+    options2.itemID = 'discussion:topic:' + document.getElementById(options2.targetElementClassName).getAttribute("itemID");
+
+    options2.filters = ["-(subcollection:add-ons AND -subcollection:fileexchange_nopub)","-(subcollection:discussions)"];
+
+    options2.itemTemplate = '<div class="media" style="margin-bottom:10px;">'+
+                            '    <a href="{{url}}" title="{{assetTitle}}">'+
+                            '        <p class="related-title">{{assetTitle}}</p>'+
+                            '    </a>'+
+				            '    <div class="small">{{subcollection}}</div>'+
+                            '</div>';
+    options2.tracking = [params.tracking_prefix + 'rc2-1_p4', params.tracking_prefix + 'rc2-2_p5', params.tracking_prefix + 'rc2-3_p6'];
+
+	mwRelatedContentLib.init(options2);
+}
+
+function init_related_content(params) {
+  jQuery(document).ready(function(){
+      createOptions(params);
+  });
+};
+// This is a manifest file that'll be compiled into application.js, which will include all the files
+// listed below.
+//
+// Any JavaScript/Coffee file within this directory, lib/assets/javascripts, vendor/assets/javascripts,
+// or any plugin's vendor/assets/javascripts directory can be referenced here using a relative path.
+//
+// It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
+// compiled file. JavaScript code in this file should be added after the last require_* statement.
+//
+// Read Sprockets README (https://github.com/rails/sprockets#sprockets-directives) for details
+// about supported directives.
+//
+
+
+
+(function($, undefined) {
+
+
+  $(document).ready(function() {
+      // Try to scroll to the reply in case there are expandable transitions happening
+      // (which throw off browser anchor behavior)
+      var url_fragments = document.location.toString().split("#"), anchor, collapsible = null, lastCollapsible;
+      if (url_fragments.length > 1) {
+        setTimeout(function() {
+          $(document).scrollTop( $("#" + url_fragments[1]).offset().top - 120);
+        }, 500);
+      }
+  });
+
+  // Clear error messages from edit question/answer/comment forms on cancel
+  $(document).on('click', '.reply-form .cancel', function(event) {
+    event.preventDefault();
+
+    $(this).closest('form').find('.error').remove();
+  });
+
+  // Auto-focus comment and answer textareas when the form is shown
+  $(document).on('toggle:after', '.reply-form', function() {
+    $('#reply_editor').find('textarea').focus();
+  });
+
+  // Enable maxlength when editing a question
+  $(document).on('toggle:after', '.topic-form', function() {
+    $(this).find('[data-maxlength-for]').maxlength();
+  });
+
+  // Clear the new answer/comment forms on cancel
+  $(document).on('click', '.create-reply-form .btn_primary .btn_secondary', function(event) {
+    event.preventDefault();
+    $(this).closest('form').find('textarea').val('').trigger('matlabmarkup:refresh');
+  });
+
+  // Add links that open images in question/answer/comment bodies in a new tab/window
+  $(".reply-body .question-body img").each(function() {
+    $(this).wrap($("<a>", { href: this.src, target: "_blank" }));
+  });
+
+  // Remove Answers event
+  Application.off('matlabmarkup:initialize');
+
+  // Add Discussions event, with Discussions URLs
+  Application.on('matlabmarkup:initialize', function(event, selector) {
+    var form = $(selector).closest("form");
+
+    var listener = {
+      fileUploadComplete: function(fileData) {} };
+
+    var callback = function() {
+      $(this).matlabmarkup({
+        guidelinesPath: "/matlabcentral/content/terms-of-use.html",
+        helpPath:       "/matlabcentral/discussions/help/markup/",
+        remotePath:     "/matlabcentral/discussions/matlabmarkup",
+        uploadPath:     "/matlabcentral/discussions/uploaded_files",
+        uploadListener: listener,
+        preview:        false
+      });
+    };
+
+    // Don't initialize the editor unless it's visible
+    $(selector).filter(':visible').each(callback);
+
+    $(selector).filter(':hidden').closest('.matlabmarkup').one('toggle:after', function() {
+      $(this).find('[data-matlab-markup]').each(callback);
+    });
+
+    // move uploaded file name spans to their correct location
+    var preview = form.find('.matlabmarkup-preview').first();
+    preview.before($('.pending-uploads'));
+
+    $('[data-file-id]').click(
+      function() {
+        var fileId = $(this).data("file-id");
+        $('input[type="hidden"][data-assoc-file-id="' + fileId + '"]').remove();
+
+        var pendingUploads = $(this).closest('.pending-uploads');
+        if ($(pendingUploads).find('li').length <= 1) {
+          $(pendingUploads).remove();
+        }
+        else {
+          $(this).parent().remove();
+        }
+      });
+  });
+
+  if (window.parent !== window) {
+    Application.on("rebind_component_helpers", function() {  
+      $("a[href^='#reply']").off("click");
+      $("a[href^='#reply']").click(function(event){
+        event.preventDefault()
+        Discussions.sendPM({"setAnchor": $(this).attr('href')})
+      });
+      
+      $("a[href^='http']").off("click");
+      $("a[href^='http']").click(function(event){
+        event.preventDefault()
+        Discussions.sendPM({"setURL": $(this).attr('href')})
+      });
+
+      $("a[href^='/matlabcentral/discussions/uploaded_files']").off("click");
+      $("a[href^='/matlabcentral/discussions/uploaded_files']").click(function(event){
+        event.preventDefault()
+        Discussions.sendPM({"setURL": window.location.protocol + '//' + window.location.hostname + $(this).attr('href')})
+      });
+
+    });
+  } else {
+    // Full-page clients
+    Application.on("rebind_component_helpers", function() {      
+      // Link off MW
+      $(".smart_wrap").find("a[href^='http']").filter(function() {
+        return !this.href.match(/^https:\/\/[\w-]+\.mathworks\.(com|cn)/);
+      }).attr('target','_blank')
+      
+      // Link within MW
+      $(".smart_wrap").find("a[href^='http']").filter(function() {
+        return this.href.match(/^https:\/\/[\w-]+\.mathworks\.(com|cn)/);
+      }).removeAttr('target')
+      
+      // Trap any in-line links to attachments
+      $("a[href^='/matlabcentral/discussions/uploaded_files']").attr('target','_blank')
+    });
+  }
+
+  // Logic fired any time Discussions renders topic/reply content
+  Application.on("after_discussions_render", function() {
+    if (CodeOptions)
+       CodeOptions.show();
+
+    // ES6 test
+    if (rtc_is_supported()) {
+      if (typeof Discussions.config !== "underfined" && Discussions.config.mentions === true) {
+        handle_mentions({locale: Discussions.config.locale, profile_id: Discussions.config.profile_id });
+      }
+    } else {
+      disable_unsupported_es6_features()
+    }
+
+    Application.trigger('rebind_component_helpers');
+  });
+
+  // Disable pressing Enter to submit a form (except on the submit button) g1801321 7/23/18
+  $(document).on("keypress", ":input:not(textarea):not([type=submit])", function(event) {
+    if (event.keyCode == 13)
+      event.preventDefault();
+  });
+
+})(jQuery);
+
+var Discussions = {
+  getUrlWithReferrer: function(url, params) {
+    // Strip params, anchors from url
+    url = (url || window.location.toString()).split(/[?#]/)[0];
+    // Add custom parameters
+    if (params) {
+      // Remove referrer from params, if included
+      url = url + '?' + params.replace(/&?referrer=[^&]*&*/, '&');
+      if (url.slice(-1) != '&') url = url + '&';
+    } else
+      url = url + '?' 
+
+    return url + "referrer=" + encodeURI(Discussions.referrer)
+  },
+  // iFrame messaging
+  sendPM: function(blob) {
+    blob['discussion_group'] = Discussions.component_id;    // Legacy
+    blob['discussions_identifier'] = Discussions.component_id;
+
+    if (Discussions.referrer == null)
+      return;
+    
+      if (window.parent !== window && window.parent.postMessage && Discussions.isValidHost(Discussions.referrer)) {
+      window.parent.postMessage(blob, Discussions.referrer);
+    }
+  },
+  showLoadingBar: function(div_id) {
+    $(div_id).html('<div class="progress"><div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"><span class="sr-only">Loading...</span></div></div> ');
+  },
+  isValidHost: function(url) {
+    return url.match(/^https:\/\/[\w-]+\.mathworks\.(com|cn)/) || 
+           url.match(/^https?:\/\/[\w-]+\.dhcp.mathworks.com/)
+  },
+  // Update the direct link to replies if a BaseURL was provided (component mode)
+  setReplyURL: function(div, id) {
+    if (Discussions.baseURL) {
+      var anchor = Discussions.replyAnchor || "reply";
+      $(div).text(Discussions.baseURL + "#" + anchor + "_" + id);
+      $(div).attr("href", Discussions.baseURL + "#" + anchor + "_" + id);
+    }
+  }
+};
+ 
