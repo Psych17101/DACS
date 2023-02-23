@@ -1,6 +1,6 @@
 % Principle Elongation to Normal Elongation
 
-e_123 = PtoN_e(theta,e_xyz)
+function e_123 = PtoN_e(theta,e_xyz)
 
 m = cos(theta);
 n = sin(theta);

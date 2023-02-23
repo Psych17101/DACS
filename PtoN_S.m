@@ -1,5 +1,5 @@
 %Principal to Normal Stress
-sigma_123 = PtoN_S(theta,sigma_xyz)
+function sigma_123 = PtoN_S(theta,sigma_xyz)
 
 m = cos(theta);
 n = sin(theta);
