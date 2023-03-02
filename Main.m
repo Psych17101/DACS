@@ -36,7 +36,7 @@ MT = zeros(3,1);
 
 for i = 1:Nplies
   % For each ply we calculate the ABD Matrix
-  theta  = thetadb(i);  % ply i angle in radians, from bottom
+  theta  = thetadb(i)*pi/180;  % ply i angle in radians, from bottom
   [T, invT] = TinvT(theta);
   [Sbar, Qbar] = Tranformed_SCbar(S,Q,T,invT);
   
