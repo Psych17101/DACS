@@ -7,21 +7,24 @@ format short g;
 
 %% Initialisation
 % Laminate definition (plies of equal thickness)
-Nplies = 6;
-thetadt = [0 60 -30 30 -60 0]; % ply angles in degrees, from top
+
+thetadt = [0 +45 -45 90 90 -45 +45 0]; % ply angles in degrees, from top
+Nplies = length(thetadt);
 thetadb = fliplr(thetadt); % ply angles in degrees, from bottom
-h_ply  = 0.003;           % SI units, meters
+h_ply  = 0.125*10^(-3);           % SI units, meters
 h      = Nplies * h_ply ;
+
+z = 0:h_ply:h;
 
 for i = 1:Nplies
   zbar(i) = - (h + h_ply)/2 + i*h_ply;
 end
 
 % Ply engineering properties examples
-E1   = 148.e9 ; % Pa
+E1   = 140.e9 ; % Pa
 nu12 = .3 ;
-E2   = 10.5e9  ; % Pa
-G12  = 5.61e9  ; % Pa
+E2   = 10.e9  ; % Pa
+G12  = 5.e9  ; % Pa
 nu21 = nu12 * E2 / E1 ;
 
 [S, Q] = ReducedComplianceStiffness(E1,E2,nu12,G12);
@@ -34,23 +37,47 @@ D = zeros(3,3);
 NT = zeros(3,1);
 MT = zeros(3,1);
 
+
 for i = 1:Nplies
   % For each ply we calculate the ABD Matrix
   theta  = thetadb(i)*pi/180;  % ply i angle in radians, from bottom
-  [T, invT] = TinvT(theta);
+  [T, invT] = TinvT(theta); %% there may be a problem with the TinvT and Transformed_SCbar
   [Sbar, Qbar] = Tranformed_SCbar(S,Q,T,invT);
   
-  A = A + Qbar * h_ply;
-  B = B + Qbar * h_ply * zbar(i); 
-  D = D + Qbar * (h_ply * zbar(i)^2  + h_ply^3 / 12);
+  A = A + Qbar * (z(i+1)-z(i)) ; %N/m
+  B = B + (1/2)*Qbar * (z(i+1)^2-z(i)^2); %N 
+  D = D + (1/3)*Qbar * (z(i+1)^3-z(i)^3); %Nm
   
-  NT = NT + Qbar * h_ply ;
-  MT = MT + Qbar * h_ply * zbar(i)  ;
+  A_inv = inv(A);
+  B_inv = inv(B);
+  D_inv = inv(D);
+
+ 
+
+  NT = NT + Qbar * (z(i+1)-z(i));
+  MT = MT + (1/2)*Qbar * (z(i+1)^2-z(i)^2) ;
   
   ABD = [A B; A D];
 end
 
+% Exercise done is class
+E_x = EquivPropA(h,A_inv);
+N_initial  = [0 100000]; %N/m
+iter1   = 0;
+k3      = 0;
 
-%%
+while I(2)-I(1)>0.01
+    mean = mean(N_initial);
+
+end
+
+
+disp(A)
+
+
+
+%% Functions
+
+
 
 
