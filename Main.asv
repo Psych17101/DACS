@@ -58,18 +58,17 @@ for i = 1:Nplies
   MT = MT + (1/2)*Qbar * (z(i+1)^2-z(i)^2) ;
   
   %changes on every iteration, and isnt it supposed to be [A B;B D]
-  %there is only one ABD matrix, meaning line 63 should be outside of the
-  %loop
+  %there is only one AB
   ABD = [A B; A D];
 end
 
 % Exercise done is class
-E_x = EquivPropA(h,A_inv); 
+E_x = EquivPropA(h,A_inv);
 N_initial  = [0 100000]; %N/m
 iter1   = 0;
 k3      = 0;
 
-while I(2)-I(1)>0.01%im guessing this is error
+while I(2)-I(1)>0.01
     mean = mean(N_initial);
 
 end

@@ -1,4 +1,4 @@
-function [T invT]= TinvT(theta)
+function [T, invT]= TinvT(theta)
 %T This function returns the transformation matrix T
 % given the orientation angle "theta".
 % There is only one argument representing "theta"
