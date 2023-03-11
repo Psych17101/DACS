@@ -7,4 +7,6 @@ function [T, invT]= TinvT(theta)
 m = cos(theta);
 n = sin(theta);
 T = [m*m n*n 2*m*n ; n*n m*m -2*m*n ; -m*n m*n m*m-n*n];
-invT = inv(T);
+invT = [m*m n*n -2*m*n ; n*n m*m 2*m*n ; m*n -m*n m*m-n*n];
+
+
