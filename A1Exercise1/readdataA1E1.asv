@@ -1,0 +1,6 @@
+data=readtable("C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\AE\45\AE_45_2.csv");
+data2=readtable("C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\AE\90\AE_90_3.csv");
+%data.Properties.DimensionNames
+%[number, Time, Chan, Load [N], E [eu]]
+plot(data{:,1}, data{:,5}, "*b"); xlabel("number"); ylabel("E");
+plodata2{:,1}, data2{:,5}, "xr"); xlabel("number"); ylabel("E");
