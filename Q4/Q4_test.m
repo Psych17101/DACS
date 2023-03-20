@@ -9,7 +9,6 @@ format short g;
 % Not sure about units of force and material properties
 % Problems with plotting
 
-
 %% Initialisationation
 layup = [0 +45 -45 90 90 -45 +45 0 ];
 Nplies = length(layup);
@@ -89,21 +88,21 @@ for i = 1:length(N)
                 fe(k,l) = puckfailure(sigma_loc,E1_samples(k),E_x(k),v12_samples(k),X_T,X_C);  % (num_samples,layer)
                 % Calculation of Ply failure 
                 if fe(k,l) > max_fe(k)
-                    max_fe(k) = fe(k,l);
+                    max_fe(k) = fe(k,l); % failure index under puck criterion
                     numberply(k,l) = l;
                 end
-            end    
-      
-             
+            end   
         end
         
         % calculate the probability of failure for each ply
-        % check if any ply has failed for each sample
         %ply_failure(j) = max_fe > 1;
+
+
     end
     
     % calculate the probability of failure for each load and orientation
     %P_f_convergence(k) = sum(ply_failure) / num_simulations;
+
 end
 
 % plot the probability of failure as a function of load and orientation

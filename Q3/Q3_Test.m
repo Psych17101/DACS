@@ -90,9 +90,6 @@ for i = 1:length(sigma_range)
             maxstress_envelope1(i,j) = 1;
         end
 
-
-
-
         %Biaxial Maximum Stress (Puck - Fiber Failure)
         fe = fiberfailure(sigma1,sigma2,0,'c',X_T,X_C,E_x,E1_f,nu12); %Function defined at the bottom 
         if fe >= 1
@@ -102,7 +99,8 @@ for i = 1:length(sigma_range)
 end
 
 
-% Find FPF from Puck and Max Stress criteria
+%% Find FPF from Puck and Max Stress criteria
+
 for i = 1:length(N_range)
     for j = 1:length(N_range)
         % Initialisation of loading criterion (Biaxial loading)
@@ -128,12 +126,6 @@ for i = 1:length(N_range)
             [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
             FI = [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)];
             
-            %
-            % isolate FI_1 and FI_2 which are the biggest with respect to
-            % each ply so analyse all the FI_1 for each ply find the
-            % maximum and divide the sigma1 by this index. do the same for
-            % FI_2 and sigma2
-            
             % Failure index with Pucks Criterion
             fe(i,j,l) = fiberfailure(sigma_loc(1),sigma_loc(2),sigma_loc(3),'c',X_T,X_C,E_x,E1_f,nu12);  % (num_samples,layer)
             % Calculation of Ply failure
@@ -141,41 +133,27 @@ for i = 1:length(N_range)
                 max_fe(i,j)= fe(i,j,l); %maximum failure index with relative forces
                 numberply(i,j,l) = l;
             end
-
-
         end
         % Considering all the plies - find highest index for each pair of 
-        max_FI_1(i,j) = max(FI_1(i,j,:));
-        max_FI_2(i,j) = max(FI_2(i,j,:));
+        max_FI_1(i,j) = max(FI_1(i,j,:)); % Strength Ratio
+        max_FI_2(i,j) = max(FI_2(i,j,:)); % Strength Ratio
         
         % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
-        F_FPF(:,i,j) = [N_range(i)/max_FI_1(i,j);N_range(j)/max_FI_2(i,j)];
-
-
-
-
-        
-        % norm of force for first ply failure 
-        %F_norm_puck(i,j) = norm(F./max_fe(i,j));
-        %F_norm_MaxStress(i,j) = norm(F./max_FI(i,j));
-
-        %Force_failure_maxStress(:,i,j) = [F(1)/max_FI(i,j);F(2)/max_FI(i,j);0];
-        %strain_failure_maxStress(:,i,j) = invA_test*Force_failure_maxStress(:,i,j);
-
-        %Force_failure_Puck(:,i,j) = [F(1)/max_FI(i,j);F(2)/max_fe(i,j);0];
-        %strain_failure_Puck(:,i,j) = invA_test*Force_failure_Puck(:,i,j);
+        F_FPF_MS(:,i,j) = [N_range(i)/max_FI_1(i,j);N_range(j)/max_FI_2(i,j)];
+        F_FPF_PC(:,i,j) = [N_range(i);N_range(j)]/max_fe(i,j);
 
     end
 end
 
-%%
-
-
-%%
+%% LPF
 
 
 
 
+
+
+
+%% Plots
 
 % % Plot biaxial stress failure envelopes for Puck and Max Stress criteria
 % figure(1);
