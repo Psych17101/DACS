@@ -147,14 +147,12 @@ for i = 1:length(N_range)
         % Considering all the plies - find highest index for each pair of 
         max_FI_1(i,j) = max(FI_1(i,j,:));
         max_FI_2(i,j) = max(FI_2(i,j,:));
-        
-        % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
-        F_FPF(:,i,j) = [N_range(i)/max_FI_1(i,j);N_range(j)/max_FI_2(i,j)];
+
+        F_FPF() = [N_range(i)/max_FI_1;N_range(j)/max_FI_1];
 
 
 
 
-        
         % norm of force for first ply failure 
         %F_norm_puck(i,j) = norm(F./max_fe(i,j));
         %F_norm_MaxStress(i,j) = norm(F./max_FI(i,j));
