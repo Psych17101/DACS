@@ -1,0 +1,3 @@
+
+data=readtable("C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\AE4ASM109(dimensions).xlsx");
+Lengths=(data{2:end, 2}.*data{2:

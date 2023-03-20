@@ -1,6 +1,367 @@
-data=readtable("C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\AE\45\AE_45_2.csv");
-data2=readtable("C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\AE\90\AE_90_3.csv");
-%data.Properties.DimensionNames
-%[number, Time, Chan, Load [N], E [eu]]
-plot(data{:,1}, data{:,5}, "*b"); xlabel("number"); ylabel("E");
-plodata2{:,1}, data2{:,5}, "xr"); xlabel("number"); ylabel("E");
+%% geometry, from the geometryfile (hardcoded for speed)
+geomUD=[  250.1800   14.9867    0.8383
+  250.1450   15.1367    0.9917
+  250.1400   15.1767    1.0400
+  250.1450   15.1100    1.0100
+  250.1500   15.0900    0.9867
+  250.1600   15.0967    0.9850
+  250.1700   15.1400    1.0000
+  250.1400   15.1467    1.0017
+  250.1200   15.0800    1.0000
+  250.1100   15.1567    0.9950
+  250.1200   15.0600    0.9967
+  250.1650   15.1233    0.9867
+  250.1600   15.1433    0.9917
+  250.1300   15.1467    1.0033
+  250.1100   15.0833    1.0400
+  250.1000   15.2333    1.0217
+  250.0850   15.2167    0.8983];
+geomUD=geomUD.*1e-3; %convert to [m]
+
+geom90=[
+  175.1150   25.0700    2.1233
+  175.0950   24.9600    2.1450
+  175.1150   25.0633    2.1133
+  175.1000   25.0467    2.1133
+  175.1000   25.0733    2.1250
+  175.0950   25.0333    2.1217
+  175.0800   25.0367    2.1217
+  175.0850   25.0600    2.1400
+  175.0650   25.0200    2.1383];
+geom90=geom90.*1e-3;
+
+geom45=[  250.0950   25.0367    2.0733
+  250.0850   25.0433    2.0700
+  250.0700   25.0200    2.0467
+  250.0600   25.0300    2.0600
+  250.0700   25.0833    2.0483
+  250.0700   25.0800    2.0483
+  250.0700   25.0500    2.0417
+  250.0600   24.9467    2.0700
+  250.0650   25.0467    2.0500];
+geom45=geom45.*1e-3;
+
+% in the following code, go to either MTS or DIC folder and run it before 
+%working only with the sections below it
+%% MTS folder
+folder_path_UD = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\MTS\UD\'; % Replace with your folder path
+file_list = dir([folder_path_UD '*.csv']); % Get a list of all CSV files in the folder
+
+table_listUD = cell(length(file_list), 1); % Initialize a cell array to store the table data
+
+for i = 1:length(file_list)
+    filename = [folder_path_UD file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_listUD{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samplesUD=[1,2,3,4,5,6,8,9,11,12,13];
+%table_list{i} gives the table if index i, in this case the Samples used
+%are 1,2,3,4,5,6,8,9,11,12,13
+% its variable names are {'Var1'}{'Time_s_'}{'Load_N_'}{'Displacement_mm_'}
+
+%45 folder
+folder_path_45 = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\MTS\45\'; % Replace with your folder path
+file_list = dir([folder_path_45 '*.csv']); % Get a list of all CSV files in the folder
+
+table_list45 = cell(length(file_list), 1); % Initialize a cell array to store the table data
+
+for i = 1:length(file_list)
+    filename = [folder_path_45 file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_list45{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samples45=[2,3,6,7,8];
+
+%90 folder
+folder_path_90 = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\MTS\90\'; % Replace with your folder path
+file_list = dir([folder_path_90 '*.csv']); % Get a list of all CSV files in the folder
+
+table_list90 = cell(length(file_list), 1); % Initialize a cell array to store the table data
+%length(file_list)
+for i = 1:length(file_list)
+    filename = [folder_path_90 file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_list90{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samples90=[3,4,5,6,7,8,9];
+
+%Quasi folder
+folder_path_Quasi = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\MTS\Quasi\'; % Replace with your folder path
+file_list = dir([folder_path_Quasi '*.csv']); % Get a list of all CSV files in the folder
+
+table_listQuasi = cell(length(file_list), 1); % Initialize a cell array to store the table data
+
+for i = 1:length(file_list)
+    filename = [folder_path_Quasi file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_listQuasi{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samplesQuasi=[1,2,3,5,6,7,8,9,10];
+
+
+%% calculating E1 by using the UD
+
+AreasUD=[];
+LengthsUD=[];
+for i= 1:length(samplesUD)
+    AreasUD=[AreasUD, geomUD(i, 2).*geomUD(i, 3)]; %add only the areas of the samples used
+    LengthsUD=[LengthsUD, geomUD(:, 1)];
+end
+
+%AtimesLUD=AreasUD.*LengthsUD; %This is the denominator when calculating E1, different for each sample
+
+E1table= cell(length(AreasUD), 1); %for each sample, there will be calculated E1
+%variable names are {'Var1'}{'Time_s_'}{'Load_N_'}{'Displacement_mm_'}
+%we cut off the first 100 and linear behaviour until index=14000
+%we remove the values because we're interested in the linear behaviour of
+%E1
+for i=1:length(AreasUD)
+    E1=(table_listUD{i}{100:14000, 3}.*LengthsUD(i))./(table_listUD{i}{100:14000, 4}.*1e-3*AreasUD(i));    
+    E1table{i}=E1;
+end
+
+%% calculating the gaussian distribution variables for E1
+%meanE1=mean(E1table{1}); 
+%stdE1=std(E1table{1});
+%using all values:
+E1tot=[];
+for i=1:length(AreasUD)
+    E1tot=[E1tot; E1table{i}];
+end
+
+meanE1=mean(E1tot); %result:165 GPa
+stdE1=std(E1tot);
+
+
+x=meanE1-2*stdE1:1e8:meanE1+2*stdE1;
+plot(x./1e9, normpdf(x, meanE1, stdE1));xlabel("E [Gpa]");
+
+
+%% calculating E2 by using the 90
+
+Areas90=[];
+Lengths90=[];
+for i= 1:length(samples90)
+    Areas90=[Areas90, geom90(i, 2).*geom90(i, 3)]; %add only the areas of the samples used
+    Lengths90=[Lengths90, geom90(:, 1)];
+end
+
+%AtimesLUD=AreasUD.*LengthsUD; %This is the denominator when calculating E1, different for each sample
+
+E2table= cell(length(Areas90), 1); %for each sample, there will be calculated E1
+%variable names are {'Var1'}{'Time_s_'}{'Load_N_'}{'Displacement_mm_'}
+%we cut off the first 100 and linear behaviour until index=14000
+%we remove the values because we're interested in the linear behaviour of
+%E1
+for i=1:length(Areas90)
+    E2=(table_list90{i}{100:7000, 3}.*Lengths90(i))./(table_list90{i}{100:7000, 4}.*1e-3*Areas90(i));
+    E2table{i}=E2;
+end
+
+%% calculating the gaussian distribution variables for E2
+%meanE2=mean(E2table{1}); %mean in Gpa
+%stdE2=std(E2table{1});
+E2tot=[];
+for i=1:length(Areas90)
+    E2tot=[E2tot; E2table{i}];
+end
+
+meanE2=mean(E2tot); %result:8.44 GPa
+stdE2=std(E2tot);
+x=meanE2-2*stdE2:1e8:meanE2+2*stdE2;
+plot(x./1e9, normpdf(x, meanE2, stdE2));xlabel("E [Gpa]");
+
+%% calculating Ex to obtain E2=E1 for the 45
+
+Areas45=[];
+Lengths45=[];
+for i= 1:length(samples45)
+    Areas45=[Areas45, geom45(i, 2).*geom45(i, 3)]; %add only the areas of the samples used
+    Lengths45=[Lengths45, geom45(:, 1)];
+end
+
+%AtimesLUD=AreasUD.*LengthsUD; %This is the denominator when calculating E1, different for each sample
+
+E21table= cell(length(Areas45), 1); %for each sample, there will be calculated E1
+%variable names are {'Var1'}{'Time_s_'}{'Load_N_'}{'Displacement_mm_'}
+%we cut off the first 100 and linear behaviour until index=14000
+%we remove the values because we're interested in the linear behaviour of
+%E1
+for i=1:length(Areas45)
+    E21=(table_list45{i}{100:14000, 3}.*Lengths45(i))./(table_list45{i}{100:14000, 4}.*1e-3*Areas45(i));
+    E21table{i}=E2;
+end
+
+%using basic transformation matrix with theta=45 and only sigmax non-zero
+%gives E1=E2=cos^2(theta)*Ex
+
+
+
+%% calculating the gaussian distribution variables for Ex
+%meanE21=mean(E21table{1}); %mean in Gpa
+%stdE21=std(E21table{1});
+
+E21tot=[];
+for i=1:length(Areas45)
+    E21tot=[E21tot; E21table{i}];
+end
+
+meanE21=mean(E21tot); %result:165 GPa
+stdE21=std(E21tot);
+
+x=meanE21-2*stdE21:1e8:meanE21+2*stdE21;
+plot(x./1e9, normpdf(x, meanE21, stdE21));xlabel("E [Gpa]");
+
+
+
+%% 
+for i=1:length(v21table)
+    mean(v21table{i})
+end
+
+
+%% calculating Xt for UD laminate, using UD
+%plot(1:1:length(table_listUD{1}{:, 3}), table_listUD{1}{:, 3})
+Xttable= [];
+for i =1:length(samplesUD)
+    maxload=max(table_listUD{i}{:, 3});%retrieves the maximum load
+    Xttable=[Xttable, maxload./AreasUD(i)];
+end
+meanXt=mean(Xttable); %result:1920 MPa
+stdXt=std(Xttable);
+
+%% calculating Yt for UD laminate, using 90
+Yttable= [];
+for i =1:length(samples90)
+    maxload=max(table_list90{i}{:, 3});%retrieves the maximum load
+    Yttable=[Yttable, maxload./Areas90(i)];
+end
+meanYt=mean(Yttable); %result:107 MPa
+stdYt=std(Yttable);
+
+%% calculating Xt=Yt for 45, using 45
+XYttable= [];
+for i =1:length(samples45)
+    maxload=max(table_list45{i}{:, 3});%retrieves the maximum load
+    XYttable=[XYttable, maxload./Areas45(i)];
+end
+meanXYt=mean(XYttable); %result:305 MPa
+stdXYt=std(XYttable);
+
+
+
+%% DIC folder
+folder_path_UD = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\DIC\UD\'; % Replace with your folder path
+file_list = dir([folder_path_UD '*.csv']); % Get a list of all CSV files in the folder
+
+table_listUD = cell(length(file_list), 1); % Initialize a cell array to store the table data
+
+for i = 1:length(file_list)
+    filename = [folder_path_UD file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_listUD{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samplesUD=[1,2,3,4,5,6,8,9,11,12,13];
+%table_list{i} gives the table if index i, in this case the Samples used
+%are 1,2,3,4,5,6,8,9,11,12,13
+% its variable names are {'Var1'}{'Time_s_'}{'Load_N_'}{'Displacement_mm_'}
+
+%45 folder
+folder_path_45 = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\DIC\45\'; % Replace with your folder path
+file_list = dir([folder_path_45 '*.csv']); % Get a list of all CSV files in the folder
+
+table_list45 = cell(length(file_list), 1); % Initialize a cell array to store the table data
+
+for i = 1:length(file_list)
+    filename = [folder_path_45 file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_list45{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samples45=[2,3,6,7,8];
+
+%90 folder
+folder_path_90 = 'C:\Users\rkerk\OneDrive\Dokument\GitHub\DACS\ASM109_2021_data\DIC\90\'; % Replace with your folder path
+file_list = dir([folder_path_90 '*.csv']); % Get a list of all CSV files in the folder
+
+table_list90 = cell(length(file_list), 1); % Initialize a cell array to store the table data
+
+for i = 1:length(file_list)
+    filename = [folder_path_90 file_list(i).name]; % Get the full file path
+    table_data = readtable(filename); % Read the CSV file using readtable
+    table_list90{i} = table_data; % Store the table data in the cell array
+    % Do something with the table data
+end
+samples90=[3,4,5,6,7,8,9];
+
+%% calculating v12 major poisson ratio using UD
+
+v12table= cell(length(samplesUD), 1);
+
+
+for i=1:length(samplesUD)
+    v12=-1.*str2double(table_listUD{i}{17:end-15, 2})./str2double(table_listUD{i}{17:end-15, 1});
+    v12table{i}=v12;
+end
+%% calc mean
+v12tot=[];
+for i=1:length(samplesUD)
+    v12tot=[v12tot; v12table{i}];
+end
+
+meanv12=mean(v12tot); %result:0.35
+stdv12=std(v12tot);
+
+
+%% calculating v21 minor poisson ratio using 90
+
+v21table= cell(length(samples90), 1);
+
+
+for i=1:length(samples90)
+    v21=-1.*str2double(table_list90{i}{17:end-15, 2})./str2double(table_list90{i}{17:end-15, 1});
+    v21table{i}=abs(v21);
+end
+%% calc mean
+v21tot=[];
+for i=1:length(samples90)
+    v21tot=[v21tot; v21table{i}];
+end
+
+meanv21=mean(v21tot); %result:0.0185
+stdv21=std(v21tot);
+
+%% validation
+
+meanv21theory=meanv12*meanE2/meanE1;
+relError=(meanv21theory-meanv21)/meanv21;%2percent error, almost too good
+
+
+
+%% calculating v12=v21 for the 45
+v1221table= cell(length(samples45), 1);
+
+
+for i=1:length(samples45)
+    v1221=-1*str2double(table_list45{i}{10:end-15, 2})./str2double(table_list45{i}{10:end-15, 1});
+    v1221table{i}=v1221;
+end
+%% calc mean
+v1221tot=[];
+for i=1:length(samples45)
+    v1221tot=[v1221tot; v1221table{i}];
+end
+
+meanv1221=mean(v1221tot); %result:0.72
+stdv1221=std(v1221tot);
+
+
+
+
+
+
