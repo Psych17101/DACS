@@ -37,7 +37,6 @@ for i = 1:length(N_range)
         E_temp = E2;
         iter = 0;
         max_FI_1(i) = 0;
-        index = 0;
         while E_temp ~= 0 && iter < 10 % While the failure index of our laminate is less than 1           
             z = 0:h_ply:h;
             if max_FI_1(i) == 0
@@ -47,11 +46,7 @@ for i = 1:length(N_range)
             end
 
             if index ~= 0
-                thetadt(index) = [];
-                thetadt(Nplies-index) = [];
-                Nplies = length(thetadt);
-                thetadb = fliplr(thetadt); % ply angles in degrees, from bottom
-            end
+                thetadt(index) =  
 
 
 
@@ -85,14 +80,7 @@ for i = 1:length(N_range)
             strain_glo = invA_test*F;
             max_fe(i) = 0;
             % Calculation of global stresses
-            stress_glo = Qbar*strain_glo; % global sigmaxx etc..            
-
-            clear FI_1
-            clear FI_2
-            clear FI_3
-            clear FI
-
-
+            stress_glo = Qbar*strain_glo; % global sigmaxx etc...
 
             for l = 1:Nplies
                 % Calculations of local Strains and Stresses
@@ -104,7 +92,6 @@ for i = 1:length(N_range)
                 % For each pair of N(i) and N(j) there will be a maximum
                 % failure criterion - from all the calculations of each failure
                 % index, find the maximum one.
-               
 
                 [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
                 FI = [FI_1(i,l),FI_2(i,l),FI_3(i,l)];

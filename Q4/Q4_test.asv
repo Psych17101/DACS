@@ -21,7 +21,6 @@ z = 0:h_ply:h;
 for i = 1:Nplies
   zbar(i) = - (h + h_ply)/2 + i*h_ply;
 end
-
 % material properties (mean and standard deviation)
 mean_E1 = 165e9; std_E1 = 17e9;
 mean_E2 = 8.44e9; std_E2 = 0.2e9;
@@ -35,7 +34,7 @@ S_t = 70.e6;
 
 
 % load and orientation
-N = [100, 400]; % resultant force in N/mm
+N = [100000, 400000]; % resultant force in N/mm
 % Confused about units
 theta = [30, 30]; % angle of resultant force with respect to X-axis in radians
 
@@ -122,6 +121,30 @@ for i = 1:num_samples
     plot(array_num_simulations,max_fe(:,i))
 end
 
+% initialize array to count number of times each ply fails first
+ply_failures = zeros(Nplies,1);
+
+for j = 1:num_simulations
+    for l = 1:Nplies
+        % check if this ply fails first for any of the samples
+        if any(max_fe(j,:,l) == max_fe(j,numberply(j,:,l) == l))
+            % increment the count for this ply
+            ply_failures(l) = ply_failures(l) + 1;
+            % we can stop checking the remaining plies for this simulation
+            break
+        end
+    end
+end
+
+% calculate the probability of each ply failing first
+prob_fail = ply_failures ./ num_simulations;
+
+% plot the results
+figure
+bar(prob_fail)
+xlabel('Ply Number')
+ylabel('Probability of First Ply Failure')
+title('Probability of First Ply Failure under Puck Criterion')
 
 
 
