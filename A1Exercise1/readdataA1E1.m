@@ -138,11 +138,11 @@ for i=1:length(AreasUD)
 end
 
 meanE1=mean(meanE1s); %result:165 GPa
-stdE1=std(meanE1s);
+stdE1=std(meanE1s); %16.9GPa
 
 
-x=meanE1-2*stdE1:1e8:meanE1+2*stdE1;
-plot(x./1e9, normpdf(x, meanE1, stdE1));xlabel("E [Gpa]");
+%x=meanE1-2*stdE1:1e8:meanE1+2*stdE1;
+%plot(x./1e9, normpdf(x, meanE1, stdE1));xlabel("E [Gpa]");
 
 
 %% calculating E2 by using the 90
@@ -173,11 +173,14 @@ E2tot=[];
 for i=1:length(Areas90)
     E2tot=[E2tot; E2table{i}];
 end
-
-meanE2=mean(E2tot); %result:8.44 GPa
-stdE2=std(E2tot);
-x=meanE2-2*stdE2:1e8:meanE2+2*stdE2;
-plot(x./1e9, normpdf(x, meanE2, stdE2));xlabel("E [Gpa]");
+meanE2s=[];
+for i=1:length(Areas90)
+    meanE2s=[meanE2s, mean(E2table{i})];
+end
+meanE2=mean(meanE2s); %result:8.44 GPa
+stdE2=std(meanE2s); %1.08 GPa
+%x=meanE2-2*stdE2:1e8:meanE2+2*stdE2;
+%plot(x./1e9, normpdf(x, meanE2, stdE2));xlabel("E [Gpa]");
 
 %% calculating Ex to obtain E2=E1 for the 45
 
@@ -211,14 +214,14 @@ E21=E21.*(1+0.72);
 
 E21tot=[];
 for i=1:length(Areas45)
-    E21tot=[E21tot; E21table{i}];
+    E21tot=[E21tot; E21];
 end
 
 meanE21=mean(E21tot); %result:8 GPa
 stdE21=std(E21tot);
 
-x=meanE21-2*stdE21:1e8:meanE21+2*stdE21;
-plot(x./1e9, normpdf(x, meanE21, stdE21));xlabel("E [Gpa]");
+%x=meanE21-2*stdE21:1e8:meanE21+2*stdE21;
+%plot(x./1e9, normpdf(x, meanE21, stdE21));xlabel("E [Gpa]");
 
 
 
@@ -235,6 +238,7 @@ for i =1:length(samplesUD)
     maxload=max(table_listUD{i}{:, 3});%retrieves the maximum load
     Xttable=[Xttable, maxload./AreasUD(i)];
 end
+
 meanXt=mean(Xttable); %result:1920 MPa
 stdXt=std(Xttable);
 
