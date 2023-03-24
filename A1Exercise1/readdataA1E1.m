@@ -202,7 +202,7 @@ end
 
 %using basic transformation matrix with theta=45 and only sigmax non-zero
 %gives E1=E2=Ex*(1+1/vxy)
-E21=E21.*(1+1/meanvxy);
+E21=E21.*(1+0.72);
 % !!!!!! Not sure about this calculationmean 
 
 %% calculating the gaussian distribution variables for Ex
@@ -364,8 +364,62 @@ end
 meanvxy=mean(vxytot); %result:0.72
 stdvxy=std(vxytot);
 
+%% calculating G12 of UD
+G12UDtable= cell(length(samplesUD), 1);
 
 
+for i=1:length(samplesUD)
+    A=table_listUD{i}.Variables;
+    G12UDtable{i}=str2double(A(10:end-15, 6))./(log(1+abs(str2double(A(10:end-15, 3)))).*AreasUD(i));
+    %G12UDtable{i}=abs(2*str2double(A(10:end-15, 6)).*1e3./((str2double(A(10:end-15, 1))-str2double(A(10:end-15, 2))).*geomUD(i,3)));
+end
+%plot(1:1:length(G12UDtable{1}),G12UDtable{1}) 
+%% calculating means and std
+meanG12UD=[];
+    
+for i =1:length(samplesUD)
+    meanG12UD=[meanG12UD, mean(G12UDtable{i})];
+end
+meanG12UDtot=mean(meanG12UD);
+stdG12UDtot=std(meanG12UD);
+%% same with G12 of 90 to double check
+
+G1290table= cell(length(samples90), 1);
 
 
+for i=1:length(samples90)
+    A=table_list90{i}.Variables;
+    G1290table{i}=str2double(A(10:end-15, 6))./(str2double(A(10:end-15, 3)).*geomUD(i,3));
+    %G1290table{i}=(2*str2double(A(10:end-15, 6)).*1e3./((str2double(A(10:end-15, 1))-str2double(A(10:end-15, 2))).*geomUD(i,3)));
+end
 
+%% calculating means and std
+meanG1290=[];
+    
+for i =1:length(samples90)
+    meanG1290=[meanG1290, mean(G1290table{i})];
+end
+meanG1290tot=mean(meanG1290);
+stdG1290tot=std(meanG1290);
+
+
+%%
+
+Vxy=meanE1/2/(1+0.35);
+Vyx=meanE2/2/(1+0.0185);
+b=1-(0.35*0.0185);
+G12UDtable= cell(length(samplesUD), 1);
+
+
+for i=1:length(samplesUD)
+    A=table_listUD{i}.Variables;
+    G12UDtable{i}=str2double(A(10:end-15, 6))./AreasUD(i).*str2double(A(10:end-15, 3)).*b./(Vxy.*str2double(A(10:end-15, 1))+Vyx.*str2double(A(10:end-15, 2)));
+    %G12UDtable{i}=abs(2*str2double(A(10:end-15, 6)).*1e3./((str2double(A(10:end-15, 1))-str2double(A(10:end-15, 2))).*geomUD(i,3)));
+end
+meanG12UD=[];
+    
+for i =1:length(samplesUD)
+    meanG12UD=[meanG12UD, mean(G12UDtable{i})];
+end
+meanG12UDtot=mean(meanG12UD);
+stdG12UDtot=std(meanG12UD);
