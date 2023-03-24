@@ -31,80 +31,118 @@ sigma_range = linspace(-sigma_max, sigma_max, 101);
 N_range = sigma_range*h/100;
 max_FI = zeros(length(sigma_range));
 
-E_temp = E2;
-iter = 0;
-while max(max(max_FI)) < 1 && iter < 50
+% Calculations of Failure index
+for i = 1:length(N_range)
+        % Initialisation of 1 iteration of Modulus
+        E_temp = E2;
+        iter = 0;
+        max_FI_1(i) = 0;
+        index = 0;
+        while E_temp ~= 0 && iter < 10 % While the failure index of our laminate is less than 1           
+            z = 0:h_ply:h;
+            if max_FI_1(i) == 0
+                F = [N_range(i);0;0]; % looped to creat different biaxial forces
+            else
+                F = [N_range(i)/max_FI_1(i);0;0]; % looped to creat different biaxial forces
+            end
 
-z = 0:h_ply:h;
+            if index ~= 0
+                thetadt(index) = [];
+                thetadt(Nplies-index) = [];
+                Nplies = length(thetadt);
+                thetadb = fliplr(thetadt); % ply angles in degrees, from bottom
+            end
 
-% ABD reset
-A = zeros(3,3);
-B = zeros(3,3);
-D = zeros(3,3);
-S = zeros(3,3);
-Q = zeros(3,3);
-Qbar = zeros(3,3);
-Sbar = zeros(3,3);
 
-[S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
-[moduli]= [E1 E_temp nu12 G12];
 
-zbar = zeros(1, Nplies);
-for l = 1:Nplies
-    zbar(l) = -(h + h_ply)/2 + l*h_ply;
-    % For each ply we calculate the ABD Matrix
-    [Qbar,Sbar] = QbarandSbar(thetadb(l),moduli);
-    A = A + Qbar * (z(l+1)-z(l)) ; %N/m, right dimensions?
-    B = B + (1/2)*Qbar * (z(l+1)^2-z(l)^2); %N
-    D = D + (1/3)*Qbar * (z(l+1)^3-z(l)^3); %Nm
-    ABD = [A B; A D];
-end
+            % ABD reset
+            A = zeros(3,3);
+            B = zeros(3,3);
+            D = zeros(3,3);
+            Qbar = zeros(3,3);
+            Sbar = zeros(3,3);
 
-A_test = A;
-invA_test = inv(A);
-E_x = inv(h*invA_test(1,1));
+            % Calculation of Stiffness Matrix
+            [S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
+            [moduli]= [E1 E_temp nu12 G12];
 
-% Find FPF and LPF for Puck and Max Stress criteria
-    for i = 1:length(N_range)
-        for j = 1:length(N_range)
-            F = [N_range(i);N_range(j);0]; % looped to creat different biaxial forces
+            zbar = zeros(1, Nplies);
+            for l = 1:Nplies
+                zbar(l) = -(h + h_ply)/2 + l*h_ply;
+                % For each ply we calculate the ABD Matrix
+                [Qbar,Sbar] = QbarandSbar(thetadb(l),moduli);
+                A = A + Qbar * (z(l+1)-z(l)) ; %N/m, right dimensions?
+                B = B + (1/2)*Qbar * (z(l+1)^2-z(l)^2); %N
+                D = D + (1/3)*Qbar * (z(l+1)^3-z(l)^3); %Nm
+                ABD = [A B; A D];
+            end
+            %disp(A)
+            A_test = A;
+            invA_test = inv(A);
+            E_x = inv(h*invA_test(1,1));
+
+            % Calcuation of global strain for first ply failure
             strain_glo = invA_test*F;
-            max_fe(i,j) = 0;
-            stress_glo = Qbar*strain_glo; % global sigmaxx
+            max_fe(i) = 0;
+            % Calculation of global stresses
+            stress_glo = Qbar*strain_glo; % global sigmaxx etc..            
+
+            clear FI_1
+            clear FI_2
+            clear FI_3
+            clear FI
+
+
 
             for l = 1:Nplies
-                % Calculations of Strains and Stresses
+                % Calculations of local Strains and Stresses
                 [eps_loc] = strain_gtol(strain_glo,thetadb(l));
                 [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
                 sigma_loc = Q*eps_loc;
 
                 % Failure index with Maximum Stress Criterion
-                [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
-                FI = [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)];
-                max_FI(i,j) = max(FI);
+                % For each pair of N(i) and N(j) there will be a maximum
+                % failure criterion - from all the calculations of each failure
+                % index, find the maximum one.
+               
+
+                [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
+                FI = [FI_1(i,l),FI_2(i,l),FI_3(i,l)];
 
                 % Failure index with Pucks Criterion
-                fe(i,j,l) = fiberfailure(sigma_loc(1),sigma_loc(2),sigma_loc(3),'c',X_T,X_C,E_x,E1_f,nu12);  % (num_samples,layer)
+                fe(i,l) = fiberfailure(sigma_loc(1),sigma_loc(2),sigma_loc(3),'c',X_T,X_C,E_x,E1_f,nu12);  % (num_samples,layer)
                 % Calculation of Ply failure
-                if fe(i,j,l) > max_fe(i,j)
-                    max_fe(i,j)= fe(i,j,l); %maximum failure index with relative forces
-                    numberply(i,j,l) = l;
+                if fe(i,l) > max_fe(i)
+                    max_fe(i)= fe(i,l); %maximum failure index with relative forces
+                    numberply(i,l) = l;
                 end
-
-
             end
+            % Considering all the plies - find highest index for each pair of
+            max_FI_1(i) = max(FI_1(i,:)); % Strength Ratio
+            max_FI_2(i) = max(FI_2(i,:)); % Strength Ratio
+
+            % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
+            F_FPF_MS1(i) = N_range(i)/max_FI_1(i);
+            F_FPF_FF1(i) = N_range(i)/max_fe(i);
+
+
+            if max_FI_1(i) > max_FI_2(i)
+                index = find(max(FI_1(i,:)));
+            else
+                index = find(max(FI_2(i,:)));
+            end
+
+            if max_FI_1(i) < 1 && max_FI_2(i) < 1
+                E_temp = 0.1*E_temp;
+            else
+                E_final(i) = E_temp;
+                E_temp = 0;
+            end
+
+            iter = iter + 1;
+            %disp(iter)
         end
-    end
-    if max(max(max_FI)) < 1
-        disp(max(max(max_FI)) )
-        E_temp = 0.1*E_temp;
-    else
-        break
-    end
-    iter =+ 1;
-
 end
-
 
 %% Functions
 function fe = fiberfailure(sigma1,sigma2,sigma3,fiber,X_T,X_C,Ex,E1,nu12)

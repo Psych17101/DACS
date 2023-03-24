@@ -1,5 +1,4 @@
 clear; format;
-close;
 format short g;
 
 % Define material properties
@@ -68,7 +67,7 @@ sigma_range = linspace(-sigma_max, sigma_max, 101);
 % Definition of on distributed biaxial load
 N_range = sigma_range*h/100;
 
-%% Calculate biaxial stress failure envelopes for Puck and Max Stress criteria
+% Calculate biaxial stress failure envelopes for Puck and Max Stress criteria
 % For each stress index in range increment.
 for i = 1:length(sigma_range)
     for j = 1:length(sigma_range)
@@ -101,7 +100,54 @@ end
 
 
 %% Find FPF from Puck and Max Stress criteria
+
+for i = 1:length(N_range)
+    for j = 1:length(N_range)
+        % Initialisation of loading criterion (Biaxial loading)
+        F = [N_range(i);N_range(j);0];
+        
+        % Calcuation of global strain for first ply failure
+        strain_glo = invA_test*F;
+        max_fe(i,j) = 0;
+        % Calculation of global stresses 
+        stress_glo = Qbar*strain_glo; % global sigmaxx etc...
+
+        for l = 1:Nplies
+            % Calculations of local Strains and Stresses
+            [eps_loc] = strain_gtol(strain_glo,thetadb(l));
+            [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
+            sigma_loc = Q*eps_loc;
+            
+            % Failure index with Maximum Stress Criterion
+            % For each pair of N(i) and N(j) there will be a maximum
+            % failure criterion - from all the calculations of each failure
+            % index, find the maximum one. 
+
+            [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
+            FI = [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)];
+            
+            % Failure index with Pucks Criterion
+            fe(i,j,l) = fiberfailure(sigma_loc(1),sigma_loc(2),sigma_loc(3),'c',X_T,X_C,E_x,E1_f,nu12);  % (num_samples,layer)
+            % Calculation of Ply failure
+            if fe(i,j,l) > max_fe(i,j)
+                max_fe(i,j)= fe(i,j,l); %maximum failure index with relative forces
+                numberply(i,j,l) = l;
+            end
+        end
+        % Considering all the plies - find highest index for each pair of 
+        max_FI_1(i,j) = max(FI_1(i,j,:)); % Strength Ratio
+        max_FI_2(i,j) = max(FI_2(i,j,:)); % Strength Ratio
+        
+        % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
+        F_FPF_MS(:,i,j) = [N_range(i)/max_FI_1(i,j);N_range(j)/max_FI_2(i,j)];
+        F_FPF_PC(:,i,j) = [N_range(i);N_range(j)]/max_fe(i,j);
+
+    end
+end
+
+
 %
+
 for i = 1:length(N_range)
         % Initialisation of loading criterion (Biaxial loading)
         F = [N_range(i);0;0];
@@ -138,8 +184,8 @@ for i = 1:length(N_range)
         max_FI_1(i) = max(FI_1(i,:)); % Strength Ratio
         
         % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
-        F_FPF_MS1(i) = N_range(i)/max_FI_1(i);
-        F_FPF_FF1(i) = N_range(i)/max_fe(i);
+        F_FPF_MS1(:,i) = N_range(i)/max_FI_1(i);
+        F_FPF_FF1(:,i) = N_range(i)/max_fe(i);
 end
 
 
@@ -179,14 +225,16 @@ for i = 1:length(N_range)
         max_FI_1(i) = max(FI_1(i,:)); % Strength Ratio
         
         % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
-        F_FPF_MS2(i) = N_range(i)/max_FI_2(i);
-        F_FPF_FF2(i) = N_range(i)/max_fe(i);
-
-
+        F_FPF_MS2(:,i) = N_range(i)/max_FI_2(i);
+        F_FPF_FF2(:,i) = N_range(i)/max_fe(i);
 end
 
-%% LPF
+figure(1)
+plot(N_range)
 
+
+
+%% LPF
 
 
 
@@ -197,7 +245,7 @@ end
 %% Plots
 
 % % % Plot biaxial stress failure envelopes for Puck and Max Stress criteria
-figure;
+ figure(1);
 hold on;
 contour(sigma_range, sigma_range, maxstress_envelope1, [0 1], 'g');
 contour(sigma_range,sigma_range, puck_envelope1, [0 1], 'b');
@@ -206,28 +254,6 @@ ylabel('\sigma_2 (MPa)');
 title('Biaxial Stress Failure Envelopes');
 legend('Maximum Stress', 'Puck');
 % 
-
-figure;
-hold on;
-plot(N_range, F_FPF_MS1,'g');
-plot(N_range, F_FPF_FF1,'r')
-xlabel('N_x ');
-ylabel('N_x - First ply Failure');
-title('Loading N_x vs First ply Failure');
-legend('First ply failure');
-
-figure;
-hold on;
-plot(N_range, F_FPF_MS2,'g');
-plot(N_range, F_FPF_FF2,'r')
-xlabel('N_y ');
-ylabel('N_y - First ply Failure');
-title('Loading N_x vs First ply Failure');
-legend('First ply failure');
-
-
-
-
 % % Plot FPFfor Puck and Max Stress criteria
 % figure(2);
 % [X, Y] = meshgrid(N_range, N_range);

@@ -40,11 +40,11 @@ N = [100000, 400000]; % resultant force in N/m
 theta = [30, 30]; % angle of resultant force with respect to X-axis in radians
 
 % Monte Carlo simulation parameters
-num_simulations = 10; % number of Monte Carlo simulations to run
-num_samples = 1; % number of random samples to generate for each simulation
+num_simulations = 100; % number of Monte Carlo simulations to run
+num_samples = 30; % number of random samples to generate for each simulation
 
 for i = 1:length(N) % iterate between the two forces
-    F = [N(i)*cosd(theta(i)); N(i)*sind(theta(i)); 0]; % load vector N/m
+    F = [N(i)*cosd(theta(i)); N(i)*sind(theta(i)); 0]; % load vector N/mm
     ply_failure = zeros(num_simulations, 1); % array to store ply failure results
     
     for j = 1:num_simulations %100 times
@@ -109,7 +109,6 @@ for i = 1:length(N) % iterate between the two forces
         
         % calculate the probability of failure for each ply
         %ply_failure(j) = max_fe > 1;
-        
     end
     
     % calculate the probability of failure for each load and orientation
