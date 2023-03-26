@@ -2,9 +2,20 @@ clear; format;
 close;
 format short g;
 
+%% Problems
+% calculations of Puck are off - wrong equation?
+% is E1_f correct? - related to puck
+% Problem with plotting
+% LPF should not be the same in negative or positive
+% FPF should not be same in negative or positive
+% FPF is should not be that small
+% Why are most of the points inside the envelope
+% 
+
+
 % Define material properties
-E1   = 140.e9 ; % Pa - direction modulus of the lamina
-E1_f = 80.e9; % Pa - directional modulus of fibres
+E1   = 165.e9 ; % Pa - direction modulus of the lamina
+E1_f = 20.e9; % Pa - directional modulus of fibres
 nu12 = .3 ;
 E2   = 10.e9  ; % Pa
 E2_f = 20.e9; % Pa - tranvers modulus of fibres
@@ -15,12 +26,12 @@ X_C = 1480.e6;
 Y_T = 50.e6;
 Y_C = 220.e6;
 g_12t = 70.e6;
-sigma_max = 5000.e6; % 500 MPa
+sigma_max = 2*10^9; % 500 MPa
 
 %% Initialisation
 % Laminate definition (plies of equal thickness)
 
-thetadt = [0 90 +45 -45 -45 +45 90 0]; % ply angles in degrees, from top??? Not bottom?
+thetadt = [0 90 +45 -45 -45 +45 90 0 0 90 +45 -45 -45 +45 90 0];% ply angles in degrees, from top??? Not bottom?
 Nplies = length(thetadt);
 thetadb = fliplr(thetadt); % ply angles in degrees, from bottom
 h_ply  = 0.125*10^(-3);           % SI units, meters
@@ -232,7 +243,7 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
         [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
 
         if ply_failure(l) == 1
-            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-25) E_temp nu12 G12]);
+            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-15) E_temp nu12 G12]);
         end
 
         A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
@@ -343,7 +354,7 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
         [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
 
         if ply_failure(l) == 1
-            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-25) E_temp nu12 G12]);
+            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-15) E_temp nu12 G12]);
         end
 
         A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
@@ -411,18 +422,30 @@ end
 % Plot biaxial stress failure envelopes for Puck and Max Stress criteria
 figure;
 hold on;
+div = 10^6;
 contour(sigma_range, sigma_range, maxstress_envelope1, [0 1], 'g');
 contour(sigma_range,sigma_range, puck_envelope1, [0 1], 'b');
-scatter(F_FPF_MS1(1)/h,0,'x')
-scatter(F_FPF_FF1(1)/h,0,'o')
-scatter(LPF1/h,0,'*')
-scatter(0,F_FPF_MS2(1)/h,'x')
-scatter(0,F_FPF_FF2(1)/h,'o')
-scatter(0,LPF2/h,'*')
+scatter(F_FPF_MS1(1)/h,0,'x') % Nx FPF in Compression Max stress
+scatter(F_FPF_MS1(1000)/h,0,'x') % Nx FPF in Tension Max stress
+scatter(F_FPF_FF1(1)/h,0,'o') % Nx FPF in Compression Puck
+scatter(F_FPF_FF1(1000)/h,0,'o') % Nx FPF in Tension Puck
+scatter(LPF1(1)/h,0,'*') % Last ply Failure in Tension
+% LFP in compression need
+scatter(0,F_FPF_MS2(1)/h,'x') % Ny FPF in Compression Max stress
+scatter(0,F_FPF_MS2(1000)/h,'x') % Ny FPF in Tension Max Stress
+scatter(0,F_FPF_FF2(1)/h,'o') % Ny FPF in Compression Puck
+scatter(0,F_FPF_FF2(1000)/h,'o') % Ny FPF in Tension Puck
+scatter(0,LPF2(2)/h,'*')
 xlabel('\sigma_1 (Pa)');
 ylabel('\sigma_2 (Pa)');
 title('Biaxial Stress Failure Envelopes');
-legend('Maximum Stress', 'Puck','FPF Maximum stress Nx','FPF Puck Criterion Nx','LPF Maximum stress Criterion Nx','FPF Maximum stress Ny','FPF Puck Criterion Ny','LPF Maximum stress Criterion Ny');
+legend('Maximum Stress', 'Puck', ...
+    'FPF Maximum stress -Nx','FPF Maximum stress +Nx', ...
+    'FPF Puck Criterion -Nx','FPF Puck Criterion +Nx', ...
+    'LPF Maximum stress Criterion Nx', ...
+    'FPF Maximum stress -Ny','FPF Maximum stress +Ny', ...
+    'FPF Puck Criterion -Ny','FPF Puck Criterion +Ny', ...
+    'LPF Maximum stress Criterion Ny');
 
 
 %% Functions
