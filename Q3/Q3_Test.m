@@ -15,7 +15,7 @@ X_C = 1480.e6;
 Y_T = 50.e6;
 Y_C = 220.e6;
 g_12t = 70.e6;
-sigma_max = 50.e8; % 5000 MPa
+sigma_max = 5000.e6; % 500 MPa
 
 %% Initialisation
 % Laminate definition (plies of equal thickness)
@@ -53,20 +53,16 @@ D = D + (1/3)*Qbar * (z(i+1)^3-z(i)^3); %Nm
 ABD = [A B; A D];
 end
 
-%A_samples(:,:,k) = A;
 A_test = A;
-%invA_samples(:,:,k) = inv(A);
 invA_test = inv(A);
 
 % Initialisation of Equivalent Modulus of Laminate
 E_x = inv(h*invA_test(1,1));
-% E_y = 
-
 
 % Define stress ranges for plotting
-sigma_range = linspace(-sigma_max, sigma_max, 101);
+sigma_range = linspace(-sigma_max, sigma_max, 1001); %N\m^2
 % Definition of on distributed biaxial load
-N_range = sigma_range*h/100;
+N_range = sigma_range*h; %N/m
 
 %% Calculate biaxial stress failure envelopes for Puck and Max Stress criteria
 % For each stress index in range increment.
@@ -105,7 +101,6 @@ end
 for i = 1:length(N_range)
         % Initialisation of loading criterion (Biaxial loading)
         F = [N_range(i);0;0];
-        
         % Calcuation of global strain for first ply failure
         strain_glo = invA_test*F;
         max_fe(i) = 0;
@@ -115,15 +110,15 @@ for i = 1:length(N_range)
         for l = 1:Nplies
             % Calculations of local Strains and Stresses
             [eps_loc] = strain_gtol(strain_glo,thetadb(l));
-            [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
-            sigma_loc = Q*eps_loc;
+            %[sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
+            sigma_loc = Qbar*eps_loc;
             
             % Failure index with Maximum Stress Criterion
             % For each pair of N(i) and N(j) there will be a maximum
             % failure criterion - from all the calculations of each failure
             % index, find the maximum one. 
 
-            [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
+            [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
             FI = [FI_1(i,l),FI_2(i,l),FI_3(i,l)];
             
             % Failure index with Pucks Criterion
@@ -157,14 +152,14 @@ for i = 1:length(N_range)
             % Calculations of local Strains and Stresses
             [eps_loc] = strain_gtol(strain_glo,thetadb(l));
             [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
-            sigma_loc = Q*eps_loc;
+            sigma_loc = Qbar*eps_loc;
             
             % Failure index with Maximum Stress Criterion
             % For each pair of N(i) and N(j) there will be a maximum
             % failure criterion - from all the calculations of each failure
             % index, find the maximum one. 
 
-            [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc,X_T,X_C,Y_T,Y_C,g_12t);
+            [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
             FI = [FI_1(i,l),FI_2(i,l),FI_3(i,l)];
             
             % Failure index with Pucks Criterion
@@ -176,7 +171,7 @@ for i = 1:length(N_range)
             end
         end
         % Considering all the plies - find highest index for each pair of 
-        max_FI_1(i) = max(FI_1(i,:)); % Strength Ratio
+        max_FI_2(i) = max(FI_2(i,:)); % Strength Ratio
         
         % Creation of Forces (e.g coordinate on NxN) envelope for first ply failure
         F_FPF_MS2(i) = N_range(i)/max_FI_2(i);
@@ -187,92 +182,247 @@ end
 
 %% LPF
 
+% Calculations of Failure index
+i = 1;
+% Initialisation of 1 iteration of Modulus
+E_temp = E2;
+iter = 0;
+max_FI_1(i) = 0;
+max_FI_2(i) = 0;
+ply_index = 0;
+ply_failure = zeros(1,Nplies);
+F = [1;0;0];
+temp1 = 0;
+
+while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less than 1
+    z = 0:h_ply:h;
+    if temp1 < 10^(-25)
+        F = F; % looped to creat different biaxial forces
+    else
+            F = F/temp1;
+            %disp(F) % looped to creat different biaxial forces
+    end
+
+    FI_1 = zeros(1,Nplies);
+    FI_2 = zeros(1,Nplies);
+    FI_3 = zeros(1,Nplies);
+
+    % ABD reset
+    A = zeros(3,3);
+    B = zeros(3,3);
+    D = zeros(3,3);
+    Qbar = zeros(3,3);
+    Sbar = zeros(3,3);
+
+    % Calculation of Stiffness Matrix
+    [S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
+    [moduli]= [E1 E_temp nu12 G12];
+
+    zbar = zeros(1, Nplies);
+
+    for j = 1:length(ply_index)
+        if ply_index ~= 0
+            ply_failure(ply_index(j)) = 1;
+        end
+    end
+
+    for l = 1:Nplies
+        zbar(l) = -(h + h_ply)/2 + l*h_ply;
+        % For each ply we calculate the ABD Matrix
+        [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
+
+        if ply_failure(l) == 1
+            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-25) E_temp nu12 G12]);
+        end
+
+        A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
+        B = B + (1/2) * Qbar(:,:,l) * (z(l+1)^2-z(l)^2); %N
+        D = D + (1/3) * Qbar(:,:,l) * (z(l+1)^3-z(l)^3); %Nm
+        ABD = [A B; A D];
+    end
+    A_test = A;
+    invA_test = inv(A);
+    E_x = inv(h*invA_test(1,1));
+
+    % Calcuation of global strain for first ply failure
+    strain_glo = invA_test*F;
+    max_fe(i) = 0;
+    % Calculation of global stresses
+    stress_glo = Qbar(:,:,1)*strain_glo; % global sigmaxx etc.
+
+    for l = 1:Nplies
+        % Calculations of local Strains and Stresses
+        [eps_loc] = strain_gtol(strain_glo,thetadb(l));
+        [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
+        %sigma_loc = Qbar(:,:,1)*eps_loc;
 
 
+        %
+
+        % Failure index with Maximum Stress Criterion
+        % For each pair of N(i) and N(j) there will be a maximum
+        % failure criterion - from all the calculations of each failure
+        % index, find the maximum one.
+        [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
+       
+        % Failure index with Pucks Criterion
+        fe(i,l) = fiberfailure(sigma_loc(1),sigma_loc(2),sigma_loc(3),'c',X_T,X_C,E_x,E1_f,nu12);  % (num_samples,layer)
+        % Calculation of Ply failure
+        if fe(i,l) > max_fe(i)
+            max_fe(i)= fe(i,l); %maximum failure index with relative forces
+            numberply(i,l) = l;
+        end
+    end
+
+    if ply_failure == ones(1,Nplies)
+        fprintf('LPF1 =')
+        LPF1 = F;
+        disp(LPF1)
+        break
+    end
+
+    temp2 = max(FI_2(~ply_failure));
+    temp1 = max(FI_1(~ply_failure));
+
+    if  temp1 > temp2
+        ply_index = find(FI_1(i,:) == temp1);
+    else
+        ply_index = find(FI_2(i,:) == temp2);
+        E_temp = 0.1*E_temp;
+    end
+    iter = iter + 1;
+end
+
+% Calculations of Failure index
+i = 1;
+% Initialisation of 1 iteration of Modulus
+E_temp = E2;
+iter = 0;
+max_FI_1(i) = 0;
+max_FI_2(i) = 0;
+ply_index = 0;
+ply_failure = zeros(1,Nplies);
+F = [0;1;0];
+temp2 = 0;
+
+while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less than 1
+    z = 0:h_ply:h;
+    if temp2 < 10^(-25)
+        F = F; % looped to creat different biaxial forces
+    else
+            F = F/temp2;
+            %disp(F) % looped to creat different biaxial forces
+    end
+
+    FI_1 = zeros(1,Nplies);
+    FI_2 = zeros(1,Nplies);
+    FI_3 = zeros(1,Nplies);
+
+    % ABD reset
+    A = zeros(3,3);
+    B = zeros(3,3);
+    D = zeros(3,3);
+    Qbar = zeros(3,3);
+    Sbar = zeros(3,3);
+
+    % Calculation of Stiffness Matrix
+    [S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
+    [moduli]= [E1 E_temp nu12 G12];
+
+    zbar = zeros(1, Nplies);
+
+    for j = 1:length(ply_index)
+        if ply_index ~= 0
+            ply_failure(ply_index(j)) = 1;
+        end
+    end
+
+    for l = 1:Nplies
+        zbar(l) = -(h + h_ply)/2 + l*h_ply;
+        % For each ply we calculate the ABD Matrix
+        [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
+
+        if ply_failure(l) == 1
+            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-25) E_temp nu12 G12]);
+        end
+
+        A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
+        B = B + (1/2) * Qbar(:,:,l) * (z(l+1)^2-z(l)^2); %N
+        D = D + (1/3) * Qbar(:,:,l) * (z(l+1)^3-z(l)^3); %Nm
+        ABD = [A B; A D];
+    end
+    A_test = A;
+    invA_test = inv(A);
+    E_x = inv(h*invA_test(1,1));
+
+    % Calcuation of global strain for first ply failure
+    strain_glo = invA_test*F;
+    max_fe(i) = 0;
+    % Calculation of global stresses
+    stress_glo = Qbar(:,:,1)*strain_glo; % global sigmaxx etc.
+
+    for l = 1:Nplies
+        % Calculations of local Strains and Stresses
+        [eps_loc] = strain_gtol(strain_glo,thetadb(l));
+        [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
+        %sigma_loc = Qbar(:,:,1)*eps_loc;
 
 
+        %
 
+        % Failure index with Maximum Stress Criterion
+        % For each pair of N(i) and N(j) there will be a maximum
+        % failure criterion - from all the calculations of each failure
+        % index, find the maximum one.
 
+        [FI_1(i,l),FI_2(i,l),FI_3(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
+
+        % Failure index with Pucks Criterion
+        fe(i,l) = fiberfailure(sigma_loc(1),sigma_loc(2),sigma_loc(3),'c',X_T,X_C,E_x,E1_f,nu12);  % (num_samples,layer)
+        % Calculation of Ply failure
+        if fe(i,l) > max_fe(i)
+            max_fe(i)= fe(i,l); %maximum failure index with relative forces
+            numberply(i,l) = l;
+        end
+    end
+
+    if ply_failure == ones(1,Nplies)
+        fprintf('LFP2 =')
+        LPF2 = F;
+        disp(LPF2)
+        break
+    end
+
+    temp2 = max(FI_2(~ply_failure));
+    temp1 = max(FI_1(~ply_failure));
+
+    if  temp1 > temp2
+        ply_index = find(FI_1(i,:) == temp1);
+    else
+        ply_index = find(FI_2(i,:) == temp2);
+        E_temp = 0.1*E_temp;
+    end
+
+    
+    iter = iter + 1;
+end
 
 %% Plots
-
-% % % Plot biaxial stress failure envelopes for Puck and Max Stress criteria
+% Plot biaxial stress failure envelopes for Puck and Max Stress criteria
 figure;
 hold on;
 contour(sigma_range, sigma_range, maxstress_envelope1, [0 1], 'g');
 contour(sigma_range,sigma_range, puck_envelope1, [0 1], 'b');
-xlabel('\sigma_1 (MPa)');
-ylabel('\sigma_2 (MPa)');
+scatter(F_FPF_MS1(1)/h,0,'x')
+scatter(F_FPF_FF1(1)/h,0,'o')
+scatter(LPF1/h,0,'*')
+scatter(0,F_FPF_MS2(1)/h,'x')
+scatter(0,F_FPF_FF2(1)/h,'o')
+scatter(0,LPF2/h,'*')
+xlabel('\sigma_1 (Pa)');
+ylabel('\sigma_2 (Pa)');
 title('Biaxial Stress Failure Envelopes');
-legend('Maximum Stress', 'Puck');
-% 
-
-figure;
-hold on;
-plot(N_range, F_FPF_MS1,'g');
-plot(N_range, F_FPF_FF1,'r')
-xlabel('N_x ');
-ylabel('N_x - First ply Failure');
-title('Loading N_x vs First ply Failure');
-legend('First ply failure');
-
-figure;
-hold on;
-plot(N_range, F_FPF_MS2,'g');
-plot(N_range, F_FPF_FF2,'r')
-xlabel('N_y ');
-ylabel('N_y - First ply Failure');
-title('Loading N_x vs First ply Failure');
-legend('First ply failure');
-
-
-
-
-% % Plot FPFfor Puck and Max Stress criteria
-% figure(2);
-% [X, Y] = meshgrid(N_range, N_range);
-% 
-% % Plot the 3D surface
-% surf(X, Y, max_fe);
-% 
-% % Add labels and title
-% xlabel('x');
-% ylabel('y');
-% zlabel('fe');
-% title('3D Surface Plot of fe');
-% 
-% 
-% figure(3);
-% % Plot the 3D surface
-% surf(X, Y, max_FI);
-% 
-% % Add labels and title
-% xlabel('x');
-% ylabel('y');
-% zlabel('FI max');
-% title('3D Surface Plot of F');
-% 
-% figure(4);
-% % Plot the 3D surface
-% surf(X, Y, F_norm_puck);
-% 
-% % Add labels and title
-% xlabel('x');
-% ylabel('y');
-% zlabel('F_norm');
-% title('3D Surface Plot of F Puck');
-% 
-% figure(5);
-% % Plot the 3D surface
-% surf(X, Y, F_norm_MaxStress);
-% 
-% % Add labels and title
-% xlabel('x');
-% ylabel('y');
-% zlabel('F_norm');
-% title('3D Surface Plot of F maxStres');
-
-
+legend('Maximum Stress', 'Puck','FPF Maximum stress Nx','FPF Puck Criterion Nx','LPF Maximum stress Criterion Nx','FPF Maximum stress Ny','FPF Puck Criterion Ny','LPF Maximum stress Criterion Ny');
 
 
 %% Functions
@@ -292,20 +442,21 @@ function fe = fiberfailure(sigma1,sigma2,sigma3,fiber,X_T,X_C,Ex,E1,nu12)
 
 end
 
-function [FI_1,FI_2,FI_3]= MaxStress(sigma,X_T,X_C,Y_T,Y_C,S_f)
 
-if sigma(1)>=0
-    FI_1 = sigma(1)/X_T;
+function [FI_1,FI_2,FI_3]= MaxStress(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,S_f)
+
+if sigma1>=0
+    FI_1 = sigma1/X_T;
 else
-    FI_1 = -sigma(1)/X_C;
+    FI_1 = -sigma1/X_C;
 end
 
-if sigma(2)>=0
-    FI_2 = sigma(2)/Y_T;
+if sigma2>=0
+    FI_2 = sigma2/Y_T;
 else
-    FI_2 = -sigma(2)/Y_C;
+    FI_2 = -sigma2/Y_C;
 end
-FI_3 = abs(sigma(3))/S_f;
+FI_3 = abs(sigma3)/S_f;
 end
 
 
