@@ -40,7 +40,7 @@ max_FI_1(i) = 0;
 max_FI_2(i) = 0;
 ply_index = 0;
 ply_failure = zeros(1,Nplies);
-F = [0;0;0];
+F = [1;0;0];
 temp1 = 0;
 
 while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less than 1
