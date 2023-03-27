@@ -2,19 +2,19 @@ clear; format;
 format short g;
 
 % Define material properties
-E1   = 140.e9 ; % Pa - direction modulus of the lamina
-E1_f = 20.e9; % Pa - directional modulus of fibres
-nu12 = .3 ;
-E2   = 10.e9  ; % Pa
+E1   = 165.e9 ; % Pa - direction modulus of the lamina
+E1_f = 20.e9; % Pa - directional modulus of fibres %% MAY BE WRONG
+nu12 = .35 ;
+E2   = 8.44*10^(9)  ; % Pa
 E2_f = 20.e9; % Pa - tranvers modulus of fibres
-G12  = 5.e9  ; % Pa
+G12  = 7.e9  ; % Pa
 nu21 = nu12 * E2 / E1 ;
-X_T = 1500.e6;
-X_C = 1480.e6;
-Y_T = 50.e6;
-Y_C = 220.e6;
+X_T = 1920.e6;
+X_C = 1200.e6;
+Y_T = 107.e6;
+Y_C = 250.e6;
 g_12t = 70.e6;
-sigma_max = 200.e8;
+sigma_max = 2*10^9; % 500 MPa
 
 %% Initialisation
 % Laminate definition (plies of equal thickness)
@@ -40,16 +40,16 @@ max_FI_1(i) = 0;
 max_FI_2(i) = 0;
 ply_index = 0;
 ply_failure = zeros(1,Nplies);
-F = [1,-1;0,0;0,0];
+F = [0;1;0];
 n = size(F);
-temp1 = 0;
+temp2 = 0;
 
 while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less than 1
     z = 0:h_ply:h;
-    if temp1 < 10^(-25)
+    if temp2 < 10^(-25)
         F = F; % looped to creat different biaxial forces
     else
-        F = F/temp1;
+        F = F/temp2;
         disp(F) % looped to creat different biaxial forces
     end
 
@@ -65,8 +65,8 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
     Sbar = zeros(3,3);
 
     % Calculation of Stiffness Matrix
-    [S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
-    [moduli]= [E1 E_temp nu12 G12];
+    [S, Q] = ReducedComplianceStiffness(E_temp,E2,nu12,G12);
+    [moduli]= [E_temp E2 nu12 G12];
 
     zbar = zeros(1, Nplies);
 
@@ -83,7 +83,8 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
         [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
 
         if ply_failure(l) == 1
-            [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),[10^(-25) E_temp nu12 G12]);
+            Q = ReducedStiffness2(E_temp, nu12,nu21,G12);
+            Qbar(:,:,l) = TransformedReducedQ(Q,thetadb(l));
         end
 
         A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
@@ -108,9 +109,6 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
         [eps_loc] = strain_gtol(strain_glo,thetadb(l));
         [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
         %sigma_loc = Qbar(:,:,1)*eps_loc;
-
-
-        %
 
         % Failure index with Maximum Stress Criterion
         % For each pair of N(i) and N(j) there will be a maximum
@@ -139,12 +137,11 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
     temp1 = max(FI_1(~ply_failure));
 
     if  temp1 > temp2
-        ply_index = find(FI_1(i,:) == temp1);
-    else
         ply_index = find(FI_2(i,:) == temp2);
+    else
+        ply_index = find(FI_1(i,:) == temp1);
         E_temp = 0.1*E_temp;
     end
-
 
     iter = iter + 1;
     disp(iter)
@@ -188,7 +185,29 @@ FI_3 = abs(sigma3)/S_f;
 end
 
 
+function y = ReducedStiffness2(E1,NU12,NU21,G12)
+%ReducedStiffness This function returns the reduced stiffness
+% matrix for fiber-reinforced materials.
+% There are four arguments representing four
+% material constants. The size of the reduced
+% stiffness matrix is 3 x 3.
+y = [E1/(1-NU12*NU21), 0, 0 ; 0, 0, 0 ; 0, 0, G12];
+end
 
+function y = TransformedReducedQ(Q,theta)
+%Qbar This function returns the transformed reduced
+% stiffness matrix "Qbar" given the reduced
+% stiffness matrix Q and the orientation
+% angle "theta".
+% There are two arguments representing Q and "theta"
+% The size of the matrix is 3 x 3.
+% The angle "theta" must be given in degrees.
+m = cosd(theta);
+n = sind(theta);
+T = [m*m n*n 2*m*n ; n*n m*m -2*m*n ; -m*n m*n m*m-n*n];
+Tinv = [m*m n*n -2*m*n ; n*n m*m 2*m*n ; m*n -m*n m*m-n*n];
+y = Tinv*Q*T;
+end
 
 function [Qbar,Sbar] = QbarandSbar(angle,moduli)
 % Sine of the angle of the lamina
