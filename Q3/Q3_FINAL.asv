@@ -224,8 +224,6 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
         [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
 
         [FI_LPF_1(i,l),FI_LPF_2(i,l),FI_LPF_3(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
-
-        [FF_LPF(i,l),IFF_LPF(i,l)] = PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t,nu12,E1,'c','n');
     end
     
     % Considering all the plies - find highest failure index of loading ration (i,j) 
@@ -234,13 +232,7 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
     max_FI_2(i,j) = max(FI_LPF_2(i,j,:));
     max_FI_3(i,j) = max(FI_LPF_3(i,j,:));
     % Highest Failure index according to maxmimum Stress
-    max_FI_MS(i,j) = max([max_FI_1(i,j),max_FI_2(i,j),max_FI_3(i,j)]);
-
-    % Puck Criterion
-    max_FF(i,j) = max(FF_LPF(i,j,:));
-    max_IFF(i,j) = max(IFF_LPF(i,j,:));
-    % Highest Failure index according to Puck Criterion
-    max_FI_PUCK(i,j) = max([max_FF(i,j),max_IFF(i,j)]);
+    max_FI_MS_LPF(i,j) = max([max_FI_1(i,j),max_FI_2(i,j),max_FI_3(i,j)]);
 
     if ply_failure == ones(1,Nplies)
         fprintf('LFP1 =')
@@ -250,10 +242,12 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
     end
 
     if max_FI_MS(i,j) == max_FI_1(i,j) % if fibre failure
-        E_temp = 
-        ply_index = find(FI_LPF_1(i,:) == );
-    else 
-        ply_index = find(FI_LPF_2(i,:) == temp2);
+        ply_index = find(FI_LPF_1(i,:) == FI_LPF_1(~ply_failure));
+    elseif max_FI_MS(i,j) == max_FI_2(i,j)
+        ply_index = find(FI_LPF_2(i,:) == FI_LPF_2(~ply_failure));
+        E_temp = 0.1*E_temp;
+    else
+        ply_index = find(FI_LPF_3(i,:) == FI_LPF_3(~ply_failure));
         E_temp = 0.1*E_temp;
     end
 

@@ -228,11 +228,11 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
     
     % Considering all the plies - find highest failure index of loading ration (i,j) 
     % Maximum Stress
-    max_FI_1(i,j) = max(FI_LPF_1(i,j,:)); % Maximum FI_1 over all plies for loading ratio (i,j)
-    max_FI_2(i,j) = max(FI_LPF_2(i,j,:));
-    max_FI_3(i,j) = max(FI_LPF_3(i,j,:));
+    max_FI_1_LPF(i,j) = max(FI_LPF_1(i,j,:)); % Maximum FI_1 over all plies for loading ratio (i,j)
+    max_FI_2_LPF(i,j) = max(FI_LPF_2(i,j,:));
+    max_FI_3_LPF(i,j) = max(FI_LPF_3(i,j,:));
     % Highest Failure index according to maxmimum Stress
-    max_FI_MS(i,j) = max([max_FI_1(i,j),max_FI_2(i,j),max_FI_3(i,j)]);
+    max_FI_MS_LPF(i,j) = max([max_FI_1_LPF(i,j),max_FI_2_LPF(i,j),max_FI_3_LPF(i,j)]);
 
     if ply_failure == ones(1,Nplies)
         fprintf('LFP1 =')
@@ -241,9 +241,9 @@ while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less
         break
     end
 
-    if max_FI_MS(i,j) == max_FI_1(i,j) % if fibre failure
+    if max_FI_MS_LPF(i,j) == max_FI_1_LPF(i,j) % if fibre failure
         ply_index = find(FI_LPF_1(i,:) == FI_LPF_1(~ply_failure));
-    elseif max_FI_MS(i,j) == max_FI_2(i,j)
+    elseif max_FI_MS_LPF(i,j) == max_FI_2_LPF(i,j)
         ply_index = find(FI_LPF_2(i,:) == FI_LPF_2(~ply_failure));
         E_temp = 0.1*E_temp;
     else

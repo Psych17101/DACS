@@ -71,7 +71,7 @@ E_x = inv(h*invA(1,1));
 
 %% Plot and Calculations biaxial stress failure envelopes for Puck and Max Stress criteria
 % Define stress ranges for plotting
-sigma_range = linspace(-Y_C, Y_T, 101); %N\m^2
+sigma_range = linspace(-Y_C, Y_T, 2); %N\m^2
 
 
 
