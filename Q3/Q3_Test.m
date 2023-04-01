@@ -25,7 +25,7 @@ X_C = 1200.e6;
 Y_T = 107.e6;
 Y_C = 250.e6;
 g_12t = 70.e6;
-sigma_max = 2*10^9; % 500 MPa
+sigma_max = 10*10^9; % 500 MPa
 
 %% Initialisation of Composites Model
 % Laminate definition (plies of equal thickness)
@@ -154,13 +154,17 @@ for i = 1:length(N_range)
             % Calculations of local Strains and Stresses
             [eps_loc] = strain_gtol(strain_glo,thetadb(l));
             [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
-            disp(sigma_loc)
             % Failure index with Maximum Stress criterion
             [FI_FPF1x(i,l),FI_FPF2x(i,l),FI_FPF3x(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
             
-            %sigma_loc = Qbar*eps_loc; % same as function stress_gtol
+            sigma_loc = Qbar*eps_loc; % same as function stress_gtol
             % Failure index with Pucks Criterion
-            [FF_FPFx(i,l),IFF_FPFx(i,l)] = PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t,nu12,E1,'c','n');
+            [FF_FPFx(i,l),IFF_FPFx(i,l)] = PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t,nu12,E1,'c','y');
+         
+         
+                %% Problem 
+                % It is saying that under pure compression,
+         
          end
        
         % Considering all the plies - find highest index for each pair of 
@@ -266,9 +270,6 @@ disp(min(F_FPF_FF(1)))
 
 % Something wrong with Ny - What Fiber failure index or interfiber failure
 % index do i use for 
-
-
-
 
 
 
@@ -530,7 +531,7 @@ function fe = fiberfailure(sigma1,sigma2,sigma3,fiber,X_T,X_C,Ex,E1,nu12)
 
 end
 
-function [FF,IFF] = PuckCriterion(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,G12_t,nu12,E1,fiber,print)
+function [FF,IFF] = PuckCriterion(sigma_1,sigma_2,sigma_3,X_T,X_C,Y_T,Y_C,G12_t,nu12,E1,fiber,print)
 FF =0;
 IFF = 0;
 
@@ -552,49 +553,65 @@ elseif fiber == 'g'
     Ex = 75e9; % GPa
 end
 
-R_TTA = Y_C/(2*(1+pcTT));
+R_TTA = Y_C./(2.*(1.+pcTT));
 
-if sigma1 > 0
-    FF = 1/X_T*(sigma1 - (nu12-nu12*m*E1/Ex)*(sigma2+sigma3));
+% fprintf("R_TTA:")
+%disp(-R_TTA(1))
+% fprintf("sigma2: ")
+% disp(sigma2)
+
+% Fiber Failure
+if sigma_1 > 0
+    FF = 1./X_T.*(sigma_1 - (nu12-nu12.*m.*E1/Ex)*(sigma_2+sigma_3));
     if print == 'y'
-        fprintf("fiber failure Tension\n")
+        fprintf("Fiber failure Tension\n")
     end
 else 
-    FF = 1/(-X_C)*(sigma1 - (nu12-nu12*m*E1/Ex)*(sigma2+sigma3));
+    FF = 1./(-X_C).*(sigma_1 - (nu12-nu12.*m.*E1/Ex).*(sigma_2+sigma_3));
     if print == 'y'
         fprintf("Fibre failure Compression\n")
     end
 end
 
-if sigma2 > 0  && Y_T > sigma2 %Condition Mode A
+
+% Inter Fiber Failure (Matrix)
+if sigma_2 > 0  %&& Y_T > sigma2 %Condition Mode A
     R_Tll = G12_t;
     R_Tt = Y_T;
-    A_ = (1/R_Tt - ptTll/R_Tll)*sigma2;
-    B = sigma3/R_Tll;
-    C = ptTll/R_Tll*sigma2;
-    IFF = sqrt(A_^2 + B^2) + C;
-    if print == 'y'
-        fprintf("Interfiber failure Mode A\n")
-    end
-elseif sigma2 < 0 && -R_TTA < sigma2  %  Condition Mode B
-    R_Tll = G12_t;
-    A_ = (pcTll./R_Tll).*sigma2;
-    B = sigma3./R_Tll;
-    C = pcTll./R_Tll*sigma2;
+    A_ = (1./R_Tt - ptTll./R_Tll).*sigma_2;
+    B = sigma_3./R_Tll;
+    C = ptTll./R_Tll*sigma_2;
     IFF = sqrt(A_.^2 + B.^2) + C;
     if print == 'y'
-        fprintf("Interfiber failure Mode B\n")
+        fprintf("Interfiber failure Mode A\n")
+        disp(IFF)
     end
-elseif sigma2 < -R_TTA && -Y_C <= sigma2 % Condition Mode C
+elseif sigma_2 <= 0 && -R_TTA(1) < sigma_2  %  Condition Mode B
+    disp(sigma_2)
+    R_Tll = G12_t;
+    A_ = (pcTll./R_Tll).*sigma_2;
+    disp(A_)
+    B = sigma_3./R_Tll;
+    disp(B)
+    C = pcTll./R_Tll.*sigma_2;
+    disp(C)
+    IFF = sqrt(A_.^2 + B.^2) + C;
+    
+    if print == 'y'
+        fprintf("Interfiber failure Mode B\n")
+        disp(IFF)
+    end
+elseif sigma_2 < -R_TTA(1) %&& -Y_C <= sigma2 % Condition Mode C
     R_Tll = Y_C;
-    A_ = sigma3./(2*(1+pcTT)*R_Tll);
-    B = sigma2./R_Tll;
-    C = R_Tll./-sigma2;
-    IFF = (A_.^2 + B.^2)* C;
-    thetafp = acosd(sqrt(1./2*(1+pcTT)*((R_TTA./R_Tll)*(sigma3./sigma2)+1)));
+    A_ = sigma_3./(2*(1+pcTT)*R_Tll);
+    B = sigma_2./R_Tll;
+    C = R_Tll./-sigma_2;
+    IFF = (A_.^2 + B.^2).* C;
+    thetafp = acosd(sqrt(1./2*(1+pcTT)*((R_TTA(1)./R_Tll)*(sigma_3./sigma_2)+1)));
     if print == 'y'
         fprintf("Interfiber failure Mode C\n")
         disp(thetafp)
+        disp(IFF)
     end
 else
     if print == 'y'
