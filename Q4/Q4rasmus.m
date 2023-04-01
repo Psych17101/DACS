@@ -45,13 +45,13 @@ num_samples = 1; % number of random samples to generate for each simulation
 
 F = [N*cosd(theta); N*sind(theta); 0]; % load vector N/m
 ply_failure = zeros(num_simulations, 1); % array to store ply failure results
-conv=1;
+error=1;
 pflist=[];
 hh = animatedline('Color','r');
 axis([0,10000,0,5])
 FN=1;
 FNlast=1;
-while conv>1e-3 %run until converged
+while error>1e-3 %run until converged
     % generate random samples for material properties
     
     n=0;
@@ -121,13 +121,14 @@ while conv>1e-3 %run until converged
     FNlast2=FNlast;
     FNlast=FN;
     FN=sum(pflist)/length(pflist);
+    
     %plot(length(FN), FN); hold on;
     ROC=abs(FNlast2-FNlast)/abs(FNlast-FN);
     %addpoints(hh,length(pflist),FN);
     
     addpoints(hh, length(pflist), ROC); 
     drawnow;
-    %error=FN-FNlast;
+    error=FN-FNlast;
     
     
 end
