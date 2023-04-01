@@ -153,105 +153,110 @@ legend('Maximum Stress','Puck');
 
 
 %% LPF
-% Calculations of Failure index
-i = 1;
-% Initialisation of 1 iteration of Modulus
-E_temp = E2;
-iter = 0;
-ply_index = 0;
-ply_failure = zeros(1,Nplies);
-F = [1;1;0];
-temp1 = 0;
+for i = 1:length(sigma_range)
+    for j = 1:length(sigma_range)
+        % Calculations of Failure index
+        % Initialisation of 1 iteration of Modulus
+        E_temp = E2;
+        iter = 1;
+        ply_index = 0;
+        ply_failure = zeros(1,Nplies);
+        F = [N_range(i);N_range(j);0];
+        max_FI_MS_LPF = 0;
 
-while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less than 1
-    z = 0:h_ply:h;
-    if temp1 < 10^(-25)
-        F = F; % looped to creat different biaxial forces
-    else
-        F = F/temp1;
-    end
+        while E_temp ~= 0 && iter < 50 % While the failure index of our laminate is less than 1
+            z = 0:h_ply:h;
+            if max_FI_MS_LPF == 0
+                F = F; % looped to creat different biaxial forces
+            else
+                F = F/max_FI_MS_LPF;
+            end
 
-    FI_LPF_1 = zeros(1,Nplies);
-    FI_LPF_2 = zeros(1,Nplies);
-    FI_LPF_3 = zeros(1,Nplies);
+            FI_LPF_1(iter,:) = zeros(1,Nplies);
+            FI_LPF_2(iter,:) = zeros(1,Nplies);
+            FI_LPF_3(iter,:) = zeros(1,Nplies);
 
-    % ABD reset
-    A = zeros(3,3);
-    B = zeros(3,3);
-    D = zeros(3,3);
-    Qbar = zeros(3,3);
-    Sbar = zeros(3,3);
+            % ABD reset
+            A = zeros(3,3);
+            B = zeros(3,3);
+            D = zeros(3,3);
+            Qbar = zeros(3,3);
+            Sbar = zeros(3,3);
 
-    % Calculation of Stiffness Matrix
-    [S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
-    [moduli]= [E1 E_temp nu12 G12];
+            % Calculation of Stiffness Matrix
+            [S, Q] = ReducedComplianceStiffness(E1,E_temp,nu12,G12);
+            [moduli]= [E1 E_temp nu12 G12];
 
-    zbar = zeros(1, Nplies);
+            zbar = zeros(1, Nplies);
 
-    for j = 1:length(ply_index)
-        if ply_index ~= 0
-            ply_failure(ply_index(j)) = 1;
+            for j = 1:length(ply_index)
+                if ply_index ~= 0
+                    ply_failure(ply_index(j)) = 1;
+                end
+            end
+
+            for l = 1:Nplies
+                zbar(l) = -(h + h_ply)/2 + l*h_ply;
+                % For each ply we calculate the ABD Matrix
+                [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
+
+                if ply_failure(l) == 1
+                    Q = ReducedStiffness(E_temp, nu12,nu21,G12);
+                    Qbar(:,:,l) = TransformedReducedQ(Q,thetadb(l));
+                end
+
+                A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
+                B = B + (1/2) * Qbar(:,:,l) * (z(l+1)^2-z(l)^2); %N
+                D = D + (1/3) * Qbar(:,:,l) * (z(l+1)^3-z(l)^3); %Nm
+                ABD = [A B; A D];
+            end
+
+            A_test = A;
+            invA_test = inv(A);
+
+            % Calcuation of global strain for first ply failure
+            strain_glo = inv(A)*F;
+            % Calculation of global stresses
+            stress_glo = Qbar(:,:,1)*strain_glo; % global sigmaxx etc.
+
+            for l = 1:Nplies
+                % Calculations of local Strains and Stresses
+                [eps_loc] = strain_gtol(strain_glo,thetadb(l));
+                [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
+
+                [FI_LPF_1(iter,l),FI_LPF_2(iter,l),FI_LPF_3(iter,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
+            end
+
+            if ply_failure == ones(1,Nplies)
+                fprintf('LFP1 =')
+                LPF_MS(i,j,:) = F;
+                %disp(LPF_MS(i,j,:))
+                break
+            end
+
+            % Considering all the plies - find highest failure index of loading ration (i,j)
+            % Maximum Stress
+            max_FI_1_LPF(iter) = max(FI_LPF_1(iter,~ply_failure)); % Maximum FI_1 over all plies for loading ratio (i,j)
+            max_FI_2_LPF(iter) = max(FI_LPF_2(iter,~ply_failure));
+            max_FI_3_LPF(iter) = max(FI_LPF_3(iter,~ply_failure));
+            % Highest Failure index according to maxmimum Stress
+            max_FI_MS_LPF = max([max_FI_1_LPF(iter),max_FI_2_LPF(iter),max_FI_3_LPF(iter)]);
+
+
+
+            if max_FI_MS_LPF == max_FI_1_LPF(iter) % if fibre failure
+                ply_index = find(max_FI_MS_LPF == FI_LPF_1(iter,:));
+            elseif max_FI_MS_LPF == max_FI_2_LPF(iter)
+                ply_index = find(FI_LPF_2(iter,:) == max_FI_MS_LPF);
+                E_temp = 0.1*E_temp;
+            else
+                ply_index = find(max_FI_MS_LPF == FI_LPF_3(iter,:));
+                E_temp = 0.1*E_temp;
+            end
+
+            iter = iter + 1;
         end
     end
-
-    for l = 1:Nplies
-        zbar(l) = -(h + h_ply)/2 + l*h_ply;
-        % For each ply we calculate the ABD Matrix
-        [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
-
-        if ply_failure(l) == 1
-            Q = ReducedStiffness(E_temp, nu12,nu21,G12);
-            Qbar(:,:,l) = TransformedReducedQ(Q,thetadb(l));
-        end
-
-        A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
-        B = B + (1/2) * Qbar(:,:,l) * (z(l+1)^2-z(l)^2); %N
-        D = D + (1/3) * Qbar(:,:,l) * (z(l+1)^3-z(l)^3); %Nm
-        ABD = [A B; A D];
-    end
-    
-    A_test = A;
-    invA_test = inv(A);
-
-    % Calcuation of global strain for first ply failure
-    strain_glo = inv(A)*F;
-    % Calculation of global stresses
-    stress_glo = Qbar(:,:,1)*strain_glo; % global sigmaxx etc.
-
-    for l = 1:Nplies
-        % Calculations of local Strains and Stresses
-        [eps_loc] = strain_gtol(strain_glo,thetadb(l));
-        [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
-
-        [FI_LPF_1(i,l),FI_LPF_2(i,l),FI_LPF_3(i,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
-    end
-    
-    % Considering all the plies - find highest failure index of loading ration (i,j) 
-    % Maximum Stress
-    max_FI_1_LPF(i,j) = max(FI_LPF_1(i,j,:)); % Maximum FI_1 over all plies for loading ratio (i,j)
-    max_FI_2_LPF(i,j) = max(FI_LPF_2(i,j,:));
-    max_FI_3_LPF(i,j) = max(FI_LPF_3(i,j,:));
-    % Highest Failure index according to maxmimum Stress
-    max_FI_MS_LPF(i,j) = max([max_FI_1_LPF(i,j),max_FI_2_LPF(i,j),max_FI_3_LPF(i,j)]);
-
-    if ply_failure == ones(1,Nplies)
-        fprintf('LFP1 =')
-        LPF1 = F;
-        disp(LPF1)
-        break
-    end
-
-    if max_FI_MS_LPF(i,j) == max_FI_1_LPF(i,j) % if fibre failure
-        ply_index = find(FI_LPF_1(i,:) == FI_LPF_1(~ply_failure));
-    elseif max_FI_MS_LPF(i,j) == max_FI_2_LPF(i,j)
-        ply_index = find(FI_LPF_2(i,:) == FI_LPF_2(~ply_failure));
-        E_temp = 0.1*E_temp;
-    else
-        ply_index = find(FI_LPF_3(i,:) == FI_LPF_3(~ply_failure));
-        E_temp = 0.1*E_temp;
-    end
-
-    iter = iter + 1;
 end
 
 
