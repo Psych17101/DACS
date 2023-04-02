@@ -5,16 +5,17 @@ format short g;
 
 
 % Define material properties
-E1   = 165.22*10^9 ;% Pa - direction modulus of the lamina
+E1   = 165.22*10*9 ;% Pa - direction modulus of the lamina
 E2   = 8.4443*10^9  ; % Pa
 nu12 = .35218 ;
 nu21 = 0.0185;
-G12  = 6.8*10^9  ; % Pa
-X_T = 1923.7*10^6;
-X_C = 1480*10^6;
-Y_T = 107*10^6;
-Y_C = 220*10^6;
-g_12t = 152.4*10^6;
+G12  = 6.8*10*9  ; % Pa
+X_T = 1923.7*10*6;
+X_C = 1480*10*6;
+Y_T = 107*10*6;
+Y_C = 220*10*6;
+g_12t = 152.4*10*6;
+sigma_max = 1*10^4; % 2 MNm
 
 
 %% Initialisation of Composites Model
@@ -46,9 +47,9 @@ D = zeros(3,3);
 % Creation of ABD Matrix 
 for i = 1:Nplies
     % For each ply we calculate the ABD Matrix
-    %Qbar(:,:,i) = FUNQbar(Q,thetadb(i));
-    [Qbar(:,:,i),Sbar(:,:,i)] = QbarandSbar(thetadb(i),moduli);
-    A = A + Qbar(:,:,i) * (z(i+1)-z(i)) ; %N/m, 
+    Qbar(:,:,i) = FUNQbar(Q,thetadb(i));
+    %[Qbar(:,:,i),Sbar(:,:,i)] = QbarandSbar(thetadb(i),moduli);
+    A = A + Qbar(:,:,i) * (z(i+1)-z(i)) ; %N/m, right dimensions?
     B = B + (1/2)* Qbar(:,:,i)* (z(i+1)^2-z(i)^2); %N
     D = D + (1/3)* Qbar(:,:,i) * (z(i+1)^3-z(i)^3); %Nm
     ABD = [A B; B D];
@@ -152,8 +153,10 @@ for i = 1:length(sigma_range)
                 F_LPF(:) = F_LPF(:)/max_FI_MS_LPF(i,j);
                 Nx_LPF(i,j) = F_LPF(1);
                 Ny_LPF(i,j) = F_LPF(2);
+            
+
             end
-          
+           
 
             FI_LPF_1(i,j,:) = zeros(1,Nplies);
             FI_LPF_2(i,j,:) = zeros(1,Nplies);
@@ -244,7 +247,7 @@ for i = 1:length(sigma_range)
                 end
             end
            
-         
+            
             iter = iter + 1;
         end
     end
@@ -274,6 +277,7 @@ for i = 1:length(sigma_range)
                 F_LPF(:) = F_LPF(:)/max_FI_PUCK_LPF(i,j);
                 
             end
+
             FF_LPF(i,j,:) = zeros(1,Nplies);
             IFF_LPF(i,j,:) = zeros(1,Nplies);
 
@@ -374,11 +378,11 @@ vec_Nx_FMS = Nx_FMS(:);
 vec_Ny_FMS = Ny_FMS(:);
 
 
-vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-4*10^5);
-vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-4*10^5);
+vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-0.5*10^6);
+vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-0.5*10^6);
 
-vec_Nx_LMS = vec_Nx_LMS1(vec_Ny_LMS1(:)<4*10^5);
-vec_Ny_LMS = vec_Ny_LMS1(vec_Ny_LMS1(:)<4*10^5);
+vec_Nx_LMS = vec_Nx_LMS1(vec_Ny_LMS1(:)<10^6);
+vec_Ny_LMS = vec_Ny_LMS1(vec_Ny_LMS1(:)<10^6);
 
 P_FMS = [vec_Nx_FMS,vec_Ny_FMS];
 k_FMS = convhull(P_FMS);
@@ -399,8 +403,8 @@ vec_Ny_FP = Ny_FP(:);
 vec_Nx_LP1 = Nx_LP(Ny_LP(:)>-0.5*10^6);
 vec_Ny_LP1 = Ny_LP(Ny_LP(:)>-0.5*10^6);
 
-vec_Nx_LP = vec_Nx_LP1(vec_Ny_LP1(:)<4*10^5);
-vec_Ny_LP = vec_Ny_LP1(vec_Ny_LP1(:)<4*10^5);
+vec_Nx_LP = vec_Nx_LP1(vec_Ny_LP1(:)<10^6);
+vec_Ny_LP = vec_Ny_LP1(vec_Ny_LP1(:)<10^6);
 
 P_FP = [vec_Nx_FP,vec_Ny_FP];
 k_FP = convhull(P_FP);
@@ -414,7 +418,7 @@ grid on
 plot(P_FMS(:,1),P_FMS(:,2),'b*')
 plot(P_FMS(k_FMS,1),P_FMS(k_FMS,2),'b')
 plot(P_LMS(:,1),P_LMS(:,2),'r*')
-plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
+plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'b')
 legend('FPF - MS','FPF envelope - MS','LPF - MS','LPF envelope - MS')
 title('Comparison MS - FPF & LPF')
 
