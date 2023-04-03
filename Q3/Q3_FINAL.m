@@ -9,7 +9,7 @@ E1   = 165.22*10^9 ;% Pa - direction modulus of the lamina
 E2   = 8.4443*10^9  ; % Pa
 nu12 = .35218 ;
 nu21 = 0.0185;
-G12  = 6.8*10^9  ; % Pa
+G12  = 6.444*10^9  ; % Pa
 X_T = 1923.7*10^6;
 X_C = 1480*10^6;
 Y_T = 107*10^6;
@@ -45,8 +45,6 @@ D = zeros(3,3);
 
 % Creation of ABD Matrix 
 for i = 1:Nplies
-    % For each ply we calculate the ABD Matrix
-    %Qbar(:,:,i) = FUNQbar(Q,thetadb(i));
     [Qbar(:,:,i),Sbar(:,:,i)] = QbarandSbar(thetadb(i),moduli);
     A = A + Qbar(:,:,i) * (z(i+1)-z(i)) ; %N/m, 
     B = B + (1/2)* Qbar(:,:,i)* (z(i+1)^2-z(i)^2); %N
@@ -373,12 +371,15 @@ Ny_LMS = Ny_LPF_MS(sorting_index);
 vec_Nx_FMS = Nx_FMS(:);
 vec_Ny_FMS = Ny_FMS(:);
 
+% vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-8*10^5);
+% vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-8*10^5);
+vec_Nx_LMS1 = Nx_LMS(abs(Nx_LMS(:))>2*10^5);
+vec_Ny_LMS1 = Ny_LMS(abs(Ny_LMS(:))>2*10^5);
 
-vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-4*10^5);
-vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-4*10^5);
-
-vec_Nx_LMS = vec_Nx_LMS1(vec_Ny_LMS1(:)<4*10^5);
-vec_Ny_LMS = vec_Ny_LMS1(vec_Ny_LMS1(:)<4*10^5);
+% vec_Nx_LMS = vec_Nx_LMS1(vec_Ny_LMS1(:)<4*10^5);
+% vec_Ny_LMS = vec_Ny_LMS1(vec_Ny_LMS1(:)<4*10^5);
+vec_Nx_LMS = vec_Nx_LMS1(:);
+vec_Ny_LMS = vec_Ny_LMS1(:);
 
 P_FMS = [vec_Nx_FMS,vec_Ny_FMS];
 k_FMS = convhull(P_FMS);
@@ -396,11 +397,15 @@ Ny_LP = Ny_LPF_PUCK(sorting_index);
 vec_Nx_FP = Nx_FP(:);
 vec_Ny_FP = Ny_FP(:);
 
-vec_Nx_LP1 = Nx_LP(Ny_LP(:)>-0.5*10^6);
-vec_Ny_LP1 = Ny_LP(Ny_LP(:)>-0.5*10^6);
+% vec_Nx_LP1 = Nx_LP(Ny_LP(:)>-0.5*10^6);
+% vec_Ny_LP1 = Ny_LP(Ny_LP(:)>-0.5*10^6);
+vec_Nx_LP1 = Nx_LP(:);
+vec_Ny_LP1 = Ny_LP(:);
 
-vec_Nx_LP = vec_Nx_LP1(vec_Ny_LP1(:)<4*10^5);
-vec_Ny_LP = vec_Ny_LP1(vec_Ny_LP1(:)<4*10^5);
+% vec_Nx_LP = vec_Nx_LP1(vec_Ny_LP1(:)<4*10^5);
+% vec_Ny_LP = vec_Ny_LP1(vec_Ny_LP1(:)<4*10^5);
+vec_Nx_LP = vec_Nx_LP1(:);
+vec_Ny_LP = vec_Ny_LP1(:);
 
 P_FP = [vec_Nx_FP,vec_Ny_FP];
 k_FP = convhull(P_FP);
@@ -417,6 +422,7 @@ plot(P_LMS(:,1),P_LMS(:,2),'r*')
 plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
 legend('FPF - MS','FPF envelope - MS','LPF - MS','LPF envelope - MS')
 title('Comparison MS - FPF & LPF')
+exportgraphics(gcf,'MS_Comp.png','Resolution',500);
 
 
 figure(2);
@@ -426,8 +432,11 @@ plot(P_FP(:,1),P_FP(:,2),'b*')
 plot(P_FP(k_FP,1),P_FP(k_FP,2),'b')
 plot(P_LP(:,1),P_LP(:,2),'r*')
 plot(P_LP(k_LP,1),P_LP(k_LP,2),'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
 legend('FPF - Puck','FPF envelope - Puck','LPF - Puck','LPF envelope - Puck')
 title('Comparison PUCK - FPF & LPF')
+exportgraphics(gcf,'PUCK_Comp.png','Resolution',500);
 
 % Comparison MS and PUCK
 figure(3);
@@ -437,9 +446,11 @@ plot(P_FP(:,1),P_FP(:,2),'b*')
 plot(P_FP(k_FP,1),P_FP(k_FP,2),'b')
 plot(P_FMS(:,1),P_FMS(:,2),'r*')
 plot(P_FMS(k_FMS,1),P_FMS(k_FMS,2),'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
 legend('FPF - Puck','FPF envelope - Puck','FPF - MS','LPF envelope - MS')
 title('Comparison FPF - Puck & MS')
-
+exportgraphics(gcf,'FPF_Comp.png','Resolution',500);
 
 figure(4);
 hold on
@@ -448,13 +459,18 @@ plot(P_LP(:,1),P_LP(:,2),'b*')
 plot(P_LP(k_LP,1),P_LP(k_LP,2),'b')
 plot(P_LMS(:,1),P_LMS(:,2),'r*')
 plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
 legend('LPF - Puck','LPF envelope - Puck','LPF - MS','LPF envelope - MS')
-title('Comparison LPF - Puck & MS')
+title('Biaxial Loading Comparison LPF - Puck & MS')
+exportgraphics(gcf,'LPF_Comp.png','Resolution',500);
+
+
 
 
 %% Functions
 function [FF,IFF] = PuckCriterion(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,G12_t,nu12,E1,fiber,print)
-FF =0;
+FF = 0;
 IFF = 0;
 
 sigma3 = abs(sigma3);
