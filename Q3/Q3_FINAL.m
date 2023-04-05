@@ -2,14 +2,12 @@ clear; format;
 close;
 format short g;
 
-
-
 % Define material properties
 E1   = 165.22*10^9 ;% Pa - direction modulus of the lamina
 E2   = 8.4443*10^9  ; % Pa
 nu12 = .35218 ;
 nu21 = 0.0185;
-G12  = 6.8*10^9  ; % Pa
+G12  = 6.444*10^9  ; % Pa
 X_T = 1923.7*10^6;
 X_C = 1480*10^6;
 Y_T = 107*10^6;
@@ -45,8 +43,6 @@ D = zeros(3,3);
 
 % Creation of ABD Matrix 
 for i = 1:Nplies
-    % For each ply we calculate the ABD Matrix
-    %Qbar(:,:,i) = FUNQbar(Q,thetadb(i));
     [Qbar(:,:,i),Sbar(:,:,i)] = QbarandSbar(thetadb(i),moduli);
     A = A + Qbar(:,:,i) * (z(i+1)-z(i)) ; %N/m, 
     B = B + (1/2)* Qbar(:,:,i)* (z(i+1)^2-z(i)^2); %N
@@ -74,33 +70,26 @@ for i = 1:length(sigma_range)
         sigma1 = sigma_range(i);
         sigma2 = sigma_range(j);
         F = [N_range(i);N_range(j);0];
-        %disp(F)
         LR(i,j) = N_range(i)/N_range(j);
-   
+
         % Calcuation of global strain for first ply failure
         strain_glo = A\F;
         % Calculation of global stresses
         stress_glo = Qbar(:,:,1)*strain_glo; % global sigmaxx etc...
-        %Initialisation of Failure criterion envelope
-        maxstress_envelope2(i,j,:) = 0;
-        puck_envelope2(i,j,:) = 0; 
 
         % Calculations of Failure Criterion for each ply 
         for l = 1:Nplies
             % Calculations of local Strains and Stresses
             [eps_loc] = strain_gtol(strain_glo,thetadb(l));
             [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
-            % Failure index with Maximum Stress criterion
             
+            % Failure index with Maximum Stress criterion
             [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
            
 
             % Failure index with Pucks Criterion
             [FF(i,j,l),IFF(i,j,l)] = PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t,nu12,E1,'c','n');
-            % Calculation of Ply failure
-%             if FF(i,j,l) > 1 || IFF(i,j,l) >1
-%                 puck_envelope2(i,j,l) = 1;
-%             end
+         
         end
         
             % Considering all the plies - find highest failure index of loading ration (i,j) 
@@ -136,7 +125,6 @@ for i = 1:length(sigma_range)
     for j = 1:length(sigma_range)
         % Calculations of Failure index
         % Initialisation of 1 iteration of Modulus
-        E_temp = E2;
         iter = 0;
         ply_index = 0;
         ply_failure = zeros(1,Nplies);
@@ -258,12 +246,10 @@ end
         % Initialisation of 1 iteration of Modulus
 for i = 1:length(sigma_range)
     for j = 1:length(sigma_range)
-        E_temp = E2;
         iter = 1;
         ply_index = 0;
         ply_failure = zeros(1,Nplies);
         F_LPF = [N_range(i);N_range(j);0];
-        %disp(F_LPF)
         max_FI_PUCK_LPF(i,j) = 0;
 
         while iter < 50 % While the failure index of our laminate is less than 1
@@ -373,12 +359,15 @@ Ny_LMS = Ny_LPF_MS(sorting_index);
 vec_Nx_FMS = Nx_FMS(:);
 vec_Ny_FMS = Ny_FMS(:);
 
-
-vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-4*10^5);
-vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-4*10^5);
+vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-8*10^5);
+vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-8*10^5);
+% vec_Nx_LMS1 = Nx_LMS(abs(Nx_LMS(:))>2*10^5);
+% vec_Ny_LMS1 = Ny_LMS(abs(Ny_LMS(:))>2*10^5);
 
 vec_Nx_LMS = vec_Nx_LMS1(vec_Ny_LMS1(:)<4*10^5);
 vec_Ny_LMS = vec_Ny_LMS1(vec_Ny_LMS1(:)<4*10^5);
+% vec_Nx_LMS = vec_Nx_LMS1(:);
+% vec_Ny_LMS = vec_Ny_LMS1(:);
 
 P_FMS = [vec_Nx_FMS,vec_Ny_FMS];
 k_FMS = convhull(P_FMS);
@@ -398,9 +387,13 @@ vec_Ny_FP = Ny_FP(:);
 
 vec_Nx_LP1 = Nx_LP(Ny_LP(:)>-0.5*10^6);
 vec_Ny_LP1 = Ny_LP(Ny_LP(:)>-0.5*10^6);
+% vec_Nx_LP1 = Nx_LP(:);
+% vec_Ny_LP1 = Ny_LP(:);
 
 vec_Nx_LP = vec_Nx_LP1(vec_Ny_LP1(:)<4*10^5);
 vec_Ny_LP = vec_Ny_LP1(vec_Ny_LP1(:)<4*10^5);
+% vec_Nx_LP = vec_Nx_LP1(:);
+% vec_Ny_LP = vec_Ny_LP1(:);
 
 P_FP = [vec_Nx_FP,vec_Ny_FP];
 k_FP = convhull(P_FP);
@@ -417,6 +410,7 @@ plot(P_LMS(:,1),P_LMS(:,2),'r*')
 plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
 legend('FPF - MS','FPF envelope - MS','LPF - MS','LPF envelope - MS')
 title('Comparison MS - FPF & LPF')
+exportgraphics(gcf,'MS_Comp.png','Resolution',500);
 
 
 figure(2);
@@ -426,8 +420,11 @@ plot(P_FP(:,1),P_FP(:,2),'b*')
 plot(P_FP(k_FP,1),P_FP(k_FP,2),'b')
 plot(P_LP(:,1),P_LP(:,2),'r*')
 plot(P_LP(k_LP,1),P_LP(k_LP,2),'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
 legend('FPF - Puck','FPF envelope - Puck','LPF - Puck','LPF envelope - Puck')
 title('Comparison PUCK - FPF & LPF')
+exportgraphics(gcf,'PUCK_Comp.png','Resolution',500);
 
 % Comparison MS and PUCK
 figure(3);
@@ -437,9 +434,11 @@ plot(P_FP(:,1),P_FP(:,2),'b*')
 plot(P_FP(k_FP,1),P_FP(k_FP,2),'b')
 plot(P_FMS(:,1),P_FMS(:,2),'r*')
 plot(P_FMS(k_FMS,1),P_FMS(k_FMS,2),'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
 legend('FPF - Puck','FPF envelope - Puck','FPF - MS','LPF envelope - MS')
 title('Comparison FPF - Puck & MS')
-
+exportgraphics(gcf,'FPF_Comp.png','Resolution',500);
 
 figure(4);
 hold on
@@ -448,13 +447,18 @@ plot(P_LP(:,1),P_LP(:,2),'b*')
 plot(P_LP(k_LP,1),P_LP(k_LP,2),'b')
 plot(P_LMS(:,1),P_LMS(:,2),'r*')
 plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
 legend('LPF - Puck','LPF envelope - Puck','LPF - MS','LPF envelope - MS')
-title('Comparison LPF - Puck & MS')
+title('Biaxial Loading Comparison LPF - Puck & MS')
+exportgraphics(gcf,'LPF_Comp.png','Resolution',500);
+
+
 
 
 %% Functions
 function [FF,IFF] = PuckCriterion(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,G12_t,nu12,E1,fiber,print)
-FF =0;
+FF = 0;
 IFF = 0;
 
 sigma3 = abs(sigma3);
@@ -557,31 +561,6 @@ FI_3 = abs(sigma3)/S_f;
 end
 
 
-function y = ReducedStiffness(E2,NU12,NU21,G12)
-%ReducedStiffness This function returns the reduced stiffness
-% matrix for fiber-reinforced materials.
-% There are four arguments representing four
-% material constants. The size of the reduced
-% stiffness matrix is 3 x 3.
-y = [0, NU12*E2/(1-NU12*NU21), 0 ; NU12*E2/(1-NU12*NU21), E2/(1-NU12*NU21), 0 ; 0, 0, G12];
-end
-
-function y = TransformedReducedQ(Q,theta)
-%Qbar This function returns the transformed reduced
-% stiffness matrix "Qbar" given the reduced
-% stiffness matrix Q and the orientation
-% angle "theta".
-% There are two arguments representing Q and "theta"
-% The size of the matrix is 3 x 3.
-% The angle "theta" must be given in degrees.
-m = cosd(theta);
-n = sind(theta);
-T = [m*m n*n 2*m*n ; n*n m*m -2*m*n ; -m*n m*n m*m-n*n];
-Tinv = [m*m n*n -2*m*n ; n*n m*m 2*m*n ; m*n -m*n m*m-n*n];
-y = Tinv*Q*T;
-end
-
-
 function [Qbar,Sbar] = QbarandSbar(angle,moduli)
 % Sine of the angle of the lamina
 s=sind(angle);
@@ -616,30 +595,6 @@ Q = [E_1/(1-v_12*v_21), v_12*E_2/(1-v_12*v_21), 0 ;
 
 end
 
-function [Sbar, Qbar] = Tranformed_SCbar(S,Q,T,invT)
-% This function returns the off axis reduced stiffness
-% matrix for fiber-reinforced materials.
-% There are four arguments representing four
-% material constants. The size of the reduced
-% stiffness and compliance matrix is 3 x 3.
-Sbar = invT*S*T;
-Qbar = invT*Q*T;
-end
-
-
-function [strain_glo] = strain_ltog(strain_loc,angle)
-% Sine of the angle of the lamina
-s=sind(angle);
-% Cosine of the angle of the lamina
-c=cosd(angle);
-% Transformation matrix
-T=[c^2, s^2, 2*s*c; s^2, c^2, -2*s*c; -s*c, s*c, c^2-s^2;];
-% Calculating the global strain vector using the Tinv matrix
-strain_glo=inv(T)*strain_loc;
-% Calculating espxy
-strain_glo(3)=strain_glo(3)*2;
-end
-
 function [strain_loc] = strain_gtol(strain_glo,angle)
 % Sine of the angle of the lamina
 s=sind(angle);
@@ -653,17 +608,6 @@ T=[c^2, s^2, 2*s*c; s^2, c^2, -2*s*c; -s*c, s*c, c^2-s^2;];
 strain_loc=R*T*inv(R)*strain_glo;
 %strain_loc=T*strain_glo;
 
-end
-
-function [stress_glo] = stress_ltog(stress_loc,angle)
-% Sine of the angle of the lamina
-s=sind(angle);
-% Cosine of the angle of the lamina
-c=cosd(angle);
-% Transformation matrix
-T=[c^2, s^2, 2*s*c; s^2, c^2, -2*s*c; -s*c, s*c, c^2-s^2;];
-% Calculating the global strain vector using the Tinv matrix
-stress_glo=inv(T)*stress_loc;
 end
 
 function [stress_loc] = stress_gtol(stress_glo,angle)
@@ -680,41 +624,3 @@ T = [c^2, s^2, 2*s*c; s^2, c^2, -2*s*c; -s*c, s*c, c^2-s^2;];
 stress_loc=T*stress_glo;
 end
 
-function [ps1,ps2,tmax,thetaps,thetass] = principalstresses(stress_glo)
-% Stress in the x direction
-sx=stress_glo(1);
-% Stress in the y direction
-sy=stress_glo(2);
-% Stress in the x-y plane
-txy=stress_glo(3);
-% Longitudinal and Transverse Stresses
-ps_1=((sx+sy)/2)+sqrt((((sx-sy)/2)^2)+((txy)^2));
-ps_2=((sx+sy)/2)-sqrt((((sx-sy)/2)^2)+((txy)^2));
-thetaps=atand((2*txy)/(sx-sy))/2;
-if ps_1 > ps_2
-    ps1=ps_1;
-    ps2=ps_2;
-else
-    ps1=ps_2;
-    ps2=ps_1;
-end
-% Shear Stresses
-tmax=sqrt((((sx-sy)/2)^2)+(txy^2));
-thetass=atand(-(sx-sy)/(2*txy))/2;
-end
-
-
-function y = FUNQbar(Q,theta)
-%Qbar This function returns the transformed reduced
-% stiffness matrix "Qbar" given the reduced
-% stiffness matrix Q and the orientation
-% angle "theta".
-% There are two arguments representing Q and "theta"
-% The size of the matrix is 3 x 3.
-% The angle "theta" must be given in degrees.
-m = cosd(theta);
-n = sind(theta);
-T = [m*m n*n 2*m*n ; n*n m*m -2*m*n ; -m*n m*n m*m-n*n];
-Tinv = [m*m n*n -2*m*n ; n*n m*m 2*m*n ; m*n -m*n m*m-n*n];
-y = Tinv*Q*T;
-end
