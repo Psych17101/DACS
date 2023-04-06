@@ -2,13 +2,6 @@ clear; format;
 close all;
 format short g;
 
-%% Notes
-% I am a bit stuck on the creation of the probability
-% Currently taking random values of material propoerties
-% Not sure if calculation of first ply failure is correct (should be) (all values tend to be lower that 1 = no ply failure)
-% Not sure about units of force and material properties
-% Problems with plotting
-
 %% Initialisationation
 layup = [0 90 +45 -45 -45 +45 90 0 0 90 +45 -45 -45 +45 90 0];
 Nplies = length(layup);
@@ -37,11 +30,9 @@ mean_S12 = 152.4e6; std_S12=1.784e6;
 % load and orientation
 N = 400*1e3; % resultant force in N/m
 
-theta = 30; % angle of resultant force with respect to X-axis in radians
+theta = 30; % angle of resultant force with respect to X-axis in degrees
 
 % Monte Carlo simulation parameters
-num_simulations = 10; % number of Monte Carlo simulations to run
-num_samples = 1; % number of random samples to generate for each simulation
 
 F = [N*cosd(theta); N*sind(theta); 0]; % load vector N/m
 error=1;
