@@ -137,8 +137,8 @@ for i=1:length(AreasUD)
     meanE1s=[meanE1s, mean(E1table{i})];
 end
 
-meanE1=mean(meanE1s); %result:165 GPa
-stdE1=std(meanE1s); %16.9GPa
+meanE1=mean(meanE1s); %result:165.22 GPa
+stdE1=std(meanE1s); %16.922 GPa
 
 
 %x=meanE1-2*stdE1:1e8:meanE1+2*stdE1;
@@ -177,12 +177,12 @@ meanE2s=[];
 for i=1:length(Areas90)
     meanE2s=[meanE2s, mean(E2table{i})];
 end
-meanE2=mean(meanE2s); %result:8.44 GPa
-stdE2=std(meanE2s); %1.08 GPa
+meanE2=mean(meanE2s); %result:8.444 GPa
+stdE2=std(meanE2s); %1.077 GPa
 %x=meanE2-2*stdE2:1e8:meanE2+2*stdE2;
 %plot(x./1e9, normpdf(x, meanE2, stdE2));xlabel("E [Gpa]");
 
-%% calculating Ex to obtain E2=E1 for the 45
+%% calculating Ex to obtain E2=E1 and G12 for the 45
 
 Areas45=[];
 Lengths45=[];
@@ -194,34 +194,63 @@ end
 %AtimesLUD=AreasUD.*LengthsUD; %This is the denominator when calculating E1, different for each sample
 
 E21table= cell(length(Areas45), 1); %for each sample, there will be calculated E1
+G12table=cell(length(Areas45), 1);
 %variable names are {'Var1'}{'Time_s_'}{'Load_N_'}{'Displacement_mm_'}
 %we cut off the first 100 and linear behaviour until index=14000
 %we remove the values because we're interested in the linear behaviour of
 %E1
 for i=1:length(Areas45)
     E21=(table_list45{i}{100:14000, 3}.*Lengths45(i))./(table_list45{i}{100:14000, 4}.*1e-3*Areas45(i));
-    E21table{i}=E2;
+    E21table{i}=E21./(1-meanvxy); %using elastic properties for specified lamina
+    G12table{i}=E21./(2.*(1+meanvxy));%the value of E21 is equal to G12 of the UD as the 45 experiences pure shear
 end
 
 %using basic transformation matrix with theta=45 and only sigmax non-zero
-%gives E1=E2=Ex*(1+1/vxy)
-E21=E21.*(1+0.72);
-% !!!!!! Not sure about this calculationmean 
+%gives E1=E2=Ex/(1-vxy)
 
-%% calculating the gaussian distribution variables for Ex
+E21=E21./(1-meanvxy);
+%% calculating the gaussian distribution variables for E21
+%this is basically souble checking as the E21 can be calculated from E1
+
 %meanE21=mean(E21table{1}); %mean in Gpa
 %stdE21=std(E21table{1});
 
 E21tot=[];
 for i=1:length(Areas45)
-    E21tot=[E21tot; E21];
+    E21tot=[E21tot; mean(E21table{i})];
 end
 
-meanE21=mean(E21tot); %result:8 GPa
-stdE21=std(E21tot);
+meanE21=mean(E21tot); %result: 79.317 GPa
+stdE21=std(E21tot); %13.708 GPa 
 
 %x=meanE21-2*stdE21:1e8:meanE21+2*stdE21;
 %plot(x./1e9, normpdf(x, meanE21, stdE21));xlabel("E [Gpa]");
+
+%% calculating the gaussian distribution variables for G12
+G12tot=[];
+for i=1:length(Areas45)
+    G12tot=[G12tot; mean(G12table{i})];
+end
+
+meanG12=mean(G12tot); %result: 6.4167 GPa
+stdG12=std(G12tot); %1.1089 GPa
+
+%x=meanE21-2*stdE21:1e8:meanE21+2*stdE21;
+%plot(x./1e9, normpdf(x, meanE21, stdE21));xlabel("E [Gpa]");
+
+
+
+%% calculating S12 using +-45
+S12table= [];
+for i =1:length(samples45)
+    maxload=max(table_list45{i}{:, 3});%retrieves the maximum load
+    S12table=[S12table, maxload./2./Areas45(i)];
+end
+
+meanS12=mean(S12table); %result:152.4 MPa
+stdS12=std(S12table); %1.7844 MPa
+
+
 
 
 
@@ -239,8 +268,8 @@ for i =1:length(samplesUD)
     Xttable=[Xttable, maxload./AreasUD(i)];
 end
 
-meanXt=mean(Xttable); %result:1920 MPa
-stdXt=std(Xttable);
+meanXt=mean(Xttable); %result:1923.7 MPa
+stdXt=std(Xttable); %108.65
 
 %% calculating Yt for UD laminate, using 90
 Yttable= [];
@@ -248,8 +277,9 @@ for i =1:length(samples90)
     maxload=max(table_list90{i}{:, 3});%retrieves the maximum load
     Yttable=[Yttable, maxload./Areas90(i)];
 end
-meanYt=mean(Yttable); %result:107 MPa
-stdYt=std(Yttable);
+meanYt=mean(Yttable); %result:107.2 MPa
+stdYt=std(Yttable); %9.3507 MPa
+
 
 %% calculating Xt=Yt for 45, using 45
 XYttable= [];
@@ -322,8 +352,8 @@ for i=1:length(samplesUD)
     v12tot=[v12tot; v12table{i}];
 end
 
-meanv12=mean(v12tot); %result:0.35
-stdv12=std(v12tot);
+meanv12=mean(v12tot); %result:0.35318
+stdv12=std(v12tot); %0.1809
 
 
 %% calculating v21 minor poisson ratio using 90
@@ -341,8 +371,8 @@ for i=1:length(samples90)
     v21tot=[v21tot; v21table{i}];
 end
 
-meanv21=mean(v21tot); %result:0.0185
-stdv21=std(v21tot);
+meanv21=mean(v21tot); %result:0.018489
+stdv21=std(v21tot); %0.031465
 
 %% validation
 
@@ -365,8 +395,8 @@ for i=1:length(samples45)
     vxytot=[vxytot; vxytable{i}];
 end
 
-meanvxy=mean(vxytot); %result:0.72
-stdvxy=std(vxytot);
+meanvxy=mean(vxytot); %result:0.72147
+stdvxy=std(vxytot); %result: 0.10113
 
 %% calculating G12 of UD
 G12UDtable= cell(length(samplesUD), 1);

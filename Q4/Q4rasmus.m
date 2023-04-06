@@ -10,33 +10,33 @@ format short g;
 % Problems with plotting
 
 %% Initialisationation
-layup = [0 +45 -45 90 90 -45 +45 0 ];
+layup = [0 90 +45 -45 -45 +45 90 0 0 90 +45 -45 -45 +45 90 0];
 Nplies = length(layup);
 thetadb = fliplr(layup); % ply angles in degrees, from bottom;
-h_ply  = 0.125*10^(-3);           % SI units, mmm
+h_ply  = 0.12784*10^(-3);           % SI units, m
 h      = Nplies * h_ply ;
 
-z = 0:h_ply:h;
+z = -h/2:h_ply:h/2;
 
 for i = 1:Nplies
   zbar(i) = - (h + h_ply)/2 + i*h_ply; % mm
 end
 
 % material properties (mean and standard deviation) in Pa
-mean_E1 = 165e9; std_E1 = 17e9;
-mean_E2 = 8.44e9; std_E2 = 7.5e9;
-mean_G12 = 7e9; std_G12 = 0.1e9;
-mean_v12 = 0.35; std_v12 = 0.18;
-mean_X_T = 1920.e6; std_X_T=108.65*1e8;% Fiber
-X_C = 1200.e6; %
-mean_Y_T = 107.e6; std_Y_T=9.35*1e6;% Matrix
-Y_C = 250.e6;
-S_t = 70.e6;
+mean_E1 = 165.22e9; std_E1 = 16.922e9;
+mean_E2 = 8.444e9; std_E2 = 1.077e9;
+mean_G12 = 6.412e9; std_G12 = 1.109e9;
+mean_v12 = 0.3532; std_v12 = 0.1809;
+mean_X_T = 1924e6; std_X_T=108.7*1e6;% Fiber
+X_C = 1480e6; %
+mean_Y_T = 107.2e6; std_Y_T=9.351e6;% Matrix
+Y_C = 220e6;
+mean_S12 = 152.4e6; std_S12=1.784e6;
 
 
 % load and orientation
-N = 100*1e3; % resultant force in N/m
-% Confused about units
+N = 400*1e3; % resultant force in N/m
+
 theta = 30; % angle of resultant force with respect to X-axis in radians
 
 % Monte Carlo simulation parameters
@@ -44,14 +44,15 @@ num_simulations = 10; % number of Monte Carlo simulations to run
 num_samples = 1; % number of random samples to generate for each simulation
 
 F = [N*cosd(theta); N*sind(theta); 0]; % load vector N/m
-ply_failure = zeros(num_simulations, 1); % array to store ply failure results
 error=1;
 pflist=[];
 hh = animatedline('Color','r');
-axis([0,10000,0,0.15])
+axis([0,10000,0,0.3])
 FN=1;
 FNlast=1;
-while error>1e-8 %run until converged
+n_simulations=0;
+fel=[];
+while error>1e-8 && n_simulations<10000 %run until converged
     % generate random samples for material properties
     
     n=0;
@@ -63,6 +64,7 @@ while error>1e-8 %run until converged
         v12_samples = normrnd(mean_v12, std_v12, 1);
         X_T = normrnd(mean_X_T, std_X_T, 1);
         Y_T = normrnd(mean_Y_T, std_Y_T, 1);
+        S12 = normrnd(mean_S12, std_S12, 1);
         % calculate the transformed stiffness matrix for each sample
 
         %strain_samples = zeros(3);
@@ -73,35 +75,31 @@ while error>1e-8 %run until converged
         D = zeros(3,3);
         [S, Q] = ReducedComplianceStiffness(E1_samples,E2_samples,v12_samples,G12_samples);
         [moduli] = [E1_samples,E2_samples,v12_samples,G12_samples]; 
-
-        for l = 1:Nplies
+        for i = 1:Nplies
             % For each ply we calculate the ABD Matrix
-            [Qbar,Sbar] = QbarandSbar(thetadb(l),moduli);
+            [Qbar,Sbar] = QbarandSbar(thetadb(i),moduli);
 
             A = A + Qbar * (z(i+1)-z(i)) ; %N/mm
             B = B + (1/2)*Qbar * (z(i+1)^2-z(i)^2); % N 
             D = D + (1/3)*Qbar * (z(i+1)^3-z(i)^3); %N mm
             ABD = [A B; B D];
         end
+        
 
-
-        A_test = A;
-        invA_samples = inv(A);
-        E_x = inv(h*invA_samples);
-        strain_samples = A\F;%invA_samples*F; ;
-        max_fe= 0;
-
+       
+        strain_samples = inv(A)*F;%invA_samples*F; ;
+        stress_samples = Qbar*strain_samples;
         for l = 1:Nplies
             % Calculations of Strains and Stresses
-            stress_samples = Q*strain_samples; % global sigmaxx % Pa
+             % global sigmaxx % Pa
             [eps_loc] = strain_gtol(strain_samples(:),thetadb(l)); % ply i angle in radians, from bottom
-            sigma_loc = Q*eps_loc;
+            sigma_loc = stress_gtol(stress_samples, thetadb(l));
 
 
             % Calculations of Puck criterion for each simulation run,
             % each random variable chosen and each ply 
             %fe = puckfailure(sigma_loc,E1_samples,E_x,v12_samples,X_T,X_C);  % (num_samples,layer)
-            fe= max(PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,G12_samples,v12_samples,E1_samples,'c','n'));
+            [fe1, fe2] = PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,S12,v12_samples,E1_samples,'c','n');
             % Calculation of Ply failure 
             % Calculation of max failure index under puck criterion
                 % for each simulation and each random sample
@@ -109,26 +107,44 @@ while error>1e-8 %run until converged
             %    max_fe = fe; % failure index under puck criterion
             %    %numberply(j,k,l) = l;
             %end
-            if fe>1
-                Truth=0;
+            nfe=max(fe1, fe2);
+            if nfe>fe
+                fe=nfe;
             end
         
-        end  
+        end 
+        
+        if fe<1
+            Truth=0;
+            
+            %disp("JIPIIE")
+        end
+    fel=[fel, fe];
+    if length(fel)>1000
+        Truth=0;
+        mean(fel)
+        s=fel;
+        disp("done")
+        
+        fel=[];
+    end
+    fe=0;
     n=n+1;
     end
     pflist=[pflist, 1/n];%P_f^R
     % is the failure index bigger than 1?
-    FNlast2=FNlast;
-    FNlast=FN;
+    %FNlast2=FNlast;
+    %FNlast=FN;
     FN=sum(pflist)/length(pflist);
     
     %plot(length(FN), FN); hold on;
-    ROC=abs(FNlast2-FNlast)/abs(FNlast-FN);
+    %ROC=abs(FNlast2-FNlast)/abs(FNlast-FN);
     addpoints(hh,length(pflist),FN);
     
-    %addpoints(hh, length(pflist), ROC); 
+    addpoints(hh, length(pflist), ROC); 
     drawnow;
-    error=abs(FN-FNlast);
+    %error=abs(FN-FNlast);
+    n_simulations=n_simulations+1;
     
     
 end
@@ -137,7 +153,36 @@ end
 %P_f_convergence(k) = sum(ply_failure) / num_simulations;
 
 
-%first results: ca 10% for 400 N/mm and 3% for 100 N/mm
+
+%%
+S100=[0.24388, 0.2423, 0.24146, 0.24447, 0.24782, 0.24251, 0.24315, 0.23599, 0.24232, 0.24446
+];
+meanS100=mean(S100); %0.24284
+stdS100=std(S100); %0.0029955
+x=meanS100-4*stdS100:0.0001:meanS100+4*stdS100;
+plot(x, normpdf(x, meanS100, stdS100));xlabel("Probability of failure"); grid on;
+
+t_stat = tinv(0.995, length(S100)-1);
+
+% Calculate the margin of error
+margin_error = t_stat * stdS100 / sqrt(length(S100));
+
+% Calculate the lower and upper bounds of the confidence interval
+lower_bound = meanS100 - margin_error; %0.23976
+upper_bound = meanS100 + margin_error; %0.24591
+%% 
+S400=[3.5614, 3.5548, 3.5670, 3.5630, 3.5573, 3.5551, 3.559, 3.5565, 3.5618, 3.5565];
+meanS400=mean(s); %0.24284
+stdS400=std(s); %0.0029955
+x=meanS400-4*stdS400:0.0001:meanS400+4*stdS400;
+plot(x, normpdf(x, meanS400, stdS400));xlabel("Failure index"); grid on;
+prob = normcdf(1, meanS400, stdS400);
+%%
+probl=[7.4404e-16, 1.1047e-15, 8.4353e-16, 1.0793e-15, 6.6061e-16, 7.8039e-16, 1.0115e-15,1.1453e-15, 1.0931e-15,1.2127e-15];
+mean1=mean(probl);
+std1=std(probl);
+
+
 %%
 % plot of maximum failure index against number of simulations run
 figure(1)
@@ -285,20 +330,11 @@ tmax=sqrt((((sx-sy)/2)^2)+(txy^2));
 thetass=atand(-(sx-sy)/(2*txy))/2;
 end
 
-function fe = puckfailure(sigma_loc,E1,Ex,nu12,X_T,X_C)
-m = 1.3;
-    if sigma_loc(1) > 0
-        fe = 1/X_T*(sigma_loc(1) - (nu12-nu12*m*Ex/E1)*(sigma_loc(2)+sigma_loc(3)));
-    else
-        fe = 1/(-X_C)*(sigma_loc(1) - (nu12-nu12*m*Ex/E1)*(sigma_loc(2)+sigma_loc(3)));
-    end
-end
 
-
+                    %PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,S12,v12_samples,E1_samples,'c','n')
 function [FF,IFF] = PuckCriterion(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,G12_t,nu12,E1,fiber,print)
 FF =0;
-IFF = 0;
-
+IFF=0;
 sigma3 = abs(sigma3);
 
 % Determination of which fiber used
@@ -378,4 +414,5 @@ else
         fprintf("invalid value of sigma2\n")
     end
 end
+%IFF
 end

@@ -37,3 +37,7 @@ meanXt=mean(Xttable)
 maxloadtot=mean(maxload)
 stdXt=std(Xttable);
 stdmaxload=std(maxload)
+
+
+x=meanXt-3*stdXt:1e5:meanXt+3*stdXt;
+plot(x./1e6, normpdf(x, meanXt, stdXt));xlabel("E [MPa]"); grid on;
