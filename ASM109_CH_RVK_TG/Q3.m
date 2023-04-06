@@ -14,17 +14,16 @@ Y_T = 107*10^6;
 Y_C = 220*10^6;
 g_12t = 152.4*10^6;
 
-
 %% Initialisation of Composites Model
 % Laminate definition (plies of equal thickness)
 
 thetadt = [0 90 +45 -45 -45 +45 90 0 0 90 +45 -45 -45 +45 90 0];% ply angles in degrees, from top??? Not bottom?
-Nplies = length(thetadt);
+Nplies  = length(thetadt);
 thetadb = fliplr(thetadt); % ply angles in degrees, from bottom
-h_ply  = 0.125*10^(-3);           % SI units, meters
-h      = Nplies * h_ply ;
+h_ply   = 127.84*10^(-6);   % SI units, meters
+h       = Nplies * h_ply ;
 
-z = -h/2:h_ply:h/2;
+z       = -h/2:h_ply:h/2;
 
 % Creation of layering position in ply starting from bottom
 for i = 1:Nplies
@@ -35,7 +34,6 @@ end
 A = zeros(3,3);
 B = zeros(3,3);
 D = zeros(3,3);
-
 
 % Creation of Reduced Compliance and Stiffness Matrix
 [S, Q] = ReducedComplianceStiffness(E1,E2,nu12,G12);
@@ -49,16 +47,14 @@ for i = 1:Nplies
     D = D + (1/3)* Qbar(:,:,i) * (z(i+1)^3-z(i)^3); %Nm
     ABD = [A B; B D];
 end
-
-A_test = A;
-invA = inv(A);
-
 % Initialisation of Equivalent Modulus of Laminate
+invA = inv(A);
 E_x = inv(h*invA(1,1));
 
 %% Plot and Calculations biaxial stress failure envelopes for Puck and Max Stress criteria
 % Define stress ranges for plotting
-sigma_range = linspace(-Y_C, Y_T, 21); %N\m^2
+a = 0.01;
+sigma_range = linspace(-a*Y_C, a*Y_T, 31); %N\m^2
 
 % Definition of on distributed biaxial load
 N_range = sigma_range*h; %N/m
@@ -77,46 +73,44 @@ for i = 1:length(sigma_range)
         % Calculation of global stresses
         stress_glo = Qbar(:,:,1)*strain_glo; % global sigmaxx etc...
 
-        % Calculations of Failure Criterion for each ply 
+        % Calculations of Failure Criterion for each ply
         for l = 1:Nplies
             % Calculations of local Strains and Stresses
             [eps_loc] = strain_gtol(strain_glo,thetadb(l));
             [sigma_loc] = stress_gtol(stress_glo,thetadb(l));% ply i angle in radians, from bottom
-            
+
             % Failure index with Maximum Stress criterion
             [FI_1(i,j,l),FI_2(i,j,l),FI_3(i,j,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
-           
 
             % Failure index with Pucks Criterion
             [FF(i,j,l),IFF(i,j,l)] = PuckCriterion(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t,nu12,E1,'c','n');
-         
+
         end
-        
-            % Considering all the plies - find highest failure index of loading ration (i,j) 
-            % Maximum Stress
-            max_FI_1(i,j) = max(FI_1(i,j,:)); % Maximum FI_1 over all plies for loading ratio (i,j)
-            max_FI_2(i,j) = max(FI_2(i,j,:));
-            max_FI_3(i,j) = max(FI_3(i,j,:));
-            % Highest Failure index according to maxmimum Stress
-            max_FI_MS(i,j) = max([max_FI_1(i,j),max_FI_2(i,j),max_FI_3(i,j)]);
-            
-            % Puck Criterion
-            max_FF(i,j) = max(FF(i,j,:));
-            max_IFF(i,j) = max(IFF(i,j,:));
-            % Highest Failure index according to Puck Criterion
-            max_FI_PUCK(i,j) = max([max_FF(i,j),max_IFF(i,j)]);
-       
-            % Maximum Stress
-            FPF_MS(i,j,:) = F/max_FI_MS(i,j);
-            Nx_FPF_MS(i,j) = FPF_MS(i,j,1);
-            Ny_FPF_MS(i,j) = FPF_MS(i,j,2);
-            
-            % Puck Criterion
-            FPF_PUCK(i,j,:) = F/max_FI_PUCK(i,j);
-            Nx_FPF_PUCK(i,j) = FPF_PUCK(i,j,1);
-            Ny_FPF_PUCK(i,j) = FPF_PUCK(i,j,2);
-         
-        end
+
+        % Considering all the plies - find highest failure index of loading ration (i,j)
+        % Maximum Stress
+        max_FI_1(i,j) = max(FI_1(i,j,:)); % Maximum FI_1 over all plies for loading ratio (i,j)
+        max_FI_2(i,j) = max(FI_2(i,j,:));
+        max_FI_3(i,j) = max(FI_3(i,j,:));
+        % Highest Failure index according to maxmimum Stress
+        max_FI_MS(i,j) = max([max_FI_1(i,j),max_FI_2(i,j),max_FI_3(i,j)]);
+
+        % Puck Criterion
+        max_FF(i,j) = max(FF(i,j,:));
+        max_IFF(i,j) = max(IFF(i,j,:));
+        % Highest Failure index according to Puck Criterion
+        max_FI_PUCK(i,j) = max([max_FF(i,j),max_IFF(i,j)]);
+
+        % Maximum Stress
+        FPF_MS(i,j,:) = F/max_FI_MS(i,j);
+        Nx_FPF_MS(i,j) = FPF_MS(i,j,1);
+        Ny_FPF_MS(i,j) = FPF_MS(i,j,2);
+
+        % Puck Criterion
+        FPF_PUCK(i,j,:) = F/max_FI_PUCK(i,j);
+        Nx_FPF_PUCK(i,j) = FPF_PUCK(i,j,1);
+        Ny_FPF_PUCK(i,j) = FPF_PUCK(i,j,2);
+    end
 end
 
 
@@ -132,16 +126,13 @@ for i = 1:length(sigma_range)
         %disp(F_LPF)
         max_FI_MS_LPF(i,j) = 0;
 
-        while iter < 50 % While the failure index of our laminate is less than 1
+        while iter < 50 
             z = -h/2:h_ply:h/2;
             if max_FI_MS_LPF(i,j) == 0
                 F_LPF(:) = F_LPF(:); % looped to creat different biaxial forces
             else
                 F_LPF(:) = F_LPF(:)/max_FI_MS_LPF(i,j);
-                Nx_LPF(i,j) = F_LPF(1);
-                Ny_LPF(i,j) = F_LPF(2);
             end
-          
 
             FI_LPF_1(i,j,:) = zeros(1,Nplies);
             FI_LPF_2(i,j,:) = zeros(1,Nplies);
@@ -159,16 +150,15 @@ for i = 1:length(sigma_range)
             [moduli]= [E1 E2 nu12 G12];
 
             zbar = zeros(1, Nplies);
-
             for l = 1:Nplies
                 zbar(l) = -(h + h_ply)/2 + l*h_ply;
                 % For each ply we calculate the ABD Matrix
                 [Qbar(:,:,l),Sbar(:,:,l)] = QbarandSbar(thetadb(l),moduli);
 
                 if ply_failure(l) == 2
-                    Qbar(2,2,l) = 0.1*Qbar(2,2,l);
+                    Qbar(2,2,l) = 0.1*Qbar(2,2,l); % Degrading properties if matrix failure
                 elseif ply_failure(l) == 1
-                    Qbar(:,:,l) = zeros(3,3);
+                    Qbar(:,:,l) = zeros(3,3); % Zero properties within the laminate
                 end
 
                 A = A + Qbar(:,:,l) * (z(l+1)-z(l)) ; %N/m, right dimensions?
@@ -177,7 +167,6 @@ for i = 1:length(sigma_range)
                 ABD = [A B; B D];
             end
 
-          
             % Calcuation of global strain for failure
             strain_glo = inv(A)*F_LPF;
            
@@ -191,12 +180,9 @@ for i = 1:length(sigma_range)
                 [FI_LPF_1(i,j,l),FI_LPF_2(i,j,l),FI_LPF_3(i,j,l)]= MaxStress(sigma_loc(1),sigma_loc(2),sigma_loc(3),X_T,X_C,Y_T,Y_C,g_12t);
             end
 
-            if ply_failure ~= zeros(1,Nplies)
-                %fprintf('LFP1 =')
-                %disp(F_LPF)
+            if ply_failure ~= zeros(1,Nplies) % Checking if all plies fail
                 Nx_LPF_MS(i,j) = F_LPF(1);
                 Ny_LPF_MS(i,j) = F_LPF(2);
-                %disp(LPF_MS(i,j,:))
                 break
             end
 
@@ -210,36 +196,31 @@ for i = 1:length(sigma_range)
 
             if max_FI_MS_LPF(i,j) == max_FI_1_LPF(i,j) % if fibre failure
                 ply_index = find(max_FI_MS_LPF(i,j) == FI_LPF_1(i,j));
-                for n = 1:length(ply_index)
+                for n = 1:length(ply_index) % Detection of ply failure
                     if ply_index ~= 0
                         ply_failure(ply_index(n)) = 1;
                     end
                 end
-                
-            elseif max_FI_MS_LPF(i,j) == max_FI_2_LPF(i,j)
+            elseif max_FI_MS_LPF(i,j) == max_FI_2_LPF(i,j) % if Matrix failure
                 ply_index = find(FI_LPF_2(i,j,:) == max_FI_MS_LPF(i,j,:));
-                for n = 1:length(ply_index)
+                for n = 1:length(ply_index) 
                     if ply_index ~= 0
                         ply_failure(ply_index(n)) = 2;
                     end
                 end
             else
-                ply_index = find(max_FI_MS_LPF(i,j) == FI_LPF_3(i,j,:));
+                ply_index = find(max_FI_MS_LPF(i,j) == FI_LPF_3(i,j,:)); 
                 for n = 1:length(ply_index)
                     if ply_index ~= 0
                         ply_failure(ply_index(n)) = 2;
                     end
                 end
             end
-           
-         
+
             iter = iter + 1;
         end
     end
 end
-
-
-
 
 %% LPF - PUCK
 % Calculations of Failure index
@@ -258,7 +239,6 @@ for i = 1:length(sigma_range)
                 F_LPF(:) = F_LPF(:); % looped to creat different biaxial forces
             else
                 F_LPF(:) = F_LPF(:)/max_FI_PUCK_LPF(i,j);
-                
             end
             FF_LPF(i,j,:) = zeros(1,Nplies);
             IFF_LPF(i,j,:) = zeros(1,Nplies);
@@ -312,15 +292,13 @@ for i = 1:length(sigma_range)
             end
 
             if ply_failure ~= zeros(1,Nplies)
-                %fprintf('LFP1 =')
                 Nx_LPF_PUCK(i,j) = F_LPF(1);
                 Ny_LPF_PUCK(i,j) = F_LPF(2);
-                %disp(LPF_MS(i,j,:))
                 break
             end
 
             % Considering all the plies - find highest failure index of loading ration (i,j)
-            % Maximum Stress
+            % PUCK
             max_FF_LPF(i,j) = max(FF_LPF(i,j,~ply_failure)); % Maximum FI_1 over all plies for loading ratio (i,j)
             max_IFF_LPF(i,j) = max(IFF_LPF(i,j,~ply_failure));
             % Highest Failure index according to maxmimum Stress
@@ -347,6 +325,8 @@ for i = 1:length(sigma_range)
     end
 end
 
+%% Plotting
+
 % MS FPF && LPF
 vec_LR = LR(:);
 [sorted_vecLR sorting_index] = sort(vec_LR,'descend');
@@ -361,13 +341,10 @@ vec_Ny_FMS = Ny_FMS(:);
 
 vec_Nx_LMS1 = Nx_LMS(Ny_LMS(:)>-8*10^5);
 vec_Ny_LMS1 = Ny_LMS(Ny_LMS(:)>-8*10^5);
-% vec_Nx_LMS1 = Nx_LMS(abs(Nx_LMS(:))>2*10^5);
-% vec_Ny_LMS1 = Ny_LMS(abs(Ny_LMS(:))>2*10^5);
 
 vec_Nx_LMS = vec_Nx_LMS1(vec_Ny_LMS1(:)<4*10^5);
 vec_Ny_LMS = vec_Ny_LMS1(vec_Ny_LMS1(:)<4*10^5);
-% vec_Nx_LMS = vec_Nx_LMS1(:);
-% vec_Ny_LMS = vec_Ny_LMS1(:);
+
 
 P_FMS = [vec_Nx_FMS,vec_Ny_FMS];
 k_FMS = convhull(P_FMS);
@@ -400,20 +377,8 @@ k_FP = convhull(P_FP);
 P_LP = [vec_Nx_LP,vec_Ny_LP];
 k_LP = convhull(P_LP);
 
-% Comparison First and Last ply Failure
+
 figure(1);
-hold on
-grid on
-plot(P_FMS(:,1),P_FMS(:,2),'b*')
-plot(P_FMS(k_FMS,1),P_FMS(k_FMS,2),'b')
-plot(P_LMS(:,1),P_LMS(:,2),'r*')
-plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
-legend('FPF - MS','FPF envelope - MS','LPF - MS','LPF envelope - MS')
-title('Comparison MS - FPF & LPF')
-exportgraphics(gcf,'MS_Comp.png','Resolution',500);
-
-
-figure(2);
 hold on
 grid on
 plot(P_FP(:,1),P_FP(:,2),'b*')
@@ -424,10 +389,10 @@ xlabel('$Nx$[N]','interpreter','Latex')
 ylabel('$Ny$[N]','interpreter','Latex')
 legend('FPF - Puck','FPF envelope - Puck','LPF - Puck','LPF envelope - Puck')
 title('Comparison PUCK - FPF & LPF')
-exportgraphics(gcf,'PUCK_Comp.png','Resolution',500);
+exportgraphics(gcf,'PUCK_Comp_points.png','Resolution',500);
 
 % Comparison MS and PUCK
-figure(3);
+figure(2);
 hold on
 grid on
 plot(P_FP(:,1),P_FP(:,2),'b*')
@@ -438,29 +403,134 @@ xlabel('$Nx$[N]','interpreter','Latex')
 ylabel('$Ny$[N]','interpreter','Latex')
 legend('FPF - Puck','FPF envelope - Puck','FPF - MS','LPF envelope - MS')
 title('Comparison FPF - Puck & MS')
-exportgraphics(gcf,'FPF_Comp.png','Resolution',500);
+exportgraphics(gcf,'FPF_Comp_points.png','Resolution',500);
 
-figure(4);
+
+%% Envelopes 
+% Comparison MS and PUCK FPF
+
+[xcw1, ycw1] = poly2cw(vec_Nx_FMS,vec_Ny_FMS);
+K = convhull(xcw1,ycw1);
+xy = [xcw1,ycw1];
+xy_FMS = xy(K,:);
+[xcw2, ycw2] = poly2cw(vec_Nx_FP,vec_Ny_FP);
+K = convhull(xcw2,ycw2);
+xy = [xcw2,ycw2];
+xy_FP = xy(K,:);
+
+N_range = linspace(-6*10^6,1*10^6);
+Nx = cosd(30)*400*10^3;
+Ny = sind(30)*400*10^3;
+Nx_1 = cosd(30)*100*10^3;
+Ny_1 = sind(30)*100*10^3;
+Ny_range = sind(30)/cosd(30)*N_range;
+
+% Define angle range to remove points
+angle_min = -135; % minimum angle
+angle_max = -90; % maximum angle
+[xcw1, ycw1] = poly2cw(vec_Nx_LMS,vec_Ny_LMS);
+K = convhull(xcw1,ycw1);
+xy = [xcw1,ycw1];
+xy_LMS = xy(K,:);
+% Remove identified points from polygon xy1
+angles = atan2d(xy_LMS(:,2), xy_LMS(:,1));
+angles = mod(angles + 180, 360) - 180;
+idx = (angles >= angle_min) & (angles <= angle_max);
+xy_LMS(idx, :) = [];
+P_LMS(idx,:) = [];
+
+angle_min = 45; % minimum angle
+angle_max = 90; % maximum angle
+[xcw2, ycw2] = poly2cw(vec_Nx_LP,vec_Ny_LP);
+xy_LP = [xcw2,ycw2];
+
+% Remove identified points from polygon xy2
+angles = atan2d(xy_LP(:,2), xy_LP(:,1));
+angles = mod(angles + 180, 360) - 180;
+idx = (angles >= angle_min) & (angles <= angle_max);
+xy_LP(idx, :) = [];
+K = convhull(xy_LP(:,1),xy_LP(:,2));
+xy_LP = xy_LP(K,:);
+P_LP(idx,:) = [];
+
+figure(3); % PLY FAILURE ITERATION
 hold on
 grid on
-plot(P_LP(:,1),P_LP(:,2),'b*')
-plot(P_LP(k_LP,1),P_LP(k_LP,2),'b')
-plot(P_LMS(:,1),P_LMS(:,2),'r*')
-plot(P_LMS(k_LMS,1),P_LMS(k_LMS,2),'r')
+axis equal
+scatter(Nx,Ny,'go')
+scatter(Nx_1,Ny_1,'ro')
+plot(P_FMS(:,1),P_FMS(:,2),'r*')
+plot(xy_FMS(:,1), xy_FMS(:,2), 'g')
+plot(P_FP(:,1),P_FP(:,2),'b*')
+plot(xy_FP(:,1), xy_FP(:,2), 'k')
+plot(N_range,Ny_range,'b-')
 xlabel('$Nx$[N]','interpreter','Latex')
 ylabel('$Ny$[N]','interpreter','Latex')
-legend('LPF - Puck','LPF envelope - Puck','LPF - MS','LPF envelope - MS')
-title('Biaxial Loading Comparison LPF - Puck & MS')
+legend('Loading: 400 N/m','Loading: 100 N/m','FPF envelope - Puck','FPF envelope - MS','Slope')
+title('Comparison FPF - Puck & MS')
+exportgraphics(gcf,'FPF_Comp.png','Resolution',500);
+
+figure(4); % Comparison Last ply Failure
+hold on
+grid on
+axis equal
+plot(P_LMS(:,1), P_LMS(:,2), 'g*')
+plot(P_LP(:,1), P_LP(:,2), 'k*')
+plot(xy_LMS(:,1), xy_LMS(:,2), 'g')
+plot(xy_LP(:,1), xy_LP(:,2), 'k')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
+legend('LPF envelope - MS','LPF envelope - PUCK')
+title('Comparison LPF - Puck & MS')
 exportgraphics(gcf,'LPF_Comp.png','Resolution',500);
 
+figure(5); % Maximum stress criterion
+hold on
+grid on
+axis equal
+plot(xy_FMS(:,1), xy_FMS(:,2), 'b')
+plot(xy_LMS(:,1), xy_LMS(:,2), 'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
+legend('FPF envelope - MS','LPF envelope - MS')
+title('Comparison Maximum Stress - FPF & LPF')
+exportgraphics(gcf,'MS_Comp.png','Resolution',500);
 
+figure(6); % Pucks Criterion
+hold on
+grid on
+axis equal
+plot(xy_FP(:,1), xy_FP(:,2), 'b')
+plot(xy_LP(:,1), xy_LP(:,2), 'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
+legend('FPF envelope - PUCK','LPF envelope - PUCK')
+title('Comparison Puck - FPF & LPF')
+exportgraphics(gcf,'PUCK_Comp.png','Resolution',500);
+
+figure(7); % Pucks Criterion
+hold on
+grid on
+axis equal
+plot(xy_FMS(:,1), xy_FMS(:,2), 'b')
+plot(xy_FP(:,1), xy_FP(:,2), 'r')
+xlabel('$Nx$[N]','interpreter','Latex')
+ylabel('$Ny$[N]','interpreter','Latex')
+legend('FPF envelope - PUCK','LPF envelope - PUCK')
+title('Comparison FPF')
+exportgraphics(gcf,'FPF_Comp2.png','Resolution',500);
 
 
 %% Functions
 function [FF,IFF] = PuckCriterion(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,G12_t,nu12,E1,fiber,print)
+% This function returns the Failure indices under the PUCK criterion
+% for fiber-reinforced materials.
+% There are inputs are the local stresses with the materials properties and strengths
+% the fiber input and returns each fiber failure and inter fibre failure
+% index
+
 FF = 0;
 IFF = 0;
-
 sigma3 = abs(sigma3);
 
 % Determination of which fiber used
@@ -471,7 +541,7 @@ if fiber == 'c'
     pcTll = 0.25;
     ptTT = 0.2;
     pcTT = 0.25;
-    Ex = 230e9; % GPa  
+    Ex = 270e9; % GPa  
 elseif fiber == 'g'
     m = 1.3;
     % Incline parameters
@@ -545,7 +615,10 @@ end
 
 
 function [FI_1,FI_2,FI_3]= MaxStress(sigma1,sigma2,sigma3,X_T,X_C,Y_T,Y_C,S_f)
-
+% This function returns the Failure indices under the maximum stress criterion
+% for fiber-reinforced materials.
+% There are inputs are the local stresses with the materials strengths
+% and returns each failure index
 if sigma1>=0
     FI_1 = sigma1/X_T;
 else
@@ -562,6 +635,11 @@ end
 
 
 function [Qbar,Sbar] = QbarandSbar(angle,moduli)
+% This function returns the transformed reduced stiffness
+% matrix for fiber-reinforced materials.
+% There are four arguments representing four
+% material constants. The size of the reduced
+% stiffness and compliance matrix is 3 x 3.
 % Sine of the angle of the lamina
 s=sind(angle);
 % Cosine of the angle of the lamina
